@@ -43,11 +43,21 @@ You can also consider getting the NiceHash client instead, this supports GPU min
 
 ## Won't power cost more than you make?
 
+Yea, but your mom pays for that.  Kappa.
+
 For some, yes.  Others, no.  It depends on your hardware and where you live.  You can check the [calculator from NiceHash](https://www.nicehash.com/profitability-calculator) if you know how much you pay for power.  
 
 This application aims to limit how much power is consumed.  You can choose the number of threads, e.g. if you limit this to 1 your machine will not heat up.
 
-Yea, but your mom pays for that.  Kappa.
+## But the Numbers Are So Small, Why Bother?
+
+If a few join in, this can really add up quicker than you may think.  For example, let's assume that everyone running the miner keeps it at 1 thread so their systems are never over loaded and run the miner for about 12 hours (some will do much more, others less).
+
+```
+My machine (i7-4790k) running 1 thread (which is 12% total CPU) pays about $.11 / day.
+If running 12 hours/day: $.055 / day (equivalent to watching one add for bits)
+Per month: $1.65 on average per user
+```
 
 # About NiceHash
 
