@@ -55,9 +55,11 @@ If a few join in, this can really add up quicker than you may think.  For exampl
 
 ```
 My machine (i7-4790k) running 1 thread (which is 12% total CPU) pays about $.11 / day.
-If running 12 hours/day: $.055 / day (equivalent to watching one add for bits)
-Per month: $1.65 on average per user
+If running 12 hours/day: $.055 / day (equivalent to watching one ad for bits)
+Per month: $1.65 on average per user or $100/month for a streamer with 60 supporters.
 ```
+
+If that same machine ran 100%, it would be about $0.33 / day or $9.90 / month.  This is more support for the streamer than a paid subscription.
 
 # About NiceHash
 
