@@ -45,7 +45,7 @@ You can also consider getting the NiceHash client instead, this supports GPU min
 
 Yea, but your mom pays for that.  Kappa.
 
-For some, yes.  Others, no.  It depends on your hardware and where you live.  You can check the [calculator from NiceHash](https://www.nicehash.com/profitability-calculator) if you know how much you pay for power.  
+For some, yes.  Others, no.  It depends on your hardware and where you live.  You can check the [calculator from NiceHash](https://www.nicehash.com/profitability-calculator) if you know how much you pay for power.  For my machine/where I live, power costs about 10% of the earnings.
 
 This application aims to limit how much power is consumed.  You can choose the number of threads, e.g. if you limit this to 1 your machine will not heat up.
 
@@ -66,3 +66,13 @@ If that same machine ran 100%, it would be about $0.33 / day or $9.90 / month.  
 ## Why Bitcoin specifically, why not mine other currencies?
 
 We are.  NiceHash pays in Bitcoin for the work completed, but that work may include mining any blockchain (e.g. Bitcoin or zCash).
+
+## Is This a "Pool" / Why Not Use a Pool?
+
+No, NiceHash is a marketplace, not a standard "pool".  The difference is NiceHash will pay for the work that you do, while a pool distributes winnings when someone in the pool wins the lottery.
+
+# Other
+
+## Linux? Mac? Mobile
+
+It's possible, but not yet.
