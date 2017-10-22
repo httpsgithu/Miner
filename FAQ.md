@@ -107,6 +107,10 @@ You can add one or many wallets. But, like with streamers, 1% will go to my wall
 
 No.  However, HardlyDifficult subs can view the source.  This is not 'open source' - it's for educational purposes or to help with development.  All rights reserved.
 
+<hr></details><details><summary>What's Next?</summary>
+
+If things continue to go well, after building this application most of it will be reused to create a Unity asset store package.  This could be a great alternative to watching ads as way to support developers of free-to-play games.
+
 </details>
 
 Hardly Difficult's wallet: 14VzFa1eQjcmHp7i3tSTCK3TcWP8kHWhLE
