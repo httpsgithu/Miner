@@ -76,7 +76,17 @@ We are.  NiceHash pays in Bitcoin for the work completed, but that work may incl
 No, NiceHash is a marketplace, not a standard "pool".  The difference is NiceHash will pay for the work that you do, while a pool distributes winnings when someone in the pool wins the lottery.
 
 
-<hr></details><details><summary>Is There a Minimum to Withdrawal?</summary>
+<hr></details><details><summary>How Do I Get Paid?</summary>
+
+There is no sign-up required for NiceHash.  All you need is a Bitcoin wallet address.  I recommend Coinbase.com.
+
+If you are mining for your own wallet, or you are a streamer others are mining for, every few seconds a tiny deposit is made into a NiceHash account shown on the [dashboard](https://www.nicehash.com/miner/14VzFa1eQjcmHp7i3tSTCK3TcWP8kHWhLE) (just replace the end with your wallet).
+
+Once you reach the minimum, it transfers from the NiceHash account to your wallet.  This happens once per day, if you don't meet the minimum yet it carries over to the next until you do.
+
+If you use a NiceHash wallet (instead of something like coinbase), then there is another minimum to reach and the only withdrawal option is to transfer it to an external wallet such as coinbase.
+
+<hr></details><details><summary>Is There a Minimum to Make a Withdrawal?</summary>
 
 Yes.  About $60 if you use a standard bitcoin wallet, ~$15 with a NiceHash wallet.  The transaction fees work out in your favor if you use an external wallet, such as coinbase... but hitting that minimum may take some time.
 
