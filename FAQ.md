@@ -37,7 +37,7 @@ There are cryptocurrencies looking to create more private options.
 
 <details><summary>How much can you realistically make mining without specialized hardware?</summary>
 
-My computers generate an average of $0.33 / day at the moment.
+My computers generate almost $10 / month at the moment, mining with just the CPU.
 
 There are many different algorithms used in blockchain mining.  Some run well on GPU, others on specialized hardware (ASICS) specific to mining, and the one that this program is using runs best on a CPU (the [CryptoNight algorithm](https://en.bitcoin.it/wiki/CryptoNight)).
 
