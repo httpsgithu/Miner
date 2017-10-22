@@ -73,6 +73,18 @@ No, NiceHash is a marketplace, not a standard "pool".  The difference is NiceHas
 
 # Other
 
-## Linux? Mac? Mobile
+## Why CPU Only?
+
+We could add GPU support if there is interest in this.  It adds a fair bit of complexity, in order to do this well.
+
+Mining with the CPU only is safe.  If you keep the thread count down (it defaults to 1), it will not impact other things running - like a Twitch stream or the game your playing.  Using the GPU to mine may cause your machine to lag.
+
+## Linux? Mac? Mobile?
 
 It's possible, but not yet.
+
+## I Stream, How Do I Sign Up?
+
+If you're a Twitch affiliate, just let me know you're interested.  We'll add you to a list of streamers that users can choose from... and create a download link which defaults to sending 99% of the profits to you, and the other 1% to me. 
+
+I'm still working on a few core features, and the ui.  It'll be some time before it would be ready to ask the masses to install.
