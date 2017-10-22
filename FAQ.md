@@ -77,6 +77,14 @@ No, NiceHash is a marketplace, not a standard "pool".  The difference is NiceHas
 
 </details>
 
+<hr></details><details><summary>Is There a Minimum to Withdrawal?</summary>
+
+Yes.  About $60 if you use a standard bitcoin wallet, ~$15 with a NiceHash wallet.  The transaction fees work out in your favor if you use an external wallet, such as coinbase... but hitting that minimum may take some time.
+
+</details>
+
+
+
 # Other
 
 <details><summary>Why CPU Only?</summary>
