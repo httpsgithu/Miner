@@ -13,7 +13,7 @@ A blockchain is a trusted history.  A set of events, commonly transactions, are 
 
 <hr></details><details><summary>What is Mining?</summary>
 
-Mining is the process where the miner confirms a block is valid and then spends significant computer resources in order to secure it.  This process involves calculating a hash code that meets specific criteria.  The only way to achieve this is by guess and check, making the require hash code something which is difficult (i.e. slow) to calculate but easy (i.e. fast) to confirm.
+Mining is the process where the miner confirms a block is valid and then spends significant computer resources in order to secure it.  This process involves calculating a hash code that meets specific criteria.  The only way to achieve this is by guess and check, making the required hash code something which is difficult (i.e. slow) to calculate but easy (fast) to confirm.
 
 <hr></details><details><summary>How do Miners Get Paid?</summary>
 
@@ -37,7 +37,7 @@ There are cryptocurrencies looking to create more private options.
 
 <details><summary>How much can you realistically make mining without specialized hardware?</summary>
 
-My computers generate almost $10 / month at the moment, mining with just the CPU.
+My computer generates almost $10 / month at the moment, mining with just the CPU.
 
 There are many different algorithms used in blockchain mining.  Some run well on GPU, others on specialized hardware (ASICS) specific to mining, and the one that this program is using runs best on a CPU (the [CryptoNight algorithm](https://en.bitcoin.it/wiki/CryptoNight)).
 
