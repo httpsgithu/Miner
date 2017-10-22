@@ -90,6 +90,13 @@ If you use a NiceHash wallet (instead of something like coinbase), then there is
 
 Yes.  About $60 if you use a standard bitcoin wallet, ~$15 with a NiceHash wallet.  The transaction fees work out in your favor if you use an external wallet, such as coinbase... but hitting that minimum may take some time.
 
+Every transaction along the way includes a transaction fee.  
+
+To go from coinbase to cash, you can:
+
+ - Deposit to a Bank Account for 1.49%.
+ - Deposit to Paypal for 3.49%. 
+
 <hr></details>
 
 
