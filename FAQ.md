@@ -21,7 +21,7 @@ Normally, miners are paid only when they successfully add a new block to the cha
 
 We are using the NiceHash marketplace which pays for the work you do, not for winning the lottery.  This creates a consistent payout effectively by the hour.  Miners are buying computer time from people like you, hoping to win the lottery.
 
-</details>
+<hr></details>
 
 # More About Cryptocurrency
 
@@ -31,7 +31,7 @@ No.  Bitcoin is a history of transactions.  In order to confirm someone's accoun
 
 There are cryptocurrencies looking to create more private options.
 
-</details>
+<hr></details>
 
 # Profitability
 
@@ -63,7 +63,7 @@ Per month: $1.65 on average per user or $100/month for a streamer with 60 suppor
 
 If that same machine ran 100%, it would be about $0.33 / day or $9.90 / month.  This is more support for the streamer than a paid subscription.
 
-</details>
+<hr></details>
 
 # About NiceHash
 
@@ -75,13 +75,12 @@ We are.  NiceHash pays in Bitcoin for the work completed, but that work may incl
 
 No, NiceHash is a marketplace, not a standard "pool".  The difference is NiceHash will pay for the work that you do, while a pool distributes winnings when someone in the pool wins the lottery.
 
-</details>
 
 <hr></details><details><summary>Is There a Minimum to Withdrawal?</summary>
 
 Yes.  About $60 if you use a standard bitcoin wallet, ~$15 with a NiceHash wallet.  The transaction fees work out in your favor if you use an external wallet, such as coinbase... but hitting that minimum may take some time.
 
-</details>
+<hr></details>
 
 
 
@@ -119,6 +118,8 @@ No.  However, HardlyDifficult subs can view the source.  This is not 'open sourc
 
 If things continue to go well, after building this application most of it will be reused to create a Unity asset store package.  This could be a great alternative to watching ads as way to support developers of free-to-play games.
 
-</details>
+<hr></details>
+
+<br><br>
 
 Hardly Difficult's wallet: 14VzFa1eQjcmHp7i3tSTCK3TcWP8kHWhLE
