@@ -71,7 +71,7 @@ If that same machine ran 100%, it would be about $0.33 / day or $9.90 / month.  
 
 We are.  NiceHash pays in Bitcoin for the work completed, but that work may include mining any blockchain (e.g. Bitcoin or zCash).
 
-<hr></details><details><summary>Is This a "Pool" / Why Not Use a Pool?</summary>
+<hr></details><details><summary>Is This a "Pool"?</summary>
 
 No, NiceHash is a marketplace, not a standard "pool".  The difference is NiceHash will pay for the work that you do, while a pool distributes winnings when someone in the pool wins the lottery.
 
