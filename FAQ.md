@@ -19,7 +19,7 @@ Mining is the process where the miner confirms a block is valid and then spends 
 
 Normally, miners are paid only when they successfully add a new block to the chain.  Only one miner can do this at a time, which means every other miner working on that block has wasted their time, getting nothing in return unless they submit first.  This is commonly referred to as 'winning the lottery'.
 
-We are using the NiceHash marketplace which pays for the work you do, not for winning the lottery.  This creates a consistent payout effectively by the hour.
+We are using the NiceHash marketplace which pays for the work you do, not for winning the lottery.  This creates a consistent payout effectively by the hour.  Miners are buying computer time from people like you, hoping to win the lottery.
 
 </details>
 
@@ -47,7 +47,7 @@ Here is a [calculator from NiceHash](https://www.nicehash.com/profitability-calc
 
 Yea, but your mom pays for that.  Kappa.
 
-For some, yes.  Others, no.  It depends on your hardware and where you live.  You can check the [calculator from NiceHash](https://www.nicehash.com/profitability-calculator) if you know how much you pay for power.  For my machine/where I live, power costs about 10% of the earnings.
+For most, no.  Others, yes.  It depends on your hardware and where you live.  You can check the [calculator from NiceHash](https://www.nicehash.com/profitability-calculator) (note this app uses CPU only) if you know how much you pay for power.  For my machine/where I live, power costs about 10% of the earnings.
 
 This application aims to limit how much power is consumed.  You can choose the number of threads, e.g. if you limit this to 1 your machine will not heat up.
 
