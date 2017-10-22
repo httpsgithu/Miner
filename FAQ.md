@@ -21,6 +21,10 @@ Normally, miners are paid only when they successfully add a new block to the cha
 
 We are using the NiceHash marketplace which pays for the work you do, not for winning the lottery.  This creates a consistent payout effectively by the hour.  Miners are buying computer time from people like you, hoping to win the lottery.
 
+<hr></details><details><summary>What Exactly Is My Computer Doing For This?</summary>
+
+This mining application uses just a single algorithm at the moment.  It will consume as much CPU as you allow it (defaulting at 1 thread).  There is a little bandwidth consumed but no memory used in the process.
+
 <hr></details>
 
 # More About Cryptocurrency
