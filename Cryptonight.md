@@ -40,7 +40,11 @@
 3. Scratchpad Initialization
 
    First, the input is hashed using Keccak [KECCAK] with parameters b =
-   1600 and c = 512. The bytes 0..31 of the Keccak final state are
+   1600 and c = 512.
+   
+   > Keccak is better known as SHA-3 256.  The input, when using NiceHash, is a byte[112] which has the first 76 bytes populated with the blob send by the NiceHash API.  Then bytes 39-42 are interpreted as the nOnce (a long) and incremented before the Hash is taken.
+
+    The bytes 0..31 of the Keccak final state are
    interpreted as an AES-256 key [AES] and expanded to 10 round keys. A
    scratchpad of 2097152 bytes (2 MiB) is allocated. The bytes 64..191
    are extracted from the Keccak final state and split into 8 blocks of
@@ -72,6 +76,7 @@ Seigen et al.          CryptoNight Hash Function                [Page 2]
 CRYPTONOTE STANDARD 008                                       March 2013
 
 
+```
                                +-----+
                                |Input|
                                +-----+
@@ -120,14 +125,6 @@ CRYPTONOTE STANDARD 008                                       March 2013
                             |        |     |                 |   |
                             |        |     |                 | a |
                             |        | AES |                 |   |
- 
-
-
-Seigen et al.          CryptoNight Hash Function                [Page 3]
-
-CRYPTONOTE STANDARD 008                                       March 2013
-
-
                             |        |     |                 | d |
                             |        |     |                 |   |
                             +------->+-----+                 |   |
@@ -136,6 +133,7 @@ CRYPTONOTE STANDARD 008                                       March 2013
                                                              |   |
                                                              +---+
 
+```
               Figure 3: Scratchpad initialization diagram
 
 
@@ -152,6 +150,7 @@ CRYPTONOTE STANDARD 008                                       March 2013
    written to the scratchpad in 16-byte blocks. Each iteration can be
    expressed with the following pseudo-code:
 
+```
       scratchpad_address = to_scratchpad_address(a)
       scratchpad[scratchpad_address] = aes_round(scratchpad 
         [scratchpad_address], a)
@@ -161,7 +160,7 @@ CRYPTONOTE STANDARD 008                                       March 2013
       a = 8byte_add(a, 8byte_mul(b, scratchpad[scratchpad_address]))
       a, scratchpad[scratchpad_address] = a xor 
         scratchpad[scratchpad_address], a
-
+```
    Where, the 8byte_add function represents each of the arguments as a
    pair of 64-bit little-endian values and adds them together,
    component-wise, modulo 2^64. The result is converted back into 16
@@ -184,6 +183,7 @@ Seigen et al.          CryptoNight Hash Function                [Page 4]
 CRYPTONOTE STANDARD 008                                       March 2013
 
 
+```
    +-------------------------------------------------------------+
    |                         Final state                         |
    +-------------+--------------+---------------+----------------+
@@ -232,18 +232,8 @@ CRYPTONOTE STANDARD 008                                       March 2013
           +-------------|-+                                  |   |
           |             |                                    +---+
    -------------------------- END REPEAT -------------------------
- 
-
-
-Seigen et al.          CryptoNight Hash Function                [Page 5]
-
-CRYPTONOTE STANDARD 008                                       March 2013
-
-
           |             |
-
-                   Figure 4: Memory-hard loop diagram
-
+```
 
 5. Result Calculation
 
@@ -295,7 +285,7 @@ Seigen et al.          CryptoNight Hash Function                [Page 6]
 
 CRYPTONOTE STANDARD 008                                       March 2013
 
-
+```
    +-------------------------------------------------------------+
    |                         Final state                         |
    +-------------+--------------+---------------+----------------+
@@ -344,14 +334,6 @@ CRYPTONOTE STANDARD 008                                       March 2013
          |                | |        |     |             |
          |                | |        |     |             |
          |                | |        | AES |             |
- 
-
-
-Seigen et al.          CryptoNight Hash Function                [Page 7]
-
-CRYPTONOTE STANDARD 008                                       March 2013
-
-
          |                | |        |     |             |
          |                | |        |     |             |
          |                | +------->+-----+             |
@@ -378,54 +360,19 @@ CRYPTONOTE STANDARD 008                                       March 2013
                                   V
                           +--------------+
                           | Final result |
-                          +--------------+
-
+                          +--------------+               
+```
                   Figure 5: Result calculation diagram
 
 
    Hash examples:
-
+```
       Empty string:
       eb14e8a833fac6fe9a43b57b336789c46ffe93f2868452240720607b14387e11.
 
       "This is a test":
       a084f01d1437a09c6985401b60d43554ae105802c5f5d8a9b3253649c0be6605.
-
-
-6. References
-
-   [AES] "Announcing the ADVANCED ENCRYPTION STANDARD", FIPS 197, 2001.
-
-   [BLAKE] Aumasson, J.-P., Henzen, L., Meier, W., and R. C.-W. Phan,
-   "SHA-3 proposal BLAKE", 2010.
-
-   [GROESTL] Gauravaram, P., Knudsen, L., Matusiewicz, K., Mendel, F.,
- 
-
-
-Seigen et al.          CryptoNight Hash Function                [Page 8]
-
-CRYPTONOTE STANDARD 008                                       March 2013
-
-
-   Rechberger, C., Schlaffer, M., and S. Thomsen, "Groestl - a SHA-3
-   candidate", 2011.
-
-   [JH] Wu, H., "The Hash Function JH", 2011.
-
-   [KECCAK] Bertoni, G., Daemen, J., Peeters, M., and G. Van Assche,
-   "The Keccak reference", 2011.
-
-   [SKEIN] Ferguson, N., Lucks, S., Schneier, B., Whiting, D., Bellare,
-   M., Kohno, T., Callas, J., and J. Walker, "The Skein Hash Function
-   Family", 2008.
-
-
-
-
-
-
-
+```
 
 
 
