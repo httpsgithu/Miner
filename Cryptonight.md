@@ -5,31 +5,24 @@
    CryptoNight is a memory-hard hash function.  It is designed to be
    inefficiently computable on GPU, FPGA and ASIC architectures.
    
-    ```
-    By memory-hard, they mean that calculating the hash requires more storage than a typical GPU or ASIC provides, which provide fast computation but have limited memory.  This is why it does not perform well on those devices.
-    ```
+    
+    > By memory-hard, they mean that calculating the hash requires more storage than a typical GPU or ASIC provides, which provide fast computation but have limited memory.  This is why it does not perform well on those devices.
    
      The
    CryptoNight algorithm's first step is initializing large scratchpad
    with pseudo-random data.    
    
-    ```
-    The scratchpad is the memory requirement referred to above.  'Pseudo-random' means that the data appears to be random but is always the same given the same inputs.
-    ```
+    > The scratchpad is the memory requirement referred to above.  'Pseudo-random' means that the data appears to be random but is always the same given the same inputs.
    
    The next step is numerous read/write
    operations at pseudo-random addresses contained in the scratchpad.
 
-    ```
-    Reading/writing to the scratchpad like this creates a pseudo-random scratchpad, just like what we had before this step... but this makes the process take longer, and is what makes the process inefficient on GPUs and ASICs.
-    ```
+    > Reading/writing to the scratchpad like this creates a pseudo-random scratchpad, just like what we had before this step... but this makes the process take longer, and is what makes the process inefficient on GPUs and ASICs.
  
    The final step is hashing the entire scratchpad to produce the
    resulting value.
  
-    ```
-    Hashing is the process of converting data of any size into a fixed sized pseudo-random number. 
-    ```
+    > Hashing is the process of converting data of any size into a fixed sized pseudo-random number. 
 
 2. Definitions
 
@@ -37,16 +30,12 @@
    arbitrary size to data of fixed size and behaves similarly to a
    random function
 
-   ```
-    The Hash Function is the method used for hashing.  If you know the hash function, and are given the same input, the result will always be the same.
-   ```
+   > The Hash Function is the method used for hashing.  If you know the hash function, and are given the same input, the result will always be the same.
 
    scratchpad: a large area of memory used to store intermediate values
    during the evaluation of a memory-hard function
 
-    ```
-    The scratchpad is a large data block, we'll be reading and writing to specific parts of this throughout.
-    ```
+    > The scratchpad is a large data block, we'll be reading and writing to specific parts of this throughout.
 
 3. Scratchpad Initialization
 
