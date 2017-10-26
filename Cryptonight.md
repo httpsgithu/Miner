@@ -42,7 +42,9 @@
    First, the input is hashed using Keccak [KECCAK] with parameters b =
    1600 and c = 512.
    
-   > Keccak is better known as SHA-3 256.  The input, when using NiceHash, is a byte[112] which has the first 76 bytes populated with the blob send by the NiceHash API.  Then bytes 39-42 are interpreted as the nOnce (a long) and incremented before the Hash is taken.
+   > Keccak is better known as SHA-3 256.  The input, when using NiceHash, is the blob converted from hex to a byte[76].  The bytes 39-42 are interpreted as the nOnce (a long) and incremented before the Hash is taken.  
+
+   > This produces a byte[200], filled with pseudo-random data.
 
     The bytes 0..31 of the Keccak final state are
    interpreted as an AES-256 key [AES] and expanded to 10 round keys. 
@@ -79,7 +81,7 @@
    
    
    
-   > Test 1: Simply encrypt the third block.  Test against the first 128 bytes of scratchpad.
+   > Test 1: Simply encrypt the third block.  Test against the first 128 bytes of scratchpad. -- fail.
    
    
    
