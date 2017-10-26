@@ -45,36 +45,51 @@
    > Keccak is better known as SHA-3 256.  The input, when using NiceHash, is a byte[112] which has the first 76 bytes populated with the blob send by the NiceHash API.  Then bytes 39-42 are interpreted as the nOnce (a long) and incremented before the Hash is taken.
 
     The bytes 0..31 of the Keccak final state are
-   interpreted as an AES-256 key [AES] and expanded to 10 round keys. A
-   scratchpad of 2097152 bytes (2 MiB) is allocated. The bytes 64..191
+   interpreted as an AES-256 key [AES] and expanded to 10 round keys. 
+   
+   > The hash calculated by Keccak is 200 bytes, which is then logically split blocks. The first block of the hash (bytes 0 to 31 inclusive), is the key used for AES.  
+   
+   A
+   scratchpad of 2097152 bytes (2 MiB) is allocated.
+   
+   > This is the block of memory we will be reading and writing to in the steps below.
+   
+    The bytes 64..191
    are extracted from the Keccak final state and split into 8 blocks of
-   16 bytes each. Each block is encrypted using the following procedure:
+   16 bytes each.
+   
+    Each block is encrypted using the following procedure:
 
+```
       for i = 0..9 do:
           block = aes_round(block, round_keys[i])
+```
+
+   > The third block of the hash (bytes 64 to 191) is the data we will encrypt.  
 
    Where aes_round function performs a round of AES encryption, which
    means that SubBytes, ShiftRows and MixColumns steps are performed on
    the block, and the result is XORed with the round key. Note that
    unlike in the AES encryption algorithm, the first and the last rounds
-   are not special. The resulting blocks are written into the first 128
-   bytes of the scratchpad. Then, these blocks are encrypted again in
+   are not special. 
+   
+   
+   The resulting blocks are written into the first 128
+   bytes of the scratchpad. 
+   
+   
+   
+   > Test 1: Simply encrypt the third block.  Test against the first 128 bytes of scratchpad.
+   
+   
+   
+   Then, these blocks are encrypted again in
    the same way, and the result is written into the second 128 bytes of
    the scratchpad. Each time 128 bytes are written, they represent the
    result of the encryption of the previously written 128 bytes. The
    process is repeated until the scratchpad is fully initialized.
 
    This diagram illustrates scratchpad initialization:
-
-
-
- 
-
-
-Seigen et al.          CryptoNight Hash Function                [Page 2]
-
-CRYPTONOTE STANDARD 008                                       March 2013
-
 
 ```
                                +-----+
@@ -174,15 +189,6 @@ CRYPTONOTE STANDARD 008                                       March 2013
    This diagram illustrates the memory-hard loop:
 
 
-
- 
-
-
-Seigen et al.          CryptoNight Hash Function                [Page 4]
-
-CRYPTONOTE STANDARD 008                                       March 2013
-
-
 ```
    +-------------------------------------------------------------+
    |                         Final state                         |
@@ -259,31 +265,6 @@ CRYPTONOTE STANDARD 008                                       March 2013
    output of CryptoNight.
 
    The diagram below illustrates the result calculation:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-Seigen et al.          CryptoNight Hash Function                [Page 6]
-
-CRYPTONOTE STANDARD 008                                       March 2013
 
 ```
    +-------------------------------------------------------------+
