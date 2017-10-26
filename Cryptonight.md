@@ -36,36 +36,36 @@ The following text is from the [Cryptonight spec](https://cryptonote.org/cns/cns
    scratchpad: a large area of memory used to store intermediate values
    during the evaluation of a memory-hard function
 
-    > The scratchpad is a large data block, we'll be reading and writing to specific parts of this throughout.
+    > The scratchpad is a large amount of data, we'll be reading and writing to specific parts of this throughout.
 
 3. Scratchpad Initialization
 
    First, the input is hashed using Keccak [KECCAK] with parameters b =
    1600 and c = 512.
    
-   > Keccak is better known as SHA-3 256.  The input, when using NiceHash, is the blob converted from hex to a byte[76].  The bytes 39-42 are interpreted as the nOnce (a long) and incremented before the Hash is taken.  
+   > Keccak is better known as SHA-3 (using a 256 bit key).  The input, when using NiceHash, is the blob converted from hex to a byte[76].  The bytes 39-42 are interpreted as the nOnce (a long) and incremented before the Hash is taken.  
 
    > This produces a byte[200], filled with pseudo-random data.
 
     The bytes 0..31 of the Keccak final state are
    interpreted as an AES-256 key [AES] 
    
-   > The hash calculated by Keccak is 200 bytes, which is then logically split blocks. The first block of the hash (bytes 0 to 31 inclusive) is the key used for [AES](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard).  
+   > The hash calculated by Keccak is 200 bytes, which is then logically split into 4 separate segments. The first segment of the hash (bytes 0 to 31 inclusive) is the key used for [AES](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard).  
    
     and expanded to 10 round keys.
 
       > The 32 byte AES key uses the [Rijndael key schedule](https://en.wikipedia.org/wiki/Rijndael_key_schedule) to create 10 separate keys, known as 'round keys'.  Standard AES encryption also creates round keys, we simply modified how many round keys were generated.  'Round' here is referring to iterations, so 10 round keys is 1 unique key for each of the 10 iterations we will perform.
 
    A
-   scratchpad of 2097152 bytes (2 MiB) is allocated.
+   scratchpad of   bytes (2 MiB) is allocated.
    
-   > This is the block of memory we will be reading and writing to in the steps below.
+   > This is the memory we will be reading and writing to in the steps below.
    
     The bytes 64..191
    are extracted from the Keccak final state and split into 8 blocks of
    16 bytes each.
 
-   > The third block of the hash (bytes 64 to 191) is the data we will encrypt using AES.  We interpret this block of data as a byte[8][16]. 
+   > The third segment of the hash (bytes 64 to 191) is the data we will encrypt using AES.  We interpret this segment of data as a byte[8][16] (8 blocks with 16 bytes each). 
    
     Each block is encrypted using the following procedure:
 
@@ -93,7 +93,7 @@ The following text is from the [Cryptonight spec](https://cryptonote.org/cns/cns
    result of the encryption of the previously written 128 bytes. The
    process is repeated until the scratchpad is fully initialized.
 
-   > Loop 16,384 times (so 8 blocks * 10 rounds * 16,384 scratchpad regions = 1,310,720 AES rounds).
+   > Loop 16,384 times, reusing the blocks each time it loops (so 8 blocks * 10 rounds * 16,384 scratchpad regions = a total of 1,310,720 AES rounds).
 
    This diagram illustrates scratchpad initialization:
 

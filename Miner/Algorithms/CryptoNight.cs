@@ -164,6 +164,29 @@ namespace HD
       }
     }
 
+    /// <summary>
+    /// Complete the scratchpad
+    /// </summary>
+    public void ProcessStep8()
+    {
+      for (int scratchIndex = 1; scratchIndex < 16384; scratchIndex++)
+      {
+        for (int blockIndex = 0; blockIndex < blocks.Length; blockIndex++)
+        {
+          aes.ProcessBlock(blocks[blockIndex], 0, blocks[blockIndex], 0);
+        }
+
+        for (int blockIndex = 0; blockIndex < blocks.Length; blockIndex++)
+        {
+          byte[] block = blocks[blockIndex];
+          for (int byteIndex = 0; byteIndex < block.Length; byteIndex++)
+          {
+            ctx.long_state[scratchIndex * blocks.Length * block.Length + blockIndex * block.Length + byteIndex] = block[byteIndex];
+          }
+        }
+      }
+    }
+
     uint hex2bin(string input, uint len)
     {
       bool error = false;
@@ -178,7 +201,6 @@ namespace HD
       }
       return BitConverter.ToUInt32(output, 0);
     }
-
 
     byte hf_hex2bin(byte c, ref bool err)
     {

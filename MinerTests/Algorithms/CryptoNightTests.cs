@@ -49,6 +49,35 @@ namespace HD.Tests
 
 
 
+    [TestMethod()]
+    public void Step8_CompleteScratch()
+    {
+      NewJob newJob = JsonConvert.DeserializeObject<NewJob>(@"
+
+{""jsonrpc"":""2.0"",""id"":1,""error"":null,""result"":{""id"":""236837541229689"",""status"":""OK"",""job"":{""job_id"":""000000228ffb9d4b"",""blob"":""0606cacac8cf05536e5b97528e2f1dc190fc7ebb494494303fc0b9d2e71df6b6926d7db934a2e5000000275ad8b6a20aa530fba2a492780ac934dfd8a359df3dd02c88d38be3c1dd15edb507"",""target"":""b7d10000""}}}
+
+");
+      CryptoNight night = new CryptoNight();
+      night.Process(newJob);
+      night.ProcessStep2();
+      night.ProcessStep3();
+      night.ProcessStep4();
+      night.ProcessStep5();
+      night.ProcessStep6();
+      night.ProcessStep7();
+      night.ProcessStep8();
+
+
+      Assert.IsTrue(night.ctx.long_state[0] == 205);
+      Assert.IsTrue(night.ctx.long_state[3] == 28);
+      Assert.IsTrue(night.ctx.long_state[99] == 87);
+      Assert.IsTrue(night.ctx.long_state[127] == 241);
+      Assert.IsTrue(night.ctx.long_state[128] == 29);
+      Assert.IsTrue(night.ctx.long_state[209711] == 52);
+      Assert.IsTrue(night.ctx.long_state[2097151] == 191);
+    }
+
+
 
     [TestMethod()]
     public void Step7_StoreInScratch()

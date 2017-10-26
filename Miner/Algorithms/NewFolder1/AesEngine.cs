@@ -469,28 +469,19 @@ namespace Org.BouncyCastle.Crypto.Engines
       Check.OutputLength(output, outOff, 16, "output buffer too short");
 
       UnPackBlock(input, inOff);
+      DoRounds(output, outOff);
 
+      return BLOCK_SIZE;
+    }
+
+    public void DoRounds(byte[] output, int outOff)
+    {
       for (int key = 0; key < WorkingKey.Length; key++)
       {
         EncryptBlock(WorkingKey[key]);
       }
-      //switch (useCase)
-      //{
-      //  case UseCase.Encryption:
-      //    break;
-      //  case UseCase.Decryption:
-      //    DecryptBlock(WorkingKey);
-      //    break;
-      //  case UseCase.Cryptonight:
-      //    // TODO
-      //    break;
-      //  default:
-      //    break;
-      //}
 
       PackBlock(output, outOff);
-
-      return BLOCK_SIZE;
     }
 
     public void Reset()
