@@ -517,52 +517,23 @@ namespace Org.BouncyCastle.Crypto.Engines
       Pack.UInt32_To_LE(C3, bytes, off + 12);
     }
 
-    public uint[] EncryptBlock(uint[] kw)
+    public void EncryptBlock(
+      uint[] kw)
     {
-      uint t0 = this.C0 ^ kw[0];
-      uint t1 = this.C1 ^ kw[1];
-      uint t2 = this.C2 ^ kw[2];
+      uint t0 = C0 ^ kw[0];
+      uint t1 = C1 ^ kw[1];
+      uint t2 = C2 ^ kw[2];
 
-      uint[] result = new uint[4];
-      uint temp = this.C3 ^ kw[3];
-      for (int i = 0; i < 4; i++)
-      {
-        result[i] = temp;
-      }
-      //int r = 0;
-      //while (r < ROUNDS - 1)
-      //{
       // TODO perf, maybe pre-calc T1, etc which are just shifted versions of T0.
-      result[0] = T0[C3 & 255] ^ Shift(T0[(C0 >> 8) & 255], 24) ^ Shift(T0[(C1 >> 16) & 255], 16) ^ Shift(T0[(C2 >> 24) & 255], 8);
-      result[0] ^= kw[0]; // TODO it seems result[0] is correct and kw[0] is correct but the xor result is not???
+      uint tempC3 = T0[C3 & 255] ^ Shift(T0[(C0 >> 8) & 255], 24) ^ Shift(T0[(C1 >> 16) & 255], 16) ^ Shift(T0[(C2 >> 24) & 255], 8) ^ kw[3];
+      uint tempC2 = T0[C2 & 255] ^ Shift(T0[(C3 >> 8) & 255], 24) ^ Shift(T0[(C0 >> 16) & 255], 16) ^ Shift(T0[(C1 >> 24) & 255], 8) ^ kw[2];
+      uint tempC1 = T0[C1 & 255] ^ Shift(T0[(C2 >> 8) & 255], 24) ^ Shift(T0[(C3 >> 16) & 255], 16) ^ Shift(T0[(C0 >> 24) & 255], 8) ^ kw[1];
+      uint tempC0 = T0[C0 & 255] ^ Shift(T0[(C1 >> 8) & 255], 24) ^ Shift(T0[(C2 >> 16) & 255], 16) ^ Shift(T0[(C3 >> 24) & 255], 8) ^ kw[0];
 
-
-
-      result[1] = T0[C2 & 255] ^ Shift(T0[(t2 >> 8) & 255], 24) ^ Shift(T0[(result[3] >> 16) & 255], 16) ^ Shift(T0[(t0 >> 24) & 255], 8) ^ kw[1];
-      result[2] = T0[C1 & 255] ^ Shift(T0[(result[3] >> 8) & 255], 24) ^ Shift(T0[(t0 >> 16) & 255], 16) ^ Shift(T0[(t1 >> 24) & 255], 8) ^ kw[2];
-      result[3] = T0[C0 & 255] ^ Shift(T0[(t0 >> 8) & 255], 24) ^ Shift(T0[(t1 >> 16) & 255], 16) ^ Shift(T0[(t2 >> 24) & 255], 8) ^ kw[3];
-      //kw = KW[r++];
-      //t0 = T0[r0 & 255] ^ Shift(T0[(r1 >> 8) & 255], 24) ^ Shift(T0[(r2 >> 16) & 255], 16) ^ Shift(T0[(r3 >> 24) & 255], 8) ^ kw[0];
-      //t1 = T0[r1 & 255] ^ Shift(T0[(r2 >> 8) & 255], 24) ^ Shift(T0[(r3 >> 16) & 255], 16) ^ Shift(T0[(r0 >> 24) & 255], 8) ^ kw[1];
-      //t2 = T0[r2 & 255] ^ Shift(T0[(r3 >> 8) & 255], 24) ^ Shift(T0[(r0 >> 16) & 255], 16) ^ Shift(T0[(r1 >> 24) & 255], 8) ^ kw[2];
-      //r3 = T0[r3 & 255] ^ Shift(T0[(r0 >> 8) & 255], 24) ^ Shift(T0[(r1 >> 16) & 255], 16) ^ Shift(T0[(r2 >> 24) & 255], 8) ^ kw[3];
-      //}
-
-      return result;
-
-      //kw = KW[r++];
-      //r0 = T0[t0 & 255] ^ Shift(T0[(t1 >> 8) & 255], 24) ^ Shift(T0[(t2 >> 16) & 255], 16) ^ Shift(T0[(r3 >> 24) & 255], 8) ^ kw[0];
-      //r1 = T0[t1 & 255] ^ Shift(T0[(t2 >> 8) & 255], 24) ^ Shift(T0[(r3 >> 16) & 255], 16) ^ Shift(T0[(t0 >> 24) & 255], 8) ^ kw[1];
-      //r2 = T0[t2 & 255] ^ Shift(T0[(r3 >> 8) & 255], 24) ^ Shift(T0[(t0 >> 16) & 255], 16) ^ Shift(T0[(t1 >> 24) & 255], 8) ^ kw[2];
-      //r3 = T0[r3 & 255] ^ Shift(T0[(t0 >> 8) & 255], 24) ^ Shift(T0[(t1 >> 16) & 255], 16) ^ Shift(T0[(t2 >> 24) & 255], 8) ^ kw[3];
-
-      //// the final round's table is a simple function of S so we don't use a whole other four tables for it
-
-      //kw = KW[r];
-      //this.C0 = (uint)S[r0 & 255] ^ (((uint)S[(r1 >> 8) & 255]) << 8) ^ (((uint)S[(r2 >> 16) & 255]) << 16) ^ (((uint)S[(r3 >> 24) & 255]) << 24) ^ kw[0];
-      //this.C1 = (uint)S[r1 & 255] ^ (((uint)S[(r2 >> 8) & 255]) << 8) ^ (((uint)S[(r3 >> 16) & 255]) << 16) ^ (((uint)S[(r0 >> 24) & 255]) << 24) ^ kw[1];
-      //this.C2 = (uint)S[r2 & 255] ^ (((uint)S[(r3 >> 8) & 255]) << 8) ^ (((uint)S[(r0 >> 16) & 255]) << 16) ^ (((uint)S[(r1 >> 24) & 255]) << 24) ^ kw[2];
-      //this.C3 = (uint)S[r3 & 255] ^ (((uint)S[(r0 >> 8) & 255]) << 8) ^ (((uint)S[(r1 >> 16) & 255]) << 16) ^ (((uint)S[(r2 >> 24) & 255]) << 24) ^ kw[3];
+      C3 = tempC3;
+      C2 = tempC2;
+      C1 = tempC1;
+      C0 = tempC0;
     }
 
     private void DecryptBlock(uint[][] KW)

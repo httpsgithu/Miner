@@ -138,6 +138,9 @@ namespace HD
       }
     }
 
+    /// <summary>
+    /// One AES round per block
+    /// </summary>
     public void ProcessStep6()
     {
       for (int blockIndex = 0; blockIndex < blocks.Length; blockIndex++)

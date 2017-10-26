@@ -34,8 +34,9 @@ namespace HD.Tests
     [TestMethod()]
     public void AdHoc()
     {
-      NewJob newJob = JsonConvert.DeserializeObject<NewJob>(
-"{\"jsonrpc\":\"2.0\",\"id\":1,\"error\":null,\"result\":{\"id\":\"280722591085079\",\"status\":\"OK\",\"job\":{\"job_id\":\"000000228f7624c5\",\"blob\":\"0606d7fbc7cf05c1dc898d2a8ca5b9f42f0f49a3cdb0ca306fd0ca23b775ec867ea69d336dee92000000225cec8cda668397379373d4a234d595cb8de79228552e7b1a25c2bb1f39372d3202\",\"target\":\"b7d10000\"}}}");
+      NewJob newJob = JsonConvert.DeserializeObject<NewJob>(@"
+{""jsonrpc"":""2.0"",""id"":1,""error"":null,""result"":{""id"":""493367776092421"",""status"":""OK"",""job"":{""job_id"":""000000228fe8b43c"",""blob"":""0606a4bbc8cf05030f3448ab932a22974b3c8b3b87a8103510867bc65bca8e46d5cf05bc00e52200000064d1ecdbfc5ab7896710ad4caffea6d07042303b45822e90e88af0b1e807caff3d06"",""target"":""b7d10000""}}}
+");
       CryptoNight night = new CryptoNight();
       night.Process(newJob);
       night.ProcessStep2();
@@ -43,6 +44,31 @@ namespace HD.Tests
       night.ProcessStep4();
       night.ProcessStep5();
       night.ProcessStep6();
+    }
+
+
+    [TestMethod()]
+    public void Step6_OneRoundPerBlock()
+    {
+      NewJob newJob = JsonConvert.DeserializeObject<NewJob>(@"
+
+{""jsonrpc"":""2.0"",""id"":1,""error"":null,""result"":{""id"":""236837541229689"",""status"":""OK"",""job"":{""job_id"":""000000228ffb9d4b"",""blob"":""0606cacac8cf05536e5b97528e2f1dc190fc7ebb494494303fc0b9d2e71df6b6926d7db934a2e5000000275ad8b6a20aa530fba2a492780ac934dfd8a359df3dd02c88d38be3c1dd15edb507"",""target"":""b7d10000""}}}
+
+");
+      CryptoNight night = new CryptoNight();
+      night.Process(newJob);
+      night.ProcessStep2();
+      night.ProcessStep3();
+      night.ProcessStep4();
+      night.ProcessStep5();
+      night.ProcessStep6();
+
+      Assert.IsTrue(night.blocks[0][0] == 205);
+      Assert.IsTrue(night.blocks[0][1] == 115);
+      Assert.IsTrue(night.blocks[0][15] == 205);
+      Assert.IsTrue(night.blocks[7][0] == 123);
+      Assert.IsTrue(night.blocks[7][6] == 115);
+      Assert.IsTrue(night.blocks[7][15] == 241);
     }
 
     [TestMethod()]

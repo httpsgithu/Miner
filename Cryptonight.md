@@ -74,15 +74,18 @@ The following text is from the [Cryptonight spec](https://cryptonote.org/cns/cns
           block = aes_round(block, round_keys[i])
 ```
 
-
    Where aes_round function performs a round of AES encryption, which
    means that SubBytes, ShiftRows and MixColumns steps are performed on
    the block, and the result is XORed with the round key. Note that
    unlike in the AES encryption algorithm, the first and the last rounds
    are not special. 
+
+   > This process is near standard AES encryption.  Each block is encrypted using each round key, sequentially (so 8 blocks * 10 rounds per block means 80 AES rounds so far).  The only difference from AES encryption is the 'initial round' and 'final round' as [described here](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard#High-level_description_of_the_algorithm) are excluded.
    
    The resulting blocks are written into the first 128
    bytes of the scratchpad. 
+
+   > Copy the data from the blocks into the scratchpad. 
    
    Then, these blocks are encrypted again in
    the same way, and the result is written into the second 128 bytes of
