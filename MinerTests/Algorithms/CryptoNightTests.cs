@@ -49,6 +49,40 @@ namespace HD.Tests
 
 
 
+
+
+    [TestMethod()]
+    public void Step9_AB()
+    {
+      NewJob newJob = JsonConvert.DeserializeObject<NewJob>(@"
+
+{""jsonrpc"":""2.0"",""id"":1,""error"":null,""result"":{""id"":""284736284218945"",""status"":""OK"",""job"":{""job_id"":""00000022903015a0"",""blob"":""0606c2e7c8cf0593ae736ed60c197b674b1f8db1d83e0ea17349a0f062ea80d684e52e0325f5de000000758e40ef9ecefbac1cd699cbbc997986a678af8e5f6a8c64eb77a9de2ad24f54d008"",""target"":""b7d10000""}}}
+
+
+");
+      CryptoNight night = new CryptoNight();
+      night.Process(newJob);
+      night.ProcessStep2();
+      night.ProcessStep3();
+      night.ProcessStep4();
+      night.ProcessStep5();
+      night.ProcessStep6();
+      night.ProcessStep7();
+      night.ProcessStep8();
+      night.ProcessStep9();
+
+      Assert.IsTrue(night.a[0] == 132);
+      Assert.IsTrue(night.a[1] == 94);
+      Assert.IsTrue(night.a[7] == 235);
+      Assert.IsTrue(night.a[8] == 80);
+
+      Assert.IsTrue(night.b[0] == 207);
+      Assert.IsTrue(night.b[6] == 143);
+      Assert.IsTrue(night.b[15] == 157);
+    }
+
+
+
     [TestMethod()]
     public void Step8_CompleteScratch()
     {

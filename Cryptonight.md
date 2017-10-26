@@ -163,7 +163,11 @@ The following text is from the [Cryptonight spec](https://cryptonote.org/cns/cns
    Prior to the main loop, bytes 0..31 and 32..63 of the Keccak state
    are XORed, and the resulting 32 bytes are used to initialize
    variables a and b, 16 bytes each. These variables are used in the
-   main loop. The main loop is iterated 524,288 times. When a 16-byte
+   main loop.
+   
+   > The first and second segment of the Keccak hash are XORed into a and b.
+   
+     The main loop is iterated 524,288 times. When a 16-byte
    value needs to be converted into an address in the scratchpad, it is
    interpreted as a little-endian integer, and the 21 low-order bits are
    used as a byte index. However, the 4 low-order bits of the index are
@@ -173,6 +177,9 @@ The following text is from the [Cryptonight spec](https://cryptonote.org/cns/cns
 
 ```
       scratchpad_address = to_scratchpad_address(a)
+
+> address = a & 0x1FFFF0; // Clears last 4 bits
+
       scratchpad[scratchpad_address] = aes_round(scratchpad 
         [scratchpad_address], a)
       b, scratchpad[scratchpad_address] = scratchpad[scratchpad_address],

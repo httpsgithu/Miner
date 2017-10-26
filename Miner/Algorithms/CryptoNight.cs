@@ -46,7 +46,11 @@ namespace HD
     public ulong iTarget;
     public uint iCount;
 
+    public byte[] a;
+    public byte[] b;
+
     public byte[][] blocks;
+    byte[] key;
 
     public AesEngine aes;
 
@@ -111,7 +115,7 @@ namespace HD
 
     public void ProcessStep4()
     {
-      byte[] key = new byte[32];
+      key = new byte[32];
       for (int i = 0; i < key.Length; i++)
       {
         key[i] = ctx.hash_state[i];
@@ -185,6 +189,24 @@ namespace HD
           }
         }
       }
+    }
+
+    public void ProcessStep9()
+    {
+      a = new byte[16];
+      b = new byte[16];
+      for (int i = 0; i < key.Length; i++)
+      {
+        if (i < 16)
+        {
+          a[i] = (byte)(key[i] ^ ctx.hash_state[32 + i]);
+        }
+        else
+        {
+          b[i - 16] = (byte)(key[i] ^ ctx.hash_state[32 + i]);
+        }
+      }
+      
     }
 
     uint hex2bin(string input, uint len)
