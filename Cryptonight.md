@@ -179,7 +179,7 @@ The following text is from the [Cryptonight spec](https://cryptonote.org/cns/cns
       scratchpad_address = to_scratchpad_address(a)
 ```
 
-> address = a & 0x1FFFF0; // Clears last 4 bits
+> scratchpadIndex = a & 0x1FFFF0; 
 
 ```
       scratchpad[scratchpad_address] = aes_round(scratchpad 
