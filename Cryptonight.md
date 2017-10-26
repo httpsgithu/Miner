@@ -54,7 +54,7 @@ The following text is from the [Cryptonight spec](https://cryptonote.org/cns/cns
    
     and expanded to 10 round keys.
 
-      > The 32 byte AES key uses the [Rijndael key schedule](https://en.wikipedia.org/wiki/Rijndael_key_schedule) to create 10 separate keys, known as 'round keys'.  Standard Aes encryption also creates round keys, we simply modified how many round keys were generated.  'Round' here is referring to iterations, so 10 round keys is 1 unique key for each of the 10 iterations we will perform.
+      > The 32 byte AES key uses the [Rijndael key schedule](https://en.wikipedia.org/wiki/Rijndael_key_schedule) to create 10 separate keys, known as 'round keys'.  Standard AES encryption also creates round keys, we simply modified how many round keys were generated.  'Round' here is referring to iterations, so 10 round keys is 1 unique key for each of the 10 iterations we will perform.
 
    A
    scratchpad of 2097152 bytes (2 MiB) is allocated.
@@ -65,7 +65,7 @@ The following text is from the [Cryptonight spec](https://cryptonote.org/cns/cns
    are extracted from the Keccak final state and split into 8 blocks of
    16 bytes each.
 
-   > TODO
+   > The third block of the hash (bytes 64 to 191) is the data we will encrypt using AES.  We interpret this block of data as a byte[8][16]. 
    
     Each block is encrypted using the following procedure:
 
@@ -74,7 +74,6 @@ The following text is from the [Cryptonight spec](https://cryptonote.org/cns/cns
           block = aes_round(block, round_keys[i])
 ```
 
-   > The third block of the hash (bytes 64 to 191) is the data we will encrypt.  
 
    Where aes_round function performs a round of AES encryption, which
    means that SubBytes, ShiftRows and MixColumns steps are performed on

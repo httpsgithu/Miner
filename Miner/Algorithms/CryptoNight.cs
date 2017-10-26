@@ -116,6 +116,20 @@ namespace HD
 
       AesEngine aes = new AesEngine();
       aes.Init(key);
+
+
+      byte[][] blocks = new byte[8][]; // 8 blocks
+      for (int blockIndex = 0; blockIndex < blocks.Length; blockIndex++)
+      {
+        blocks[blockIndex] = new byte[16]; // 16 bytes per block
+        for (int byteIndex = 0; byteIndex < 16; byteIndex++)
+        {
+          blocks[blockIndex][byteIndex] = ctx.hash_state[64 + blockIndex * 16 + byteIndex];
+        }
+      }
+
+      Console.WriteLine();
+
     }
 
 
