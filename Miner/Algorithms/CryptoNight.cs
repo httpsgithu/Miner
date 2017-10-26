@@ -3,7 +3,7 @@ using HD;
 using System.Diagnostics;
 using DotNetStratumMiner;
 using Org.BouncyCastle.Crypto.Engines;
-using Org.BouncyCastle.Crypto.Parameters;
+using BigMath;
 
 namespace HD
 {
@@ -107,23 +107,17 @@ namespace HD
 
     public void ProcessStep4()
     {
-      Reg128
-      System.Numerics.BigInteger aoeu = new System.Numerics.BigInteger();
-      aoeu.
+      byte[] key = new byte[32];
+      for (int i = 0; i < key.Length; i++)
+      {
+        key[i] = ctx.hash_state[i];
+      }
 
-      // Fail
-      //HD.AesEngine aes = new HD.AesEngine();
-      //byte[] key = new byte[32];
-      //for (int i = 0; i < key.Length; i++)
-      //{
-      //  key[i] = ctx.hash_state[i];
-      //}
-      //aes.Init(true, new KeyParameter(key));
-      //// 64..191
-      //byte[] eInfo = new byte[128];
-      //aes.ProcessBlock(ctx.hash_state, 64, eInfo, 0);
-      
+
+      AesEngine aes = new AesEngine();
+      aes.Init(AesEngine.UseCase.Cryptonight, key);
     }
+
 
     uint hex2bin(string input, uint len)
     {

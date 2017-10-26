@@ -38,9 +38,6 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BouncyCastle.Crypto, Version=1.8.1.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
-      <HintPath>..\packages\BouncyCastle.1.8.1\lib\BouncyCastle.Crypto.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -54,14 +51,23 @@
   <ItemGroup>
     <Compile Include="Algorithms\CryptoNight.cs" />
     <Compile Include="Algorithms\CryptoNightMiner.cs" />
+    <Compile Include="Algorithms\Data\ArrayUtils.cs" />
     <Compile Include="Algorithms\Data\BigInt128.cs" />
+    <Compile Include="Algorithms\Data\BitInt256.cs" />
+    <Compile Include="Algorithms\Data\Crc32.cs" />
+    <Compile Include="Algorithms\Data\ExtendedBitConverter.cs" />
+    <Compile Include="Algorithms\Data\MathUtils.cs" />
     <Compile Include="Algorithms\Data\MethodLogin.cs" />
     <Compile Include="Algorithms\Data\NewJob.cs" />
     <Compile Include="Algorithms\MiningAlgorithm.cs" />
     <Compile Include="Algorithms\NewFolder1\AesEngine.cs" />
     <Compile Include="Algorithms\NewFolder1\Arrays.cs" />
     <Compile Include="Algorithms\NewFolder1\Check.cs" />
+    <Compile Include="Algorithms\NewFolder1\CryptoException.cs" />
+    <Compile Include="Algorithms\NewFolder1\DataLengthException.cs" />
+    <Compile Include="Algorithms\NewFolder1\ICipherParameters.cs" />
     <Compile Include="Algorithms\NewFolder1\KeccakDigest.cs" />
+    <Compile Include="Algorithms\NewFolder1\OutputLengthException.cs" />
     <Compile Include="Algorithms\NewFolder1\Pack.cs" />
     <Compile Include="Algorithms\Utilities.cs" />
     <Compile Include="Data\Beneficiaries\Beneficiary.cs" />

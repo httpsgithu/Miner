@@ -133,7 +133,7 @@ You can add one or many wallets. But, like with streamers, 1% will go to my wall
 
 <hr></details><details><summary>Is This Open Source?</summary>
 
-No.  However, HardlyDifficult subs can view the source.  This is not 'open source' - it's for educational purposes or to help with development.  All rights reserved.
+Yes.
 
 <hr></details><details><summary>What's Next?</summary>
 

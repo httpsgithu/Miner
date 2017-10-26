@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 
-using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Utilities;
 using Org.BouncyCastle.Utilities;
-using Org.BouncyCastle.Crypto;
 
-namespace HD
+namespace Org.BouncyCastle.Crypto.Engines
 {
   /**
   * an implementation of the AES (Rijndael), from FIPS-197.
@@ -32,8 +30,7 @@ namespace HD
   * This file contains the middle performance version with 2Kbytes of static tables for round precomputation.
   * </p>
   */
-  public class AesEngine
-      : IBlockCipher
+  public sealed class AesEngine
   {
     // The S box
     private static readonly byte[] S =
@@ -290,13 +287,24 @@ namespace HD
     * AES specified a fixed block size of 128 bits and key sizes 128/192/256 bits
     * This code is written assuming those are the only possible values
     */
-    private uint[][] GenerateWorkingKey(byte[] key, bool forEncryption)
+    private uint[][] GenerateWorkingKey(
+      byte[] key,
+      UseCase useCase)
     {
       int keyLen = key.Length;
       if (keyLen < 16 || keyLen > 32 || (keyLen & 7) != 0)
         throw new ArgumentException("Key length not 128/192/256 bits.");
 
-      int KC = keyLen >> 2;
+      int KC;
+
+      if (useCase == UseCase.Cryptonight)
+      {
+        KC = 4;
+      }
+      else
+      {
+        KC = keyLen >> 2;
+      }
       this.ROUNDS = KC + 6;  // This is not always true for the generalized Rijndael that allows larger block sizes
 
       uint[][] W = new uint[ROUNDS + 1][]; // 4 words in a block
@@ -410,7 +418,7 @@ namespace HD
           }
       }
 
-      if (!forEncryption)
+      if (useCase == UseCase.Decryption)
       {
         for (int j = 1; j < ROUNDS; j++)
         {
@@ -428,7 +436,12 @@ namespace HD
     private int ROUNDS;
     private uint[][] WorkingKey;
     private uint C0, C1, C2, C3;
-    private bool forEncryption;
+    private UseCase useCase;
+
+    public enum UseCase
+    {
+      Encryption, Decryption, Cryptonight
+    }
 
     private const int BLOCK_SIZE = 16;
 
@@ -442,41 +455,37 @@ namespace HD
     /**
     * initialise an AES cipher.
     *
-    * @param forEncryption whether or not we are for encryption.
     * @param parameters the parameters required to set up the cipher.
     * @exception ArgumentException if the parameters argument is
     * inappropriate.
     */
-    public virtual void Init(
-        bool forEncryption,
-        ICipherParameters parameters)
+    public void Init(
+        UseCase useCase,
+        byte[] key)
     {
-      KeyParameter keyParameter = parameters as KeyParameter;
+      Debug.Assert(key != null);
 
-      if (keyParameter == null)
-        throw new ArgumentException("invalid parameter passed to AES init - ");
+      WorkingKey = GenerateWorkingKey(key, useCase);
 
-      WorkingKey = GenerateWorkingKey(keyParameter.GetKey(), forEncryption);
-
-      this.forEncryption = forEncryption;
+      this.useCase = useCase;
     }
 
-    public virtual string AlgorithmName
+    public string AlgorithmName
     {
       get { return "AES"; }
     }
 
-    public virtual bool IsPartialBlockOkay
+    public bool IsPartialBlockOkay
     {
       get { return false; }
     }
 
-    public virtual int GetBlockSize()
+    public int GetBlockSize()
     {
       return BLOCK_SIZE;
     }
 
-    public virtual int ProcessBlock(
+    public int ProcessBlock(
         byte[] input,
         int inOff,
         byte[] output,
@@ -490,13 +499,19 @@ namespace HD
 
       UnPackBlock(input, inOff);
 
-      if (forEncryption)
+      switch (useCase)
       {
-        EncryptBlock(WorkingKey);
-      }
-      else
-      {
-        DecryptBlock(WorkingKey);
+        case UseCase.Encryption:
+          EncryptBlock(WorkingKey);
+          break;
+        case UseCase.Decryption:
+          DecryptBlock(WorkingKey);
+          break;
+        case UseCase.Cryptonight:
+          // TODO
+          break;
+        default:
+          break;
       }
 
       PackBlock(output, outOff);
@@ -504,7 +519,7 @@ namespace HD
       return BLOCK_SIZE;
     }
 
-    public virtual void Reset()
+    public void Reset()
     {
     }
 
@@ -531,13 +546,13 @@ namespace HD
     private void EncryptBlock(uint[][] KW)
     {
       uint[] kw = KW[0];
-      uint t0 = this.C0 ^ kw[0]; // TODO wasting time
+      uint t0 = this.C0 ^ kw[0];
       uint t1 = this.C1 ^ kw[1];
       uint t2 = this.C2 ^ kw[2];
 
       uint r0, r1, r2, r3 = this.C3 ^ kw[3];
-      int r = 0;
-      while (r < ROUNDS)
+      int r = 1;
+      while (r < ROUNDS - 1)
       {
         kw = KW[r++];
         r0 = T0[t0 & 255] ^ Shift(T0[(t1 >> 8) & 255], 24) ^ Shift(T0[(t2 >> 16) & 255], 16) ^ Shift(T0[(r3 >> 24) & 255], 8) ^ kw[0];
@@ -551,19 +566,19 @@ namespace HD
         r3 = T0[r3 & 255] ^ Shift(T0[(r0 >> 8) & 255], 24) ^ Shift(T0[(r1 >> 16) & 255], 16) ^ Shift(T0[(r2 >> 24) & 255], 8) ^ kw[3];
       }
 
-      //kw = KW[r++];
-      //r0 = T0[t0 & 255] ^ Shift(T0[(t1 >> 8) & 255], 24) ^ Shift(T0[(t2 >> 16) & 255], 16) ^ Shift(T0[(r3 >> 24) & 255], 8) ^ kw[0];
-      //r1 = T0[t1 & 255] ^ Shift(T0[(t2 >> 8) & 255], 24) ^ Shift(T0[(r3 >> 16) & 255], 16) ^ Shift(T0[(t0 >> 24) & 255], 8) ^ kw[1];
-      //r2 = T0[t2 & 255] ^ Shift(T0[(r3 >> 8) & 255], 24) ^ Shift(T0[(t0 >> 16) & 255], 16) ^ Shift(T0[(t1 >> 24) & 255], 8) ^ kw[2];
-      //r3 = T0[r3 & 255] ^ Shift(T0[(t0 >> 8) & 255], 24) ^ Shift(T0[(t1 >> 16) & 255], 16) ^ Shift(T0[(t2 >> 24) & 255], 8) ^ kw[3];
+      kw = KW[r++];
+      r0 = T0[t0 & 255] ^ Shift(T0[(t1 >> 8) & 255], 24) ^ Shift(T0[(t2 >> 16) & 255], 16) ^ Shift(T0[(r3 >> 24) & 255], 8) ^ kw[0];
+      r1 = T0[t1 & 255] ^ Shift(T0[(t2 >> 8) & 255], 24) ^ Shift(T0[(r3 >> 16) & 255], 16) ^ Shift(T0[(t0 >> 24) & 255], 8) ^ kw[1];
+      r2 = T0[t2 & 255] ^ Shift(T0[(r3 >> 8) & 255], 24) ^ Shift(T0[(t0 >> 16) & 255], 16) ^ Shift(T0[(t1 >> 24) & 255], 8) ^ kw[2];
+      r3 = T0[r3 & 255] ^ Shift(T0[(t0 >> 8) & 255], 24) ^ Shift(T0[(t1 >> 16) & 255], 16) ^ Shift(T0[(t2 >> 24) & 255], 8) ^ kw[3];
 
-      //// the final round's table is a simple function of S so we don't use a whole other four tables for it
+      // the final round's table is a simple function of S so we don't use a whole other four tables for it
 
-      //kw = KW[r];
-      //this.C0 = (uint)S[r0 & 255] ^ (((uint)S[(r1 >> 8) & 255]) << 8) ^ (((uint)S[(r2 >> 16) & 255]) << 16) ^ (((uint)S[(r3 >> 24) & 255]) << 24) ^ kw[0];
-      //this.C1 = (uint)S[r1 & 255] ^ (((uint)S[(r2 >> 8) & 255]) << 8) ^ (((uint)S[(r3 >> 16) & 255]) << 16) ^ (((uint)S[(r0 >> 24) & 255]) << 24) ^ kw[1];
-      //this.C2 = (uint)S[r2 & 255] ^ (((uint)S[(r3 >> 8) & 255]) << 8) ^ (((uint)S[(r0 >> 16) & 255]) << 16) ^ (((uint)S[(r1 >> 24) & 255]) << 24) ^ kw[2];
-      //this.C3 = (uint)S[r3 & 255] ^ (((uint)S[(r0 >> 8) & 255]) << 8) ^ (((uint)S[(r1 >> 16) & 255]) << 16) ^ (((uint)S[(r2 >> 24) & 255]) << 24) ^ kw[3];
+      kw = KW[r];
+      this.C0 = (uint)S[r0 & 255] ^ (((uint)S[(r1 >> 8) & 255]) << 8) ^ (((uint)S[(r2 >> 16) & 255]) << 16) ^ (((uint)S[(r3 >> 24) & 255]) << 24) ^ kw[0];
+      this.C1 = (uint)S[r1 & 255] ^ (((uint)S[(r2 >> 8) & 255]) << 8) ^ (((uint)S[(r3 >> 16) & 255]) << 16) ^ (((uint)S[(r0 >> 24) & 255]) << 24) ^ kw[1];
+      this.C2 = (uint)S[r2 & 255] ^ (((uint)S[(r3 >> 8) & 255]) << 8) ^ (((uint)S[(r0 >> 16) & 255]) << 16) ^ (((uint)S[(r1 >> 24) & 255]) << 24) ^ kw[2];
+      this.C3 = (uint)S[r3 & 255] ^ (((uint)S[(r0 >> 8) & 255]) << 8) ^ (((uint)S[(r1 >> 16) & 255]) << 16) ^ (((uint)S[(r2 >> 24) & 255]) << 24) ^ kw[3];
     }
 
     private void DecryptBlock(uint[][] KW)

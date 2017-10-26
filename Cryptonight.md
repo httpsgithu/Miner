@@ -48,10 +48,16 @@ The following text is from the [Cryptonight spec](https://cryptonote.org/cns/cns
    > This produces a byte[200], filled with pseudo-random data.
 
     The bytes 0..31 of the Keccak final state are
-   interpreted as an AES-256 key [AES] and expanded to 10 round keys. 
+   interpreted as an AES-256 key [AES] 
    
-   > The hash calculated by Keccak is 200 bytes, which is then logically split blocks. The first block of the hash (bytes 0 to 31 inclusive) is the key used for AES.  
+   > The hash calculated by Keccak is 200 bytes, which is then logically split blocks. The first block of the hash (bytes 0 to 31 inclusive) is the key used for [AES](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard).  
    
+    and expanded to 10 round keys.
+
+      > The 32 byte AES key uses the [Rijndael key schedule](https://en.wikipedia.org/wiki/Rijndael_key_schedule) to create 10 separate keys, known as 'round keys'.  Round here is referring to iterations, so 10 round keys is 1 unique key for each of the 10 iterations we will perform.
+
+      > TODO or is that 11?
+
    A
    scratchpad of 2097152 bytes (2 MiB) is allocated.
    
