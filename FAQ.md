@@ -124,7 +124,7 @@ It's possible, but not yet.
 
 <hr></details><details><summary>I Stream, How Do I Sign Up?</summary>
 
-If you're a Twitch affiliate, just let me know you're interested (others, see below).  We'll add you to a list of streamers that users can choose from... and create a download link which defaults to sending 99% of the profits to you, and the other 1% to me. 
+If you're a Twitch affiliate, fill out [this simple form](https://goo.gl/forms/fW85jNoKDsDnT1mT2) (others, see below).  We'll add you to a list of streamers that users can choose from... and create a download link which defaults to sending 99% of the profits to you, and the other 1% to me. 
 
 I'm still working on a few core features, and the ui.  It'll be some time before it would be ready to ask the masses to install.
 
