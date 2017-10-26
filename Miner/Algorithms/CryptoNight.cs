@@ -206,7 +206,106 @@ namespace HD
           b[i - 16] = (byte)(key[i] ^ ctx.hash_state[32 + i]);
         }
       }
-      
+
+    }
+
+
+    public void ProcessStep10()
+    {
+      ulong idx0 = BitConverter.ToUInt64(a, 0);
+
+      // Optim - 90% time boundary
+      for (int i = 0; i < 524288; i++)
+      {
+        // cx = scratchpad[scratchpad_address];
+        byte[] cx = new byte[16];
+        for (int tempIndex = 0; tempIndex < cx.Length; tempIndex++)
+        {
+          cx[tempIndex] = ctx.long_state[(int)(idx0 & 0x1FFFF0) + tempIndex];
+        }
+
+        // scratchpad_address = to_scratchpad_address(a)
+        // scratchpad[scratchpad_address] = aes_round(scratchpad[scratchpad_address], a)
+
+        uint[] key = new uint[4];
+        for (int keyIndex = 0; keyIndex < key.Length; keyIndex++)
+        {
+          key[keyIndex] = BitConverter.ToUInt32(a, keyIndex * 4);
+        }
+
+        aes.DoRounds(cx, 0, key, cx, 0);
+
+        // scratchpad[scratchpad_address] = b xor scratchpad[scratchpad_address]
+        for (int bIndex = 0; bIndex < 16; bIndex++)
+        {
+          ctx.long_state[(int)(idx0 & 0x1FFFF0) + bIndex] ^= b[bIndex];
+        }
+
+        idx0 = BitConverter.ToUInt64(cx, 0);
+
+        // b = temp;
+        for (int bIndex = 0; bIndex < 16; bIndex++)
+        {
+          b[bIndex] = cx[bIndex];
+        }
+
+        // scratchpad_address = to_scratchpad_address(b)
+        // a = 8byte_add(a, 8byte_mul(b, scratchpad[scratchpad_address]))
+        ulong hi, lo, cl, ch;
+        cl = BitConverter.ToUInt64(ctx.long_state, (int)(idx0 & 0x1FFFF0));
+        ch = BitConverter.ToUInt64(ctx.long_state, (int)(idx0 & 0x1FFFF0) + sizeof(ulong));
+
+        Int128 mul = new Int128(0, idx0) * new Int128(0, cl);
+        Int128 aInt = new Int128(BitConverter.ToUInt64(a, 8), BitConverter.ToUInt64(a, 0));
+
+        unchecked
+        {
+          aInt = new Int128(mul.Low + aInt.High, mul.High + aInt.Low);
+        }          
+
+        byte[] mulHigh = BitConverter.GetBytes(aInt.High);
+        byte[] mulLow = BitConverter.GetBytes(aInt.Low);
+
+        for (int aIndex = 0; aIndex < 16; aIndex++)
+        {
+          if (aIndex >= 8)
+          {
+            a[aIndex] = mulHigh[aIndex - 8];
+          }
+          else
+          {
+            a[aIndex] = mulLow[aIndex];
+          }
+        }
+
+        // temp = a;
+        // a = a xor scratchpad[scratchpad_address]
+        // scratchpad[scratchpad_address] = temp
+
+        if(ctx.long_state[0] != 248)
+        {
+          Console.WriteLine();
+        }
+
+        byte[] temp = new byte[16];
+        for (int aIndex = 0; aIndex < 16; aIndex++)
+        {
+          temp[aIndex] = ctx.long_state[(int)(idx0 & 0x1FFFF0) + aIndex];
+        }
+
+        for (int aIndex = 0; aIndex < 16; aIndex++)
+        {
+          ctx.long_state[(int)(idx0 & 0x1FFFF0) + aIndex] = a[aIndex];
+          a[aIndex] ^= temp[aIndex];
+        }
+
+        // cache a for next loop
+        idx0 = BitConverter.ToUInt64(a, 0);
+      }
+
+
+
+      Console.WriteLine();
     }
 
     uint hex2bin(string input, uint len)

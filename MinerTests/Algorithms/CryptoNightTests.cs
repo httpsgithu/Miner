@@ -35,7 +35,9 @@ namespace HD.Tests
     public void AdHoc()
     {
       NewJob newJob = JsonConvert.DeserializeObject<NewJob>(@"
-{""jsonrpc"":""2.0"",""id"":1,""error"":null,""result"":{""id"":""493367776092421"",""status"":""OK"",""job"":{""job_id"":""000000228fe8b43c"",""blob"":""0606a4bbc8cf05030f3448ab932a22974b3c8b3b87a8103510867bc65bca8e46d5cf05bc00e52200000064d1ecdbfc5ab7896710ad4caffea6d07042303b45822e90e88af0b1e807caff3d06"",""target"":""b7d10000""}}}
+
+{""jsonrpc"":""2.0"",""id"":1,""error"":null,""result"":{""id"":""001850892808514"",""status"":""OK"",""job"":{""job_id"":""0000002290f770f4"",""blob"":""06069fe2c9cf052db6be5ca79a667073ffd637edeb8f0a9a32071832663e59285c5106bc95b6e6000000e91cb790b5e595443458c515591897e3de3f9bb0b3850403b852e0ed09736c4a4708"",""target"":""b7d10000""}}}
+
 ");
       CryptoNight night = new CryptoNight();
       night.Process(newJob);
@@ -45,6 +47,9 @@ namespace HD.Tests
       night.ProcessStep5();
       night.ProcessStep6();
       night.ProcessStep7();
+      night.ProcessStep8();
+      night.ProcessStep9();
+      night.ProcessStep10();
     }
 
 

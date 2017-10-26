@@ -474,6 +474,16 @@ namespace Org.BouncyCastle.Crypto.Engines
       return BLOCK_SIZE;
     }
 
+
+    public void DoRounds(byte[] input, int inOff, uint[] key, byte[] output, int outOff)
+    {
+      UnPackBlock(input, inOff);
+
+      EncryptBlock(key);
+
+      PackBlock(output, outOff);
+    }
+
     public void DoRounds(byte[] output, int outOff)
     {
       for (int key = 0; key < WorkingKey.Length; key++)

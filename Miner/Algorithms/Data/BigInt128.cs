@@ -23,6 +23,7 @@ namespace BigMath
   [StructLayout(LayoutKind.Explicit, Pack = 1, Size = 16)]
   public struct Int128 : IComparable<Int128>, IComparable, IEquatable<Int128>, IFormattable
   {
+
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     [FieldOffset(0)]
     private ulong _lo;
@@ -35,7 +36,6 @@ namespace BigMath
     {
       get { return "0x" + ToString("X1"); }
     }
-
     private const ulong NegativeSignMask = 0x1UL << 63;
 
     /// <summary>
@@ -1063,34 +1063,37 @@ namespace BigMath
     /// <returns>The product of the left and right parameters.</returns>
     public static Int128 Multiply(Int128 left, Int128 right)
     {
-      int leftSign = left.Sign;
-      left = leftSign < 0 ? -left : left;
-      int rightSign = right.Sign;
-      right = rightSign < 0 ? -right : right;
-
-      uint[] xInts = left.ToUIn32Array();
-      uint[] yInts = right.ToUIn32Array();
-      var mulInts = new uint[8];
-
-      for (int i = 0; i < xInts.Length; i++)
+      unchecked // unsure
       {
-        int index = i;
-        ulong remainder = 0;
-        foreach (uint yi in yInts)
-        {
-          remainder = remainder + (ulong)xInts[i] * yi + mulInts[index];
-          mulInts[index++] = (uint)remainder;
-          remainder = remainder >> 32;
-        }
+        int leftSign = left.Sign;
+        left = leftSign < 0 ? -left : left;
+        int rightSign = right.Sign;
+        right = rightSign < 0 ? -right : right;
 
-        while (remainder != 0)
+        uint[] xInts = left.ToUIn32Array();
+        uint[] yInts = right.ToUIn32Array();
+        var mulInts = new uint[8];
+
+        for (int i = 0; i < xInts.Length; i++)
         {
-          remainder += mulInts[index];
-          mulInts[index++] = (uint)remainder;
-          remainder = remainder >> 32;
+          int index = i;
+          ulong remainder = 0;
+          foreach (uint yi in yInts)
+          {
+            remainder = remainder + (ulong)xInts[i] * yi + mulInts[index];
+            mulInts[index++] = (uint)remainder;
+            remainder = remainder >> 32;
+          }
+
+          while (remainder != 0)
+          {
+            remainder += mulInts[index];
+            mulInts[index++] = (uint)remainder;
+            remainder = remainder >> 32;
+          }
         }
+        return new Int128(leftSign * rightSign, mulInts);
       }
-      return new Int128(leftSign * rightSign, mulInts);
     }
 
     /// <summary>
@@ -1638,15 +1641,18 @@ namespace BigMath
     /// </returns>
     public static Int128 operator +(Int128 left, Int128 right)
     {
-      left._hi += right._hi;
-      left._lo += right._lo;
-
-      if (left._lo < right._lo)
+      unchecked // unsure
       {
-        left._hi++;
-      }
+        left._hi += right._hi;
+        left._lo += right._lo;
 
-      return left;
+        if (left._lo < right._lo)
+        {
+          left._hi++;
+        }
+
+        return left;
+      }
     }
 
     /// <summary>
