@@ -115,7 +115,7 @@ namespace HD
 
 
       AesEngine aes = new AesEngine();
-      aes.Init(AesEngine.UseCase.Cryptonight, key);
+      aes.Init(key);
     }
 
 

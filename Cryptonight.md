@@ -54,9 +54,7 @@ The following text is from the [Cryptonight spec](https://cryptonote.org/cns/cns
    
     and expanded to 10 round keys.
 
-      > The 32 byte AES key uses the [Rijndael key schedule](https://en.wikipedia.org/wiki/Rijndael_key_schedule) to create 10 separate keys, known as 'round keys'.  Round here is referring to iterations, so 10 round keys is 1 unique key for each of the 10 iterations we will perform.
-
-      > TODO or is that 11?
+      > The 32 byte AES key uses the [Rijndael key schedule](https://en.wikipedia.org/wiki/Rijndael_key_schedule) to create 10 separate keys, known as 'round keys'.  Standard Aes encryption also creates round keys, we simply modified how many round keys were generated.  'Round' here is referring to iterations, so 10 round keys is 1 unique key for each of the 10 iterations we will perform.
 
    A
    scratchpad of 2097152 bytes (2 MiB) is allocated.
@@ -66,6 +64,8 @@ The following text is from the [Cryptonight spec](https://cryptonote.org/cns/cns
     The bytes 64..191
    are extracted from the Keccak final state and split into 8 blocks of
    16 bytes each.
+
+   > TODO
    
     Each block is encrypted using the following procedure:
 

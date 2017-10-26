@@ -288,8 +288,7 @@ namespace Org.BouncyCastle.Crypto.Engines
     * This code is written assuming those are the only possible values
     */
     private uint[][] GenerateWorkingKey(
-      byte[] key,
-      UseCase useCase)
+      byte[] key)
     {
       int keyLen = key.Length;
       if (keyLen < 16 || keyLen > 32 || (keyLen & 7) != 0)
@@ -297,18 +296,11 @@ namespace Org.BouncyCastle.Crypto.Engines
 
       int KC;
 
-      if (useCase == UseCase.Cryptonight)
-      {
-        KC = 4;
-      }
-      else
-      {
-        KC = keyLen >> 2;
-      }
-      this.ROUNDS = KC + 6;  // This is not always true for the generalized Rijndael that allows larger block sizes
+      KC = keyLen >> 2;
+      this.ROUNDS = 10;
 
-      uint[][] W = new uint[ROUNDS + 1][]; // 4 words in a block
-      for (int i = 0; i <= ROUNDS; ++i)
+      uint[][] W = new uint[ROUNDS][]; // 4 words in a block
+      for (int i = 0; i < ROUNDS; ++i)
       {
         W[i] = new uint[4];
       }
@@ -390,7 +382,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 
             uint u, rcon = 1;
 
-            for (int i = 2; i < 14; i += 2)
+            for (int i = 2; i < 10; i += 2) // was i < 14
             {
               u = SubWord(Shift(t7, 8)) ^ rcon; rcon <<= 1;
               t0 ^= u; W[i][0] = t0;
@@ -404,11 +396,11 @@ namespace Org.BouncyCastle.Crypto.Engines
               t7 ^= t6; W[i + 1][3] = t7;
             }
 
-            u = SubWord(Shift(t7, 8)) ^ rcon;
-            t0 ^= u; W[14][0] = t0;
-            t1 ^= t0; W[14][1] = t1;
-            t2 ^= t1; W[14][2] = t2;
-            t3 ^= t2; W[14][3] = t3;
+            //u = SubWord(Shift(t7, 8)) ^ rcon;
+            //t0 ^= u; W[14][0] = t0;
+            //t1 ^= t0; W[14][1] = t1;
+            //t2 ^= t1; W[14][2] = t2;
+            //t3 ^= t2; W[14][3] = t3;
 
             break;
           }
@@ -418,30 +410,12 @@ namespace Org.BouncyCastle.Crypto.Engines
           }
       }
 
-      if (useCase == UseCase.Decryption)
-      {
-        for (int j = 1; j < ROUNDS; j++)
-        {
-          uint[] w = W[j];
-          for (int i = 0; i < 4; i++)
-          {
-            w[i] = Inv_Mcol(w[i]);
-          }
-        }
-      }
-
       return W;
     }
 
     private int ROUNDS;
-    private uint[][] WorkingKey;
+    public uint[][] WorkingKey; // should be private
     private uint C0, C1, C2, C3;
-    private UseCase useCase;
-
-    public enum UseCase
-    {
-      Encryption, Decryption, Cryptonight
-    }
 
     private const int BLOCK_SIZE = 16;
 
@@ -460,14 +434,11 @@ namespace Org.BouncyCastle.Crypto.Engines
     * inappropriate.
     */
     public void Init(
-        UseCase useCase,
         byte[] key)
     {
       Debug.Assert(key != null);
 
-      WorkingKey = GenerateWorkingKey(key, useCase);
-
-      this.useCase = useCase;
+      WorkingKey = GenerateWorkingKey(key);
     }
 
     public string AlgorithmName
@@ -499,20 +470,20 @@ namespace Org.BouncyCastle.Crypto.Engines
 
       UnPackBlock(input, inOff);
 
-      switch (useCase)
-      {
-        case UseCase.Encryption:
-          EncryptBlock(WorkingKey);
-          break;
-        case UseCase.Decryption:
-          DecryptBlock(WorkingKey);
-          break;
-        case UseCase.Cryptonight:
-          // TODO
-          break;
-        default:
-          break;
-      }
+      //switch (useCase)
+      //{
+      //  case UseCase.Encryption:
+      //    EncryptBlock(WorkingKey);
+      //    break;
+      //  case UseCase.Decryption:
+      //    DecryptBlock(WorkingKey);
+      //    break;
+      //  case UseCase.Cryptonight:
+      //    // TODO
+      //    break;
+      //  default:
+      //    break;
+      //}
 
       PackBlock(output, outOff);
 

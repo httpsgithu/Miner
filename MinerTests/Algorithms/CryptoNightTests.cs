@@ -31,6 +31,16 @@ namespace HD.Tests
     // {"id":1,"jsonrpc":"2.0","error":null,"result":{"status":"OK"}}
 
 
+    [TestMethod()]
+    public void AdHoc()
+    {
+      NewJob newJob = JsonConvert.DeserializeObject<NewJob>("{\"jsonrpc\":\"2.0\",\"id\":1,\"error\":null,\"result\":{\"id\":\"061389344606618\",\"status\":\"OK\",\"job\":{\"job_id\":\"000000228f0cc01c\",\"blob\":\"06068fbdc7cf051819ea9ae500a0d2e6c07041893cb893ae799b88ba6f9057ffbac9ae3bcd1823000000f8ea945b81c0bd0c94d90701fad3005acbcff27909b7c16cd52db0767f8beecfbd12\",\"target\":\"b7d10000\"}}}");
+      CryptoNight night = new CryptoNight();
+      night.Process(newJob);
+      night.ProcessStep2();
+      night.ProcessStep3();
+      night.ProcessStep4();
+    }
 
     /// <summary>
     /// Up to while(iGlobalJobNo.load(std::memory_order_relaxed) == iJobNo)
@@ -59,16 +69,6 @@ namespace HD.Tests
       Assert.IsTrue(night.result.iNonce == 2449473536);
     }
 
-    [TestMethod()]
-    public void ProcessTest3()
-    {
-      NewJob newJob = JsonConvert.DeserializeObject<NewJob>("{\"jsonrpc\":\"2.0\",\"id\":1,\"error\":null,\"result\":{\"id\":\"051633264448588\",\"status\":\"OK\",\"job\":{\"job_id\":\"000000228be0d807\",\"blob\":\"0606fdfac3cf05c9b8a1282edc1e61bce0aa9352efa006619310b706e2f2becfe9fc4694b2dedd000000a178dd7c00e5779abaf4686c1cc1f0fa6e9857d577d75bd07a56609c89822c4f8e01\",\"target\":\"b7d10000\"}}}");
-      CryptoNight night = new CryptoNight();
-      night.Process(newJob);
-      night.ProcessStep2();
-      night.ProcessStep3();
-      night.ProcessStep4();
-    }
 
 
     [TestMethod()]
