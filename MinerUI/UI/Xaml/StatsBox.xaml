@@ -10,10 +10,13 @@
     <Grid>
 
         <StackPanel>
-            <Controls:Tile Title="{Binding Title}" Style="{StaticResource SmallTileStyle}">
+            <Controls:Tile Title="{Binding Title}" Style="{StaticResource SmallTileStyle}" Click="Tile_Click">
                 <!--  Click="miningforTile_Click"-->
-                <Label x:Name="miningfor" Content="{Binding LeftValue}"></Label>
-        </Controls:Tile>
+                <StackPanel>
+                    <Label x:Name="label" Content="{Binding LeftValue}"></Label>
+                    <Label x:Name="label_buffer" Content="{Binding RightValue}" Visibility="Collapsed" />
+                </StackPanel>
+            </Controls:Tile>
             <!--<Label Content="{Binding BackgroundColor}" />
             <Label Content="{Binding Title}" />
             <Label Content="{Binding LeftValue}" />

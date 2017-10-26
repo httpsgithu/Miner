@@ -16,9 +16,33 @@ namespace HD
 {
   public partial class StatsBox : UserControl
   {
-    public StatsBox()
-    {
-      InitializeComponent();
+        string content1, content2;
+        bool firstclick = true;
+
+        public StatsBox()
+        {
+            InitializeComponent();
+        }
+
+        private void Tile_Click(object sender, RoutedEventArgs e)
+        {
+            if (null != label_buffer.Content)
+            {
+                if (firstclick)
+                {
+                    content1 = label.Content.ToString();
+                    content2 = label_buffer.Content.ToString();
+                    firstclick = false;
+                }
+                if (label.Content.ToString() == content1)
+                {
+                    label.Content = content2;
+                }
+                else
+                {
+                    label.Content = content1;
+                }
+            }
+        }
     }
-  }
 }

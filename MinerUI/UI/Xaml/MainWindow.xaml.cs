@@ -113,18 +113,6 @@ namespace HD
             await mainWindow.ShowMessageAsync("ERROR!", "There are no bugs...");
         }
 
-        private void Tile_Click(object sender, RoutedEventArgs e)
-        {
-            //if (streamerearnings.Content.ToString() == "0.00000000 BTC")
-            //{
-            //    streamerearnings.Content = "0.00 USD";
-            //}
-            //else
-            //{
-            //    streamerearnings.Content = "0.00000000 BTC";
-            //}
-        }
-
         private void miningforTile_Click(object sender, RoutedEventArgs e)
         {
             MiningForFlyout.IsOpen = true;
