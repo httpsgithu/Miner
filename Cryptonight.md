@@ -81,21 +81,16 @@ The following text is from the [Cryptonight spec](https://cryptonote.org/cns/cns
    unlike in the AES encryption algorithm, the first and the last rounds
    are not special. 
    
-   
    The resulting blocks are written into the first 128
    bytes of the scratchpad. 
-   
-   
-   
-   > Test 1: Simply encrypt the third block.  Test against the first 128 bytes of scratchpad. -- fail.
-   
-   
    
    Then, these blocks are encrypted again in
    the same way, and the result is written into the second 128 bytes of
    the scratchpad. Each time 128 bytes are written, they represent the
    result of the encryption of the previously written 128 bytes. The
    process is repeated until the scratchpad is fully initialized.
+
+   > Loop 16,384 times (so 8 blocks * 10 rounds * 16,384 scratchpad regions = 1,310,720 AES rounds).
 
    This diagram illustrates scratchpad initialization:
 

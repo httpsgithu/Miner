@@ -46,6 +46,10 @@ namespace HD
     public ulong iTarget;
     public uint iCount;
 
+    public byte[][] blocks;
+
+    public AesEngine aes;
+
     public ulong piHashVal
     {
       get
@@ -114,11 +118,16 @@ namespace HD
       }
 
 
-      AesEngine aes = new AesEngine();
+      aes = new AesEngine();
       aes.Init(key);
 
+      // TODO unit test for the key before we go on.
 
-      byte[][] blocks = new byte[8][]; // 8 blocks
+    }
+
+    public void ProcessStep5()
+    {
+      blocks = new byte[8][]; // 8 blocks
       for (int blockIndex = 0; blockIndex < blocks.Length; blockIndex++)
       {
         blocks[blockIndex] = new byte[16]; // 16 bytes per block
@@ -127,11 +136,15 @@ namespace HD
           blocks[blockIndex][byteIndex] = ctx.hash_state[64 + blockIndex * 16 + byteIndex];
         }
       }
-
-      Console.WriteLine();
-
     }
 
+    public void ProcessStep6()
+    {
+      for (int blockIndex = 0; blockIndex < blocks.Length; blockIndex++)
+      {
+        aes.ProcessBlock(blocks[blockIndex], 0, blocks[blockIndex], 0);
+      }
+    }
 
     uint hex2bin(string input, uint len)
     {

@@ -34,12 +34,50 @@ namespace HD.Tests
     [TestMethod()]
     public void AdHoc()
     {
-      NewJob newJob = JsonConvert.DeserializeObject<NewJob>("{\"jsonrpc\":\"2.0\",\"id\":1,\"error\":null,\"result\":{\"id\":\"061389344606618\",\"status\":\"OK\",\"job\":{\"job_id\":\"000000228f0cc01c\",\"blob\":\"06068fbdc7cf051819ea9ae500a0d2e6c07041893cb893ae799b88ba6f9057ffbac9ae3bcd1823000000f8ea945b81c0bd0c94d90701fad3005acbcff27909b7c16cd52db0767f8beecfbd12\",\"target\":\"b7d10000\"}}}");
+      NewJob newJob = JsonConvert.DeserializeObject<NewJob>(
+"{\"jsonrpc\":\"2.0\",\"id\":1,\"error\":null,\"result\":{\"id\":\"280722591085079\",\"status\":\"OK\",\"job\":{\"job_id\":\"000000228f7624c5\",\"blob\":\"0606d7fbc7cf05c1dc898d2a8ca5b9f42f0f49a3cdb0ca306fd0ca23b775ec867ea69d336dee92000000225cec8cda668397379373d4a234d595cb8de79228552e7b1a25c2bb1f39372d3202\",\"target\":\"b7d10000\"}}}");
       CryptoNight night = new CryptoNight();
       night.Process(newJob);
       night.ProcessStep2();
       night.ProcessStep3();
       night.ProcessStep4();
+      night.ProcessStep5();
+      night.ProcessStep6();
+    }
+
+    [TestMethod()]
+    public void Step4_ConfirmAESKey()
+    {
+      NewJob newJob = JsonConvert.DeserializeObject<NewJob>("{\"jsonrpc\":\"2.0\",\"id\":1,\"error\":null,\"result\":{\"id\":\"935427267220117\",\"status\":\"OK\",\"job\":{\"job_id\":\"000000228f4f7dce\",\"blob\":\"0606aae6c7cf05be009d308985e25cfeaadc4f3198458dba946bce18810a8ce747259738f932980000000d504b50169cbf70974edce6b18a47b094c0604047762a9d998b58e54cf8b0d71707\",\"target\":\"b7d10000\"}}}");
+      CryptoNight night = new CryptoNight();
+      night.Process(newJob);
+      night.ProcessStep2();
+      night.ProcessStep3();
+      night.ProcessStep4();
+
+      Assert.IsTrue(night.aes.WorkingKey[0][0] == 620964217);
+      Assert.IsTrue(night.aes.WorkingKey[1][0] == 46193916);
+      Assert.IsTrue(night.aes.WorkingKey[7][1] == 3590950729);
+      Assert.IsTrue(night.aes.WorkingKey[9][3] == 407388248);
+    }
+    [TestMethod()]
+    public void Step5_ConfirmBlocks()
+    {
+      NewJob newJob = JsonConvert.DeserializeObject<NewJob>("{\"jsonrpc\":\"2.0\",\"id\":1,\"error\":null,\"result\":{\"id\":\"935427267220117\",\"status\":\"OK\",\"job\":{\"job_id\":\"000000228f4f7dce\",\"blob\":\"0606aae6c7cf05be009d308985e25cfeaadc4f3198458dba946bce18810a8ce747259738f932980000000d504b50169cbf70974edce6b18a47b094c0604047762a9d998b58e54cf8b0d71707\",\"target\":\"b7d10000\"}}}");
+      CryptoNight night = new CryptoNight();
+      night.Process(newJob);
+      night.ProcessStep2();
+      night.ProcessStep3();
+      night.ProcessStep4();
+      night.ProcessStep5();
+
+      Assert.IsTrue(night.blocks[0][0] == 73);
+      Assert.IsTrue(night.blocks[0][1] == 255);
+      Assert.IsTrue(night.blocks[0][2] == 189);
+      Assert.IsTrue(night.blocks[5][2] == 209);
+      Assert.IsTrue(night.blocks[5][9] == 80);
+      Assert.IsTrue(night.blocks[7][15] == 76);
+      Assert.IsTrue(night.blocks.Length == 8);
     }
 
     /// <summary>
