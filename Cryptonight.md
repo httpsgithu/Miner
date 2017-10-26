@@ -49,7 +49,7 @@
     The bytes 0..31 of the Keccak final state are
    interpreted as an AES-256 key [AES] and expanded to 10 round keys. 
    
-   > The hash calculated by Keccak is 200 bytes, which is then logically split blocks. The first block of the hash (bytes 0 to 31 inclusive), is the key used for AES.  
+   > The hash calculated by Keccak is 200 bytes, which is then logically split blocks. The first block of the hash (bytes 0 to 31 inclusive) is the key used for AES.  
    
    A
    scratchpad of 2097152 bytes (2 MiB) is allocated.
