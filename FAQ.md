@@ -3,6 +3,9 @@
 
 The Hardly Difficult Miner is an application which will mine blockchain while your computer is idle.  Every few minutes while the miner is running, a small deposit is made. The money you make from mining goes directly to your favorite streamer, and you can set up your own Bitcoin wallet to keep a certain percent for yourself.
 
+
+Currently working on implementing the [cryptonight algorithm](cryptonight.md) (see for progress).  
+
 <details><summary>Why are You Doing This?</summary>
 
 Streamers, like myself, depend on generous support from viewers in order to make a living. This program offers just another way of helping your favorite streamers make it.  It may be particularly compelling for those that are not able to financially support today, this is like watching ads for bits... but it simply runs in the background.
