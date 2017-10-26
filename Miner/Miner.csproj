@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9ED81EC9-AE4A-47AB-99D5-15E103A47212}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>HD</RootNamespace>
+    <AssemblyName>MinerLib</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.1.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>..\packages\BouncyCastle.1.8.1\lib\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors" />
+    <Reference Include="ValueTuple">
+      <HintPath>..\..\ValueTupleForDotNet3_5\ValueTuple.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Algorithms\CryptoNight.cs" />
+    <Compile Include="Algorithms\CryptoNightMiner.cs" />
+    <Compile Include="Algorithms\Data\BigInt128.cs" />
+    <Compile Include="Algorithms\Data\MethodLogin.cs" />
+    <Compile Include="Algorithms\Data\NewJob.cs" />
+    <Compile Include="Algorithms\MiningAlgorithm.cs" />
+    <Compile Include="Algorithms\NewFolder1\AesEngine.cs" />
+    <Compile Include="Algorithms\NewFolder1\Arrays.cs" />
+    <Compile Include="Algorithms\NewFolder1\Check.cs" />
+    <Compile Include="Algorithms\NewFolder1\KeccakDigest.cs" />
+    <Compile Include="Algorithms\NewFolder1\Pack.cs" />
+    <Compile Include="Algorithms\Utilities.cs" />
+    <Compile Include="Data\Beneficiaries\Beneficiary.cs" />
+    <Compile Include="Data\Beneficiaries\Beneficiaries.cs" />
+    <Compile Include="Utils\Windows\FileObserver.cs" />
+    <Compile Include="Utils\Windows\HardwareMonitor.cs" />
+    <Compile Include="Utils\Windows\IdleChecker.cs" />
+    <Compile Include="Miner.cs" />
+    <Compile Include="Data\MinerConfig.cs" />
+    <Compile Include="Network\APIBitcoinPrice.cs" />
+    <Compile Include="Network\NetworkAPI.cs" />
+    <Compile Include="Network\APINiceHashMiningPriceList.cs" />
+    <Compile Include="Network\APINiceHashWorkerList.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Data\Beneficiaries\BeneficiarySorter.cs" />
+    <Compile Include="Data\Settings.cs" />
+    <Compile Include="Utils\Log.cs" />
+    <Compile Include="Utils\RollingHistory.cs" />
+    <Compile Include="Utils\Windows\WindowsJob.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

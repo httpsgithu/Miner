@@ -1,3 +1,4 @@
+The following text is from the [Cryptonight spec](https://cryptonote.org/cns/cns008.txt), with comments to try and explain my understanding.
 
 
 1. Introduction
