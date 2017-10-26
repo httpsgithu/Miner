@@ -149,6 +149,21 @@ namespace HD
       }
     }
 
+    /// <summary>
+    /// Copy blocks into the scratchpad
+    /// </summary>
+    public void ProcessStep7()
+    {
+      for (int blockIndex = 0; blockIndex < blocks.Length; blockIndex++)
+      {
+        byte[] block = blocks[blockIndex];
+        for (int byteIndex = 0; byteIndex < block.Length; byteIndex++)
+        {
+          ctx.long_state[blockIndex * block.Length + byteIndex] = block[byteIndex];
+        }
+      }
+    }
+
     uint hex2bin(string input, uint len)
     {
       bool error = false;
