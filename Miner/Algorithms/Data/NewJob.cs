@@ -17,6 +17,14 @@ namespace HD
     public string Status { get; set; }
   }
 
+
+  public class NewBlock
+  {
+    public Job @params { get; set; }
+    public string jsonrpc { get; set; }
+    public string method { get; set; }
+  }
+
   public class Job
   {
     public string Job_Id { get; set; }

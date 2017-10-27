@@ -1,18 +1,65 @@
 ﻿using System;
-using HD;
 using System.Diagnostics;
 using DotNetStratumMiner;
 using Org.BouncyCastle.Crypto.Engines;
 using BigMath;
+using HashLib;
+using Newtonsoft.Json;
+using System.Text;
+using System.Security.Cryptography;
 
 namespace HD
 {
   public class cryptonight_ctx
   {
-    public readonly byte[] hash_state = new byte[224]; // Need only 200, explicit align  (TODO reduce to 200)
-    public readonly byte[] long_state = new byte[2097152]; // scratchpad
-    public readonly byte[] ctx_info = new byte[24]; //Use some of the extra memory for flags
+    public readonly byte[] keccakHash = new byte[200]; 
+    public readonly byte[] scratchpad = new byte[2097152]; 
   }
+
+  // {"method":"submit","params":{"id":"421970933313569","job_id":"000000228b11006d","nonce":"0508047b","result":"edeabc3dd5ee2bb84fe36f107f302982fa3da606ece6db32ca9bf77820350000"},"id":1}
+  public class FinalResultJson
+  {
+    public string method = "submit";
+    public FinalResultJsonParams @params { get; set; }
+    public long id { get; set; }
+
+    public FinalResultJson(
+      long id,
+      string jobId,
+      uint nonce,
+      byte[] result)
+    {
+      this.id = id;
+      this.@params = new FinalResultJsonParams(jobId, nonce, result);
+    }
+  }
+
+  public class FinalResultJsonParams
+  {
+    public string id = "421970933313569"; // TODO where does this number come from?
+    public string job_id { get; set; }
+    public string nonce { get; set; }
+    public string result { get; set; }
+
+    public FinalResultJsonParams(
+      string job_id,
+      uint nonce,
+      byte[] result)
+    {
+      this.job_id = job_id;
+      this.nonce = nonce.ToString("x");
+      this.result = ByteArrayToString(result);
+    }
+
+    public static string ByteArrayToString(byte[] ba)
+    {
+      StringBuilder hex = new StringBuilder(ba.Length * 2);
+      foreach (byte b in ba)
+        hex.AppendFormat("{0:x2}", b);
+      return hex.ToString();
+    }
+  }
+
 
   public class job_result
   {
@@ -52,6 +99,8 @@ namespace HD
     public byte[][] blocks;
     byte[] key;
 
+    Job newJob;
+
     public AesEngine aes;
 
     public ulong piHashVal
@@ -77,11 +126,12 @@ namespace HD
       }
     }
 
-    public void Process(NewJob newJob)
+    public void Process(Job newJob, string nonceOverride = null)
     {
-      byte[] databyte = Utilities.HexStringToByteArray(newJob.Result.Job.Blob);
+      this.newJob = newJob;
+      byte[] databyte = Utilities.HexStringToByteArray(newJob.Blob);
       iWorkSize = databyte.Length;
-      byte[] targetbyte = Utilities.HexStringToByteArray(newJob.Result.Job.Target);
+      byte[] targetbyte = Utilities.HexStringToByteArray(newJob.Target);
       ctx = new cryptonight_ctx();
 
 
@@ -94,13 +144,17 @@ namespace HD
 
 
 
-      iTarget = t32_to_t64(hex2bin(newJob.Result.Job.Target, 8));
+      iTarget = t32_to_t64(hex2bin(newJob.Target, 8));
       iJobDiff = t64_to_diff(iTarget);
 
       iCount = 0;
       result = new job_result(
-        newJob.Result.Job.Job_Id);
+        newJob.Job_Id);
       result.iNonce = calc_nicehash_nonce(piNonce, iResumeCnt);
+      if(nonceOverride != null)
+      {
+        result.iNonce = uint.Parse(nonceOverride, System.Globalization.NumberStyles.HexNumber);
+      }
     }
 
     public void ProcessStep2()
@@ -110,7 +164,15 @@ namespace HD
 
     public void ProcessStep3()
     {
-      KeccakDigest.keccak(bWorkBlob, iWorkSize, ctx.hash_state, 200);
+      KeccakDigest.keccak(bWorkBlob, iWorkSize, ctx.keccakHash, 200);
+    }
+
+    public string GetResultJson()
+    {
+      // TODO I think the Id is the original request ID...
+      FinalResultJson json = new FinalResultJson(1, newJob.Job_Id, result.iNonce, result.bResult);
+
+      return JsonConvert.SerializeObject(json);
     }
 
     public void ProcessStep4()
@@ -118,7 +180,7 @@ namespace HD
       key = new byte[32];
       for (int i = 0; i < key.Length; i++)
       {
-        key[i] = ctx.hash_state[i];
+        key[i] = ctx.keccakHash[i];
       }
 
 
@@ -142,7 +204,7 @@ namespace HD
         blocks[blockIndex] = new byte[16]; // 16 bytes per block
         for (int byteIndex = 0; byteIndex < 16; byteIndex++)
         {
-          blocks[blockIndex][byteIndex] = ctx.hash_state[64 + blockIndex * 16 + byteIndex];
+          blocks[blockIndex][byteIndex] = ctx.keccakHash[64 + blockIndex * 16 + byteIndex];
         }
       }
     }
@@ -173,7 +235,7 @@ namespace HD
         byte[] block = blocks[blockIndex];
         for (int byteIndex = 0; byteIndex < block.Length; byteIndex++)
         {
-          ctx.long_state[blockIndex * block.Length + byteIndex] = block[byteIndex];
+          ctx.scratchpad[blockIndex * block.Length + byteIndex] = block[byteIndex];
         }
       }
     }
@@ -195,7 +257,7 @@ namespace HD
           byte[] block = blocks[blockIndex];
           for (int byteIndex = 0; byteIndex < block.Length; byteIndex++)
           {
-            ctx.long_state[scratchIndex * blocks.Length * block.Length + blockIndex * block.Length + byteIndex] = block[byteIndex];
+            ctx.scratchpad[scratchIndex * blocks.Length * block.Length + blockIndex * block.Length + byteIndex] = block[byteIndex];
           }
         }
       }
@@ -209,16 +271,15 @@ namespace HD
       {
         if (i < 16)
         {
-          a[i] = (byte)(key[i] ^ ctx.hash_state[32 + i]);
+          a[i] = (byte)(key[i] ^ ctx.keccakHash[32 + i]);
         }
         else
         {
-          b[i - 16] = (byte)(key[i] ^ ctx.hash_state[32 + i]);
+          b[i - 16] = (byte)(key[i] ^ ctx.keccakHash[32 + i]);
         }
       }
 
     }
-
 
     public void ProcessStep10()
     {
@@ -231,7 +292,7 @@ namespace HD
         byte[] cx = new byte[16];
         for (int tempIndex = 0; tempIndex < cx.Length; tempIndex++)
         {
-          cx[tempIndex] = ctx.long_state[(int)(idx0 & 0x1FFFF0) + tempIndex];
+          cx[tempIndex] = ctx.scratchpad[(int)(idx0 & 0x1FFFF0) + tempIndex];
         }
 
         // scratchpad_address = to_scratchpad_address(a)
@@ -248,7 +309,7 @@ namespace HD
         // scratchpad[scratchpad_address] = b xor scratchpad[scratchpad_address]
         for (int bIndex = 0; bIndex < 16; bIndex++)
         {
-          ctx.long_state[(int)(idx0 & 0x1FFFF0) + bIndex] = (byte)(cx[bIndex] ^ b[bIndex]);
+          ctx.scratchpad[(int)(idx0 & 0x1FFFF0) + bIndex] = (byte)(cx[bIndex] ^ b[bIndex]);
         }
 
         idx0 = BitConverter.ToUInt64(cx, 0);
@@ -262,8 +323,8 @@ namespace HD
         // scratchpad_address = to_scratchpad_address(b)
         // a = 8byte_add(a, 8byte_mul(b, scratchpad[scratchpad_address]))
         ulong hi, lo, cl, ch;
-        cl = BitConverter.ToUInt64(ctx.long_state, (int)(idx0 & 0x1FFFF0));
-        ch = BitConverter.ToUInt64(ctx.long_state, (int)(idx0 & 0x1FFFF0) + sizeof(ulong));
+        cl = BitConverter.ToUInt64(ctx.scratchpad, (int)(idx0 & 0x1FFFF0));
+        ch = BitConverter.ToUInt64(ctx.scratchpad, (int)(idx0 & 0x1FFFF0) + sizeof(ulong));
 
         Int128 mul = new Int128(0, idx0) * new Int128(0, cl);
         Int128 aInt = new Int128(BitConverter.ToUInt64(a, 8), BitConverter.ToUInt64(a, 0));
@@ -292,7 +353,7 @@ namespace HD
         // a = a xor scratchpad[scratchpad_address]
         // scratchpad[scratchpad_address] = temp
 
-        if (ctx.long_state[0] != 248)
+        if (ctx.scratchpad[0] != 248)
         {
           Console.WriteLine();
         }
@@ -300,12 +361,12 @@ namespace HD
         byte[] temp = new byte[16];
         for (int aIndex = 0; aIndex < 16; aIndex++)
         {
-          temp[aIndex] = ctx.long_state[(int)(idx0 & 0x1FFFF0) + aIndex];
+          temp[aIndex] = ctx.scratchpad[(int)(idx0 & 0x1FFFF0) + aIndex];
         }
 
         for (int aIndex = 0; aIndex < 16; aIndex++)
         {
-          ctx.long_state[(int)(idx0 & 0x1FFFF0) + aIndex] = a[aIndex];
+          ctx.scratchpad[(int)(idx0 & 0x1FFFF0) + aIndex] = a[aIndex];
           a[aIndex] ^= temp[aIndex];
         }
 
@@ -324,7 +385,7 @@ namespace HD
       key = new byte[32];
       for (int i = 0; i < key.Length; i++)
       {
-        key[i] = ctx.hash_state[i + 32];
+        key[i] = ctx.keccakHash[i + 32];
       }
 
       aes = new AesEngine();
@@ -335,24 +396,57 @@ namespace HD
     {
       ExtractBlocksFromHash();
 
+      //for (int byteIndex = 0; byteIndex < 128; byteIndex++)
+      //{
+      //  byte hashValue = ctx.hash_state[byteIndex + 64];
+      //  byte scratchValue = ctx.long_state[byteIndex];
+      //  ctx.long_state[byteIndex] = (byte)(hashValue ^ scratchValue);
+      //}
+
       for (int scratchIndex = 0; scratchIndex < 16384; scratchIndex++)
       {
-        for (int byteIndex = 0; byteIndex < 128; byteIndex++)
+        for (int blockIndex = 0; blockIndex < blocks.Length; blockIndex++)
         {
-          byte hashValue = ctx.hash_state[byteIndex + 64 + scratchIndex * 128];
-          byte scratchValue = ctx.long_state[byteIndex + scratchIndex * 128];
-          ctx.long_state[byteIndex + scratchIndex * 128] = (byte)(hashValue ^ scratchValue);
+          for (int byteIndex = 0; byteIndex < 16; byteIndex++)
+          {
+            blocks[blockIndex][byteIndex] ^=
+              ctx.scratchpad[byteIndex + scratchIndex * 128 + blockIndex * blocks[blockIndex].Length];
+          }
         }
 
+        EncryptBlocks();
+      }
 
 
-
-
-        aoeu
+      for (int blockIndex = 0; blockIndex < blocks.Length; blockIndex++)
+      {
+        for (int byteIndex = 0; byteIndex < 16; byteIndex++)
+        {
+          ctx.keccakHash[64 + byteIndex + blockIndex * 16] = blocks[blockIndex][byteIndex];
+        }
       }
 
     }
 
+    public void ProcessStep13()
+    {
+      ulong[] tempLong = new ulong[200 / sizeof(ulong) / sizeof(byte)];
+      for (int i = 0; i < tempLong.Length; i++)
+      {
+        tempLong[i] = BitConverter.ToUInt64(ctx.keccakHash, i * sizeof(ulong) / sizeof(byte));
+      }
+
+      KeccakDigest.keccakf(tempLong, KeccakDigest.KECCAK_ROUNDS);
+
+      for (int longIndex = 0; longIndex < tempLong.Length; longIndex++)
+      {
+        byte[] longData = BitConverter.GetBytes(tempLong[longIndex]);
+        for (int byteIndex = 0; byteIndex < 8; byteIndex++)
+        {
+          ctx.keccakHash[longIndex * sizeof(ulong) + byteIndex] = longData[byteIndex];
+        }
+      }
+    }
 
     uint hex2bin(string input, uint len)
     {
@@ -367,6 +461,71 @@ namespace HD
         }
       }
       return BitConverter.ToUInt32(output, 0);
+    }
+
+    public int hashID;
+
+    public void ProcessStep14()
+    {
+      hashID = ctx.keccakHash[0] & 0b0011;
+    }
+    public void ProcessStep15()
+    {
+      switch (hashID)
+      {
+        case 0:
+          {
+            BlakeSharp.Blake256 hash = new BlakeSharp.Blake256();
+            result.bResult = hash.ComputeHash(ctx.keccakHash);
+
+            //Blake hash2 = new Blake();
+            //byte[] otherResuls = hash2.Hash(ctx.keccakHash);
+
+            //// This does not work...
+            //IHash hash2 = HashLib.HashFactory.Crypto.SHA3.CreateBlake256();
+            //byte[] other = hash2.ComputeBytes(ctx.keccakHash).GetBytes();
+
+            break;
+          }
+        case 1:
+          {
+            // TODO test this case
+            result.bResult = DoHash1(ctx.keccakHash);
+            break;
+          }
+        case 2:
+          {
+            // TODO test this case
+            IHash hash = HashLib.HashFactory.Crypto.SHA3.CreateJH256();
+            result.bResult = hash.ComputeBytes(ctx.keccakHash).GetBytes();
+            break;
+          }
+        case 3:
+          {
+            // TODO test this case
+            IHash hash = HashLib.HashFactory.Crypto.SHA3.CreateSkein256();
+            result.bResult = hash.ComputeBytes(ctx.keccakHash).GetBytes();
+            break;
+          }
+      }
+    }
+
+    public static byte[] DoHash1(byte[] dataToHash)
+    {
+      return null;
+      // TODO!
+      //Groestl256 hash = new Groestl256();
+      //return hash.ComputeHash(dataToHash);
+
+      //IHash hash = HashLib.HashFactory.Crypto.SHA3.CreateGroestl256();
+      //return hash.ComputeBytes(dataToHash).GetBytes();
+
+      //IHash hash = HashFactory.Crypto.SHA3.CreateGroestl256();
+      //HashAlgorithm hashAlgo = HashFactory.Wrappers.HashToHashAlgorithm(hash);
+      //// Now hashAlgo can be used the same as any .NET HashAlgorithm, e.g.:
+
+      //// Create byte input from string encoded as UTF-8
+      //return hashAlgo.ComputeHash(dataToHash);
     }
 
     byte hf_hex2bin(byte c, ref bool err)

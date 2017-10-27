@@ -6,7 +6,7 @@ namespace HD
   public static class KeccakDigest
   {
     const int HASH_DATA_AREA = 136;
-    const int KECCAK_ROUNDS = 24;
+    public const int KECCAK_ROUNDS = 24;
     static readonly ulong[] keccakf_rndc = new ulong[]
     {
       0x0000000000000001, 0x0000000000008082, 0x800000000000808a,
@@ -74,7 +74,7 @@ namespace HD
       }
     }
 
-    static void keccakf(
+    public static void keccakf(
       ulong[] st,
       int rounds)
     {
@@ -95,7 +95,7 @@ namespace HD
 
         for (i = 0; i < 5; ++i)
         {
-          t = bc[(i + 4) % 5] ^ ROTL64(bc[(i + 1) % 5], 1);
+          t = bc[(i + 4) % 5] ^ CryptoHelpers.ROTL64(bc[(i + 1) % 5], 1);
           st[i] ^= t;
           st[i + 5] ^= t;
           st[i + 10] ^= t;
@@ -105,30 +105,30 @@ namespace HD
 
         // Rho Pi
         t = st[1];
-        st[1] = ROTL64(st[6], 44);
-        st[6] = ROTL64(st[9], 20);
-        st[9] = ROTL64(st[22], 61);
-        st[22] = ROTL64(st[14], 39);
-        st[14] = ROTL64(st[20], 18);
-        st[20] = ROTL64(st[2], 62);
-        st[2] = ROTL64(st[12], 43);
-        st[12] = ROTL64(st[13], 25);
-        st[13] = ROTL64(st[19], 8);
-        st[19] = ROTL64(st[23], 56);
-        st[23] = ROTL64(st[15], 41);
-        st[15] = ROTL64(st[4], 27);
-        st[4] = ROTL64(st[24], 14);
-        st[24] = ROTL64(st[21], 2);
-        st[21] = ROTL64(st[8], 55);
-        st[8] = ROTL64(st[16], 45);
-        st[16] = ROTL64(st[5], 36);
-        st[5] = ROTL64(st[3], 28);
-        st[3] = ROTL64(st[18], 21);
-        st[18] = ROTL64(st[17], 15);
-        st[17] = ROTL64(st[11], 10);
-        st[11] = ROTL64(st[7], 6);
-        st[7] = ROTL64(st[10], 3);
-        st[10] = ROTL64(t, 1);
+        st[1] = CryptoHelpers.ROTL64(st[6], 44);
+        st[6] = CryptoHelpers.ROTL64(st[9], 20);
+        st[9] = CryptoHelpers.ROTL64(st[22], 61);
+        st[22] = CryptoHelpers.ROTL64(st[14], 39);
+        st[14] = CryptoHelpers.ROTL64(st[20], 18);
+        st[20] = CryptoHelpers.ROTL64(st[2], 62);
+        st[2] = CryptoHelpers.ROTL64(st[12], 43);
+        st[12] = CryptoHelpers.ROTL64(st[13], 25);
+        st[13] = CryptoHelpers.ROTL64(st[19], 8);
+        st[19] = CryptoHelpers.ROTL64(st[23], 56);
+        st[23] = CryptoHelpers.ROTL64(st[15], 41);
+        st[15] = CryptoHelpers.ROTL64(st[4], 27);
+        st[4] = CryptoHelpers.ROTL64(st[24], 14);
+        st[24] = CryptoHelpers.ROTL64(st[21], 2);
+        st[21] = CryptoHelpers.ROTL64(st[8], 55);
+        st[8] = CryptoHelpers.ROTL64(st[16], 45);
+        st[16] = CryptoHelpers.ROTL64(st[5], 36);
+        st[5] = CryptoHelpers.ROTL64(st[3], 28);
+        st[3] = CryptoHelpers.ROTL64(st[18], 21);
+        st[18] = CryptoHelpers.ROTL64(st[17], 15);
+        st[17] = CryptoHelpers.ROTL64(st[11], 10);
+        st[11] = CryptoHelpers.ROTL64(st[7], 6);
+        st[7] = CryptoHelpers.ROTL64(st[10], 3);
+        st[10] = CryptoHelpers.ROTL64(t, 1);
 
         //  Chi
         // unrolled loop, where only last iteration is different
@@ -188,13 +188,6 @@ namespace HD
         //  Iota
         st[0] ^= keccakf_rndc[round];
       }
-    }
-
-    static ulong ROTL64(
-      ulong x,
-      int y)
-    {
-      return (((x) << (y)) | ((x) >> (64 - (y))));
     }
   }
 }

@@ -285,20 +285,29 @@ The following text is from the [Cryptonight spec](https://cryptonote.org/cns/cns
    Bytes 64..191 are extracted from the Keccak state and XORed with the
    first 128 bytes of the scratchpad.
    
-   > This is the third segment from the Hash, the same data we encrypted to create the scratchpad above.  The result of the XOR may be stored in the scratchpad itself as we will not be using the scratchpad values again.
+   > This is the third segment from the Hash, the same data we encrypted to create the scratchpad above.
+   snth
    
     Then the result is encrypted in
    the same manner as in the first part, but using the new keys.
    
-   > Another 80 AES rounds.
+   > Another 80 AES rounds per scratchpad segment.
    
     The
    result is XORed with the second 128 bytes from the scratchpad,
    encrypted again, and so on. 
 
    After XORing with the last 128 bytes of the scratchpad, the result is
-   encrypted the last time, and then the bytes 64..191 in the Keccak
-   state are replaced with the result. Then, the Keccak state is passed
+   encrypted the last time,
+   
+   > For a total of another 1,310,720 aes rounds
+   
+    and then the bytes 64..191 in the Keccak
+   state are replaced with the result.
+   
+   > Update the hash code.
+
+    Then, the Keccak state is passed
    through Keccak-f (the Keccak permutation) with b = 1600. 
 
    Then, the 2 low-order bits of the first byte of the state are used to

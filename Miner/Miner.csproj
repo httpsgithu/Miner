@@ -38,6 +38,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HashLib, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\HashLib.2.0.1\lib\net40\HashLib.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -62,8 +65,10 @@
     <Compile Include="Algorithms\MiningAlgorithm.cs" />
     <Compile Include="Algorithms\NewFolder1\AesEngine.cs" />
     <Compile Include="Algorithms\NewFolder1\Arrays.cs" />
+    <Compile Include="Algorithms\NewFolder1\Blake256.cs" />
     <Compile Include="Algorithms\NewFolder1\Check.cs" />
     <Compile Include="Algorithms\NewFolder1\CryptoException.cs" />
+    <Compile Include="Algorithms\NewFolder1\CryptoHelpers.cs" />
     <Compile Include="Algorithms\NewFolder1\DataLengthException.cs" />
     <Compile Include="Algorithms\NewFolder1\ICipherParameters.cs" />
     <Compile Include="Algorithms\NewFolder1\KeccakDigest.cs" />
