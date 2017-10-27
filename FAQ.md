@@ -4,8 +4,6 @@
 The Hardly Difficult Miner is an application which will mine blockchain while your computer is idle.  Every few minutes while the miner is running, a small deposit is made. The money you make from mining goes directly to your favorite streamer, and you can set up your own Bitcoin wallet to keep a certain percent for yourself.
 
 
-Currently working on implementing the [cryptonight algorithm](Cryptonight.md) (see for progress).  
-
 <details><summary>Why are You Doing This?</summary>
 
 Streamers, like myself, depend on generous support from viewers in order to make a living. This program offers just another way of helping your favorite streamers make it.  It may be particularly compelling for those that are not able to financially support today, this is like watching ads for bits... but it simply runs in the background.
@@ -111,14 +109,9 @@ To go from coinbase to cash, you can:
 
 <details><summary>Why implement this in C#?</summary>
 
-There are a few reasons I'm implementing the Cryptonight algorithm in C#... none of them good:
+We are calling out to C++ dlls to do the work.  C# will be used for the front end and resource management.
 
- - Ease of use:
-   - Looking to bring this to Unity, a C# implementation would be easier to integrate.
- - The C++ miner flags virus scanners, a C# implementation may not (to be tested).
- - I want more control over the resources consumed.  This could be done in C++, but I'm a weak C++ coder.
- - It's a fun challenge.
-   - A reason to jump into unsafe C# and SIMD in C#.
+We did look into implementing the entire thing in C# but it was taking too long to port all the necessary Hash methods.
 
 <hr></details><details><summary>Is This Open Source?</summary>
 

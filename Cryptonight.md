@@ -310,6 +310,8 @@ The following text is from the [Cryptonight spec](https://cryptonote.org/cns/cns
     Then, the Keccak state is passed
    through Keccak-f (the Keccak permutation) with b = 1600. 
 
+   > aoeu
+
    Then, the 2 low-order bits of the first byte of the state are used to
    select a hash function: 0=BLAKE-256 [BLAKE], 1=Groestl-256 [GROESTL],
    2=JH-256 [JH], and 3=Skein-256 [SKEIN]. The chosen hash function is

@@ -70,10 +70,14 @@
     <Compile Include="Algorithms\NewFolder1\CryptoException.cs" />
     <Compile Include="Algorithms\NewFolder1\CryptoHelpers.cs" />
     <Compile Include="Algorithms\NewFolder1\DataLengthException.cs" />
+    <Compile Include="Algorithms\NewFolder1\Sphlib\DigestEngine.cs" />
+    <Compile Include="Algorithms\NewFolder1\Sphlib\Groestl256.cs" />
+    <Compile Include="Algorithms\NewFolder1\Sphlib\GroestlSmallCore.cs" />
     <Compile Include="Algorithms\NewFolder1\ICipherParameters.cs" />
     <Compile Include="Algorithms\NewFolder1\KeccakDigest.cs" />
     <Compile Include="Algorithms\NewFolder1\OutputLengthException.cs" />
     <Compile Include="Algorithms\NewFolder1\Pack.cs" />
+    <Compile Include="Algorithms\NewFolder1\Sphlib\Digest.cs" />
     <Compile Include="Algorithms\Utilities.cs" />
     <Compile Include="Data\Beneficiaries\Beneficiary.cs" />
     <Compile Include="Data\Beneficiaries\Beneficiaries.cs" />

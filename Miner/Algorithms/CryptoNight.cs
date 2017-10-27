@@ -512,7 +512,13 @@ namespace HD
 
     public static byte[] DoHash1(byte[] dataToHash)
     {
-      return null;
+
+      Groestl256 hash = new Groestl256();
+      hash.update(dataToHash);
+      return hash.digest();
+
+
+      //return null;
       // TODO!
       //Groestl256 hash = new Groestl256();
       //return hash.ComputeHash(dataToHash);
