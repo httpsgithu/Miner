@@ -165,23 +165,31 @@ The following text is from the [Cryptonight spec](https://cryptonote.org/cns/cns
    variables a and b, 16 bytes each. These variables are used in the
    main loop.
    
-   > The first and second segment of the Keccak hash are XORed into a and b.
+   > The first and second segment of the Keccak hash are XORed together to create byte[16] a and byte[16] b.
    
-     The main loop is iterated 524,288 times. When a 16-byte
+     The main loop is iterated 524,288 times.
+     
+     > This loop should be where most of the time is spent (pending confirmation).
+     
+      When a 16-byte
    value needs to be converted into an address in the scratchpad, it is
    interpreted as a little-endian integer, and the 21 low-order bits are
    used as a byte index. However, the 4 low-order bits of the index are
-   cleared to ensure the 16-byte alignment. The data is read from and
-   written to the scratchpad in 16-byte blocks. Each iteration can be
+   cleared to ensure the 16-byte alignment.
+   
+   > We use bitwise AND in order to drop the bits referenced above.e
+   > to_scratchpad_address(ulong a) => (int)(a & 0x1FFFF0)
+   
+    The data is read from and
+   written to the scratchpad in 16-byte blocks.
+   
+   > The variables a and b created above are 16-bytes each.  This code will modify these values and use them as both addresses and values in order to change the scratchpad.
+
+    Each iteration can be
    expressed with the following pseudo-code:
 
 ```
       scratchpad_address = to_scratchpad_address(a)
-```
-
-> scratchpadIndex = a & 0x1FFFF0; 
-
-```
       scratchpad[scratchpad_address] = aes_round(scratchpad 
         [scratchpad_address], a)
       b, scratchpad[scratchpad_address] = scratchpad[scratchpad_address],
@@ -191,16 +199,26 @@ The following text is from the [Cryptonight spec](https://cryptonote.org/cns/cns
       a, scratchpad[scratchpad_address] = a xor 
         scratchpad[scratchpad_address], a
 ```
+
    Where, the 8byte_add function represents each of the arguments as a
    pair of 64-bit little-endian values and adds them together,
    component-wise, modulo 2^64. The result is converted back into 16
    bytes.
+
+   > 8byte_add(Int128 a, Int128 b) => return new Int128(a.High + b.High, a.Low + b.Low);
+   > Note that each term (e.g. a.High + b.Low) may overflow, this is expected.
 
    The 8byte_mul function, however, uses only the first 8 bytes of each
    argument, which are interpreted as unsigned 64-bit little-endian
    integers and multiplied together. The result is converted into 16
    bytes, and finally the two 8-byte halves of the result are swapped.
 
+```csharp
+       Int128 8byte_mul(Int128 a, Int128 b) {
+            Int128 mul = new Int128(0, idx0) * new Int128(0, cl);
+            return new Int128(mul.Low, mul.High);
+       }
+```
    This diagram illustrates the memory-hard loop:
 
 

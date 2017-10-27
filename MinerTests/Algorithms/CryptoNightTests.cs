@@ -35,24 +35,28 @@ namespace HD.Tests
     [TestMethod()]
     public void AdHoc()
     {
-      NewJob newJob = JsonConvert.DeserializeObject<NewJob>(@"
+      for (int i = 0; i < 10; i++)
+      {
+
+        NewJob newJob = JsonConvert.DeserializeObject<NewJob>(@"
 
 {""jsonrpc"":""2.0"",""id"":1,""error"":null,""result"":{""id"":""958279617719034"",""status"":""OK"",""job"":{""job_id"":""00000022914b1fba"",""blob"":""06069595cacf05621a11850207b551cb5324b43ac2bb9c6d12710ad60fc8f39be8ae67342913b2000000c1acdfded1636bc63a54387009741881078b0aeb1bad0fabaf23e0f9387a47f7b608"",""target"":""b7d10000""}}}
 ");
-      CryptoNight night = new CryptoNight();
-      night.Process(newJob);
-      night.ProcessStep2();
-      night.ProcessStep3();
-      night.ProcessStep4();
-      night.ProcessStep5();
-      night.ProcessStep6();
-      night.ProcessStep7();
-      night.ProcessStep8();
-      night.ProcessStep9();
-      night.ProcessStep10();
+        CryptoNight night = new CryptoNight();
+        night.Process(newJob);
+        night.ProcessStep2();
+        night.ProcessStep3();
+        night.ProcessStep4();
+        night.ProcessStep5();
+        night.ProcessStep6();
+        night.ProcessStep7();
+        night.ProcessStep8();
+        night.ProcessStep9();
+        night.ProcessStep10();
 
-      Assert.IsTrue(night.ctx.long_state[0] == 251);
-      Assert.IsTrue(night.ctx.long_state[1231392] == 152);
+        Assert.IsTrue(night.ctx.long_state[0] == 251);
+        Assert.IsTrue(night.ctx.long_state[1231392] == 152);
+      }
     }
 
 
