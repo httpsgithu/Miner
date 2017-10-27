@@ -238,7 +238,7 @@ namespace HD
         // scratchpad[scratchpad_address] = b xor scratchpad[scratchpad_address]
         for (int bIndex = 0; bIndex < 16; bIndex++)
         {
-          ctx.long_state[(int)(idx0 & 0x1FFFF0) + bIndex] ^= b[bIndex];
+          ctx.long_state[(int)(idx0 & 0x1FFFF0) + bIndex] = (byte)(cx[bIndex] ^ b[bIndex]);
         }
 
         idx0 = BitConverter.ToUInt64(cx, 0);
