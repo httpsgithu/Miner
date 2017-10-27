@@ -131,6 +131,11 @@ namespace HD
 
     public void ProcessStep5()
     {
+      ExtractBlocksFromHash();
+    }
+
+    private void ExtractBlocksFromHash()
+    {
       blocks = new byte[8][]; // 8 blocks
       for (int blockIndex = 0; blockIndex < blocks.Length; blockIndex++)
       {
@@ -146,6 +151,11 @@ namespace HD
     /// One AES round per block
     /// </summary>
     public void ProcessStep6()
+    {
+      EncryptBlocks();
+    }
+
+    private void EncryptBlocks()
     {
       for (int blockIndex = 0; blockIndex < blocks.Length; blockIndex++)
       {
@@ -261,7 +271,7 @@ namespace HD
         unchecked
         {
           aInt = new Int128(mul.Low + aInt.High, mul.High + aInt.Low);
-        }          
+        }
 
         byte[] mulHigh = BitConverter.GetBytes(aInt.High);
         byte[] mulLow = BitConverter.GetBytes(aInt.Low);
@@ -282,7 +292,7 @@ namespace HD
         // a = a xor scratchpad[scratchpad_address]
         // scratchpad[scratchpad_address] = temp
 
-        if(ctx.long_state[0] != 248)
+        if (ctx.long_state[0] != 248)
         {
           Console.WriteLine();
         }
@@ -307,6 +317,42 @@ namespace HD
 
       Console.WriteLine();
     }
+
+    public void ProcessStep11()
+    {
+      // Should we not be sharing this key?
+      key = new byte[32];
+      for (int i = 0; i < key.Length; i++)
+      {
+        key[i] = ctx.hash_state[i + 32];
+      }
+
+      aes = new AesEngine();
+      aes.Init(key);
+    }
+
+    public void ProcessStep12()
+    {
+      ExtractBlocksFromHash();
+
+      for (int scratchIndex = 0; scratchIndex < 16384; scratchIndex++)
+      {
+        for (int byteIndex = 0; byteIndex < 128; byteIndex++)
+        {
+          byte hashValue = ctx.hash_state[byteIndex + 64 + scratchIndex * 128];
+          byte scratchValue = ctx.long_state[byteIndex + scratchIndex * 128];
+          ctx.long_state[byteIndex + scratchIndex * 128] = (byte)(hashValue ^ scratchValue);
+        }
+
+
+
+
+
+        aoeu
+      }
+
+    }
+
 
     uint hex2bin(string input, uint len)
     {

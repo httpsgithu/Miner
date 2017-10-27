@@ -280,9 +280,19 @@ The following text is from the [Cryptonight spec](https://cryptonote.org/cns/cns
    expanded into 10 AES round keys in the same manner as in the first
    part.
 
+   > The second segment from the original Keccak Hash is now used as the AES key to create 10 new round keys, like we had above for the first segment.
+
    Bytes 64..191 are extracted from the Keccak state and XORed with the
-   first 128 bytes of the scratchpad. Then the result is encrypted in
-   the same manner as in the first part, but using the new keys. The
+   first 128 bytes of the scratchpad.
+   
+   > This is the third segment from the Hash, the same data we encrypted to create the scratchpad above.  The result of the XOR may be stored in the scratchpad itself as we will not be using the scratchpad values again.
+   
+    Then the result is encrypted in
+   the same manner as in the first part, but using the new keys.
+   
+   > Another 80 AES rounds.
+   
+    The
    result is XORed with the second 128 bytes from the scratchpad,
    encrypted again, and so on. 
 

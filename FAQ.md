@@ -107,10 +107,24 @@ To go from coinbase to cash, you can:
 <hr></details>
 
 
+# Development 
 
-# Other
+<details><summary>Why implement this in C#?</summary>
 
-<details><summary>Why CPU Only?</summary>
+There are a few reasons I'm implementing the Cryptonight algorithm in C#... none of them good:
+
+ - Ease of use:
+   - Looking to bring this to Unity, a C# implementation would be easier to integrate.
+ - The C++ miner flags virus scanners, a C# implementation may not (to be tested).
+ - I want more control over the resources consumed.  This could be done in C++, but I'm a weak C++ coder.
+ - It's a fun challenge.
+   - A reason to jump into unsafe C# and SIMD in C#.
+
+<hr></details><details><summary>Is This Open Source?</summary>
+
+Yes.
+
+<hr></details><details><summary>Why CPU Only?</summary>
 
 We could add GPU support if there is interest in this.  It adds a fair bit of complexity, in order to do this well.
 
@@ -122,7 +136,20 @@ You may consider getting the NiceHash client instead, this supports GPU mining a
 
 It's possible, but not yet.
 
-<hr></details><details><summary>I Stream, How Do I Sign Up?</summary>
+<hr></details><details><summary>Can we track viewer contributions?</summary>
+
+Not yet.  If you need this or want to help make it happen - let me know.  We will need a server endpoint to report progress to as the NiceHash APIs are not reliable.
+
+<hr></details><details><summary>What's Next?</summary>
+
+If things continue to go well, after building this application most of it will be reused to create a Unity asset store package.  This could be a great alternative to watching ads as way to support developers of free-to-play games.
+
+<hr></details>
+
+
+# Other
+
+<details><summary>I Stream, How Do I Sign Up?</summary>
 
 If you're a Twitch affiliate, fill out [this simple form](https://goo.gl/forms/fW85jNoKDsDnT1mT2) (others, see below).  We'll add you to a list of streamers that users can choose from... and create a download link which defaults to sending 99% of the profits to you, and the other 1% to me. 
 
@@ -133,14 +160,6 @@ I'm still working on a few core features, and the ui.  It'll be some time before
 I'm hoping to set this up so that it's easily configurable.  If you wanted to used this as a fundraiser to go towards charity, for a group of friends, another company, whatever... Let's do it!  Basically I'll post instructions on how to reconfigure the settings so you can post a zip with your wallets instead of streamers.  
 
 You can add one or many wallets. But, like with streamers, 1% will go to my wallet. Let me know if there's anything specific you need.  
-
-<hr></details><details><summary>Is This Open Source?</summary>
-
-Yes.
-
-<hr></details><details><summary>What's Next?</summary>
-
-If things continue to go well, after building this application most of it will be reused to create a Unity asset store package.  This could be a great alternative to watching ads as way to support developers of free-to-play games.
 
 <hr></details>
 
