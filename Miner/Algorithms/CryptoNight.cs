@@ -119,28 +119,47 @@ namespace HD
       }
     }
 
-    public void Step5_InitHardLoopAAndB()
+    public unsafe void Step5_InitHardLoopAAndB()
     {
+      fixed(byte* key = ctx.key)
+      {
+        ulong* longKey = (ulong*)key;
+
+        fixed(byte* hash = ctx.keccakHash)
+        {
+          ulong* longHash = (ulong*)hash;
+
+          ctx.memoryHardLoop_Afirst = longKey[0] ^ longHash[sizeOfKey / sizeof(long)];
+          ctx.memoryHardLoop_Asecond = longKey[1] ^ longHash[sizeOfKey / sizeof(long) + 1];
+          ctx.memoryHardLoop_Bfirst = longKey[2] ^ longHash[sizeOfKey / sizeof(long) + 2];
+          ctx.memoryHardLoop_Bsecond = longKey[3] ^ longHash[sizeOfKey / sizeof(long) + 3];
+        }
+      }
+
+
       for (int i = 0; i < sizeOfBlock; i++)
       {
         ctx.memoryHardLoop_A[i] = (byte)(ctx.key[i] ^ ctx.keccakHash[sizeOfKey + i]);
         ctx.memoryHardLoop_B[i] = (byte)(ctx.key[i + sizeOfBlock] ^ ctx.keccakHash[sizeOfKey + i + sizeOfBlock]);
       }
+
+      Console.WriteLine();
     }
 
     public void ProcessStep10()
     {
       ulong idx0 = BitConverter.ToUInt64(ctx.memoryHardLoop_A, 0);
+      int idx0Address = (int)(idx0 & scratchpadAddressBitmask);
 
       // TODO can we reuse these?
-      byte[] cx = new byte[sizeOfBlock];
+      byte[] tempBlock = new byte[sizeOfBlock];
       uint[] key = new uint[AesEngine.numberOfUintsPerKey];
 
       for (int i = 0; i < hardLoopIterrationCount; i++)
       {
         for (int tempIndex = 0; tempIndex < sizeOfBlock; tempIndex++)
         {
-          cx[tempIndex] = ctx.scratchpad[(int)(idx0 & scratchpadAddressBitmask) + tempIndex];
+          tempBlock[tempIndex] = ctx.scratchpad[idx0Address + tempIndex];
         }
 
         for (int keyIndex = 0; keyIndex < AesEngine.numberOfUintsPerKey; keyIndex++)
@@ -148,23 +167,23 @@ namespace HD
           key[keyIndex] = BitConverter.ToUInt32(ctx.memoryHardLoop_A, keyIndex * 4);
         }
 
-        ctx.aes.Encrypt(cx, 0, key, cx, 0);
+        ctx.aes.Encrypt(tempBlock, 0, key, tempBlock, 0);
 
         for (int bIndex = 0; bIndex < sizeOfBlock; bIndex++)
         {
-          ctx.scratchpad[(int)(idx0 & scratchpadAddressBitmask) + bIndex] = (byte)(cx[bIndex] ^ ctx.memoryHardLoop_B[bIndex]);
+          ctx.scratchpad[idx0Address + bIndex] 
+            = (byte)(tempBlock[bIndex] ^ ctx.memoryHardLoop_B[bIndex]);
         }
 
-        idx0 = BitConverter.ToUInt64(cx, 0);
+        idx0 = BitConverter.ToUInt64(tempBlock, 0);
+        idx0Address = (int)(idx0 & scratchpadAddressBitmask);
 
         for (int bIndex = 0; bIndex < sizeOfBlock; bIndex++)
         {
-          ctx.memoryHardLoop_B[bIndex] = cx[bIndex];
+          ctx.memoryHardLoop_B[bIndex] = tempBlock[bIndex];
         }
 
-        ulong cl, ch;
-        cl = BitConverter.ToUInt64(ctx.scratchpad, (int)(idx0 & scratchpadAddressBitmask));
-        ch = BitConverter.ToUInt64(ctx.scratchpad, (int)(idx0 & scratchpadAddressBitmask) + sizeof(ulong));
+        ulong cl = BitConverter.ToUInt64(ctx.scratchpad, idx0Address);
 
         idx0.UnsignedMultiply128(cl, out ulong mulIntLow, out ulong mulIntHigh);
         ulong aIntLow = BitConverter.ToUInt64(ctx.memoryHardLoop_A, 0);
@@ -179,16 +198,17 @@ namespace HD
 
         for (int aIndex = 0; aIndex < sizeOfBlock; aIndex++)
         {
-          cx[aIndex] = ctx.scratchpad[(int)(idx0 & scratchpadAddressBitmask) + aIndex];
+          tempBlock[aIndex] = ctx.scratchpad[idx0Address + aIndex];
         }
 
         for (int aIndex = 0; aIndex < sizeOfBlock; aIndex++)
         {
-          ctx.scratchpad[(int)(idx0 & scratchpadAddressBitmask) + aIndex] = ctx.memoryHardLoop_A[aIndex];
-          ctx.memoryHardLoop_A[aIndex] ^= cx[aIndex];
+          ctx.scratchpad[idx0Address + aIndex] = ctx.memoryHardLoop_A[aIndex];
+          ctx.memoryHardLoop_A[aIndex] ^= tempBlock[aIndex];
         }
 
         idx0 = BitConverter.ToUInt64(ctx.memoryHardLoop_A, 0);
+        idx0Address = (int)(idx0 & scratchpadAddressBitmask);
       }
     }
 

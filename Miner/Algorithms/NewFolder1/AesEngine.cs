@@ -249,7 +249,7 @@ namespace HD
     /// TODO fixed size
     /// </summary>
     public readonly uint[][] WorkingKey; // should be private
-    int ROUNDS;
+    const int ROUNDS = numberOfWorkingKeys;
     uint C0, C1, C2, C3;
     #endregion
 
@@ -265,11 +265,9 @@ namespace HD
     #endregion
 
     #region Public API
-    public void Init(
+    public unsafe void Init(
       byte[] key)
     {
-      Debug.Assert(key != null);
-
       GenerateWorkingKey(key);
     }
 
@@ -409,117 +407,32 @@ namespace HD
     void GenerateWorkingKey(
       byte[] key)
     {
-      int keyLen = key.Length;
+      const int keyLen = 32;
+      const int KC = keyLen >> 2;
 
-      Debug.Assert(keyLen >= 16 && keyLen <= 32 && (keyLen & 7) == 0);
+      uint t0 = Pack.LE_To_UInt32(key, 0); WorkingKey[0][0] = t0;
+      uint t1 = Pack.LE_To_UInt32(key, 4); WorkingKey[0][1] = t1;
+      uint t2 = Pack.LE_To_UInt32(key, 8); WorkingKey[0][2] = t2;
+      uint t3 = Pack.LE_To_UInt32(key, 12); WorkingKey[0][3] = t3;
+      uint t4 = Pack.LE_To_UInt32(key, 16); WorkingKey[1][0] = t4;
+      uint t5 = Pack.LE_To_UInt32(key, 20); WorkingKey[1][1] = t5;
+      uint t6 = Pack.LE_To_UInt32(key, 24); WorkingKey[1][2] = t6;
+      uint t7 = Pack.LE_To_UInt32(key, 28); WorkingKey[1][3] = t7;
 
-      int KC;
+      uint u, rcon = 1;
 
-      KC = keyLen >> 2;
-      this.ROUNDS = numberOfWorkingKeys;
-      switch (KC)
+      for (int i = 2; i < 10; i += 2) 
       {
-        case 4:
-          {
-            uint t0 = Pack.LE_To_UInt32(key, 0); WorkingKey[0][0] = t0;
-            uint t1 = Pack.LE_To_UInt32(key, 4); WorkingKey[0][1] = t1;
-            uint t2 = Pack.LE_To_UInt32(key, 8); WorkingKey[0][2] = t2;
-            uint t3 = Pack.LE_To_UInt32(key, 12); WorkingKey[0][3] = t3;
-
-            for (int i = 1; i <= 10; ++i)
-            {
-              uint u = SubWord(Shift(t3, 8)) ^ rcon[i - 1];
-              t0 ^= u; WorkingKey[i][0] = t0;
-              t1 ^= t0; WorkingKey[i][1] = t1;
-              t2 ^= t1; WorkingKey[i][2] = t2;
-              t3 ^= t2; WorkingKey[i][3] = t3;
-            }
-
-            break;
-          }
-        case 6:
-          {
-            uint t0 = Pack.LE_To_UInt32(key, 0); WorkingKey[0][0] = t0;
-            uint t1 = Pack.LE_To_UInt32(key, 4); WorkingKey[0][1] = t1;
-            uint t2 = Pack.LE_To_UInt32(key, 8); WorkingKey[0][2] = t2;
-            uint t3 = Pack.LE_To_UInt32(key, 12); WorkingKey[0][3] = t3;
-            uint t4 = Pack.LE_To_UInt32(key, 16); WorkingKey[1][0] = t4;
-            uint t5 = Pack.LE_To_UInt32(key, 20); WorkingKey[1][1] = t5;
-
-            uint rcon = 1;
-            uint u = SubWord(Shift(t5, 8)) ^ rcon; rcon <<= 1;
-            t0 ^= u; WorkingKey[1][2] = t0;
-            t1 ^= t0; WorkingKey[1][3] = t1;
-            t2 ^= t1; WorkingKey[2][0] = t2;
-            t3 ^= t2; WorkingKey[2][1] = t3;
-            t4 ^= t3; WorkingKey[2][2] = t4;
-            t5 ^= t4; WorkingKey[2][3] = t5;
-
-            for (int i = 3; i < 12; i += 3)
-            {
-              u = SubWord(Shift(t5, 8)) ^ rcon; rcon <<= 1;
-              t0 ^= u; WorkingKey[i][0] = t0;
-              t1 ^= t0; WorkingKey[i][1] = t1;
-              t2 ^= t1; WorkingKey[i][2] = t2;
-              t3 ^= t2; WorkingKey[i][3] = t3;
-              t4 ^= t3; WorkingKey[i + 1][0] = t4;
-              t5 ^= t4; WorkingKey[i + 1][1] = t5;
-              u = SubWord(Shift(t5, 8)) ^ rcon; rcon <<= 1;
-              t0 ^= u; WorkingKey[i + 1][2] = t0;
-              t1 ^= t0; WorkingKey[i + 1][3] = t1;
-              t2 ^= t1; WorkingKey[i + 2][0] = t2;
-              t3 ^= t2; WorkingKey[i + 2][1] = t3;
-              t4 ^= t3; WorkingKey[i + 2][2] = t4;
-              t5 ^= t4; WorkingKey[i + 2][3] = t5;
-            }
-
-            u = SubWord(Shift(t5, 8)) ^ rcon;
-            t0 ^= u; WorkingKey[12][0] = t0;
-            t1 ^= t0; WorkingKey[12][1] = t1;
-            t2 ^= t1; WorkingKey[12][2] = t2;
-            t3 ^= t2; WorkingKey[12][3] = t3;
-
-            break;
-          }
-        case 8:
-          {
-            uint t0 = Pack.LE_To_UInt32(key, 0); WorkingKey[0][0] = t0;
-            uint t1 = Pack.LE_To_UInt32(key, 4); WorkingKey[0][1] = t1;
-            uint t2 = Pack.LE_To_UInt32(key, 8); WorkingKey[0][2] = t2;
-            uint t3 = Pack.LE_To_UInt32(key, 12); WorkingKey[0][3] = t3;
-            uint t4 = Pack.LE_To_UInt32(key, 16); WorkingKey[1][0] = t4;
-            uint t5 = Pack.LE_To_UInt32(key, 20); WorkingKey[1][1] = t5;
-            uint t6 = Pack.LE_To_UInt32(key, 24); WorkingKey[1][2] = t6;
-            uint t7 = Pack.LE_To_UInt32(key, 28); WorkingKey[1][3] = t7;
-
-            uint u, rcon = 1;
-
-            for (int i = 2; i < 10; i += 2) // was i < 14
-            {
-              u = SubWord(Shift(t7, 8)) ^ rcon; rcon <<= 1;
-              t0 ^= u; WorkingKey[i][0] = t0;
-              t1 ^= t0; WorkingKey[i][1] = t1;
-              t2 ^= t1; WorkingKey[i][2] = t2;
-              t3 ^= t2; WorkingKey[i][3] = t3;
-              u = SubWord(t3);
-              t4 ^= u; WorkingKey[i + 1][0] = t4;
-              t5 ^= t4; WorkingKey[i + 1][1] = t5;
-              t6 ^= t5; WorkingKey[i + 1][2] = t6;
-              t7 ^= t6; WorkingKey[i + 1][3] = t7;
-            }
-
-            //u = SubWord(Shift(t7, 8)) ^ rcon;
-            //t0 ^= u; W[14][0] = t0;
-            //t1 ^= t0; W[14][1] = t1;
-            //t2 ^= t1; W[14][2] = t2;
-            //t3 ^= t2; W[14][3] = t3;
-
-            break;
-          }
-        default:
-          {
-            throw new InvalidOperationException("Should never get here");
-          }
+        u = SubWord(Shift(t7, 8)) ^ rcon; rcon <<= 1;
+        t0 ^= u; WorkingKey[i][0] = t0;
+        t1 ^= t0; WorkingKey[i][1] = t1;
+        t2 ^= t1; WorkingKey[i][2] = t2;
+        t3 ^= t2; WorkingKey[i][3] = t3;
+        u = SubWord(t3);
+        t4 ^= u; WorkingKey[i + 1][0] = t4;
+        t5 ^= t4; WorkingKey[i + 1][1] = t5;
+        t6 ^= t5; WorkingKey[i + 1][2] = t6;
+        t7 ^= t6; WorkingKey[i + 1][3] = t7;
       }
     }
     #endregion
