@@ -17,32 +17,23 @@ namespace HD
   {
     public readonly byte[] keccakHash = new byte[200]; 
     public readonly byte[] scratchpad = new byte[2097152]; 
+    public readonly byte[] bResult = new byte[32];
   }
-
-  public class SomethingSomethingWIPResultStuff
-  {
-    public byte[] bResult;
-    public string sJobID;
-    public uint iNonce;
-
-    public SomethingSomethingWIPResultStuff(
-      string sJobID)
-    {
-      this.sJobID = sJobID;
-    }
-  }
-
+  
   public class CryptoNight
   {
+    // TODO this is thread stuff
     const int iThreadCount = 1;
     const int iThreadNo = 0;
-    const int iResumeCnt = 0; // What's this for?
+    const int iResumeCnt = 0; 
 
-    public byte[] bWorkBlob = new byte[112];
-    public SomethingSomethingWIPResultStuff result;
+
+    const int iWorkSize = 76;
+
+    public readonly byte[] bWorkBlob = new byte[76]; 
+
     public cryptonight_ctx ctx;
 
-    public int iWorkSize;
     public ulong iJobDiff;
     public ulong iTarget;
     public uint iCount;
@@ -61,7 +52,7 @@ namespace HD
     {
       get
       {
-        return BitConverter.ToUInt64(result.bResult, 24);
+        return BitConverter.ToUInt64(ctx.bResult, 24);
       }
     }
     public uint piNonce
@@ -84,7 +75,7 @@ namespace HD
     {
       this.newJob = newJob;
       byte[] databyte = Utilities.HexStringToByteArray(newJob.Blob);
-      iWorkSize = databyte.Length;
+      Debug.Assert(databyte.Length == iWorkSize);
       byte[] targetbyte = Utilities.HexStringToByteArray(newJob.Target);
       ctx = new cryptonight_ctx();
 
@@ -102,18 +93,16 @@ namespace HD
       iJobDiff = t64_to_diff(iTarget);
 
       iCount = 0;
-      result = new SomethingSomethingWIPResultStuff(
-        newJob.Job_Id);
-      result.iNonce = calc_nicehash_nonce(piNonce, iResumeCnt);
+      piNonce = calc_nicehash_nonce(piNonce, iResumeCnt);
       if(nonceOverride != null)
       {
-        result.iNonce = uint.Parse(nonceOverride, System.Globalization.NumberStyles.HexNumber);
+        piNonce = uint.Parse(nonceOverride, System.Globalization.NumberStyles.HexNumber);
       }
     }
 
     public void ProcessStep2()
     {
-      piNonce = ++result.iNonce;
+      piNonce++;
     }
 
     public void ProcessStep3()
@@ -124,7 +113,7 @@ namespace HD
     public string GetResultJson()
     {
       // TODO I think the Id is the original request ID...
-      Algorithms.NiceHashResultJson json = new Algorithms.NiceHashResultJson(1, newJob.Job_Id, result.iNonce, result.bResult);
+      Algorithms.NiceHashResultJson json = new Algorithms.NiceHashResultJson(1, newJob.Job_Id, piNonce, ctx.bResult);
 
       return JsonConvert.SerializeObject(json);
     }
@@ -455,7 +444,7 @@ namespace HD
       }
 
       hash.update(ctx.keccakHash);
-      result.bResult = hash.digest();
+      hash.digest(ctx.bResult, 0, 32);
     }
 
     byte hf_hex2bin(byte c, ref bool err)

@@ -320,6 +320,23 @@ namespace HD.Tests
 
 
     [TestMethod()]
+    public void E2E5Fake3Steps()
+    {
+      // piNonce == job_result.nonce == 537657678 == 200C014E -- is this wrong?
+      // in json nonce is 4e010c20 == 1308691488
+      // piHashVal == 215769439008401 -- is this wrong?
+      EndToEnd(@"
+
+{""jsonrpc"":""2.0"",""id"":1,""error"":null,""result"":{""id"":""421970933313569"",""status"":""OK"",""job"":{""job_id"":""00000022979abe5b"",""blob"":""0606c286d2cf054e62c484c4297e4afdce51d5326091796b8b5411f49d20b347a164f224d57b4000000020141c3792f28256e7558cc7b2a520da2c66ed518b8541a91637238e2cbce16e670f"",""target"":""b7d10000""}}}
+
+        ", @"
+
+{""method"":""submit"",""params"":{""id"":""421970933313569"",""job_id"":""00000022979abe5b"",""nonce"":""4e010c20"",""result"":""3fbc7b9a8b0df08b1067d87daa1cd8aa23ad7baffed4312691f6c3bc3dc40000""},""id"":1}
+
+        ", "200C014A");
+    }
+
+    [TestMethod()]
     public void E2E5Fake()
     {
       // piNonce == job_result.nonce == 537657678 == 200C014E -- is this wrong?
@@ -327,11 +344,11 @@ namespace HD.Tests
       // piHashVal == 215769439008401 -- is this wrong?
       EndToEnd(@"
 
-{""jsonrpc"":""2.0"",""id"":1,""error"":null,""result"":{""id"":""672296271781987"",""status"":""OK"",""job"":{""job_id"":""00000022979abe5b"",""blob"":""0606c286d2cf054e62c484c4297e4afdce51d5326091796b8b5411f49d20b347a164f224d57b4000000020141c3792f28256e7558cc7b2a520da2c66ed518b8541a91637238e2cbce16e670f"",""target"":""b7d10000""}}}
+{""jsonrpc"":""2.0"",""id"":1,""error"":null,""result"":{""id"":""421970933313569"",""status"":""OK"",""job"":{""job_id"":""00000022979abe5b"",""blob"":""0606c286d2cf054e62c484c4297e4afdce51d5326091796b8b5411f49d20b347a164f224d57b4000000020141c3792f28256e7558cc7b2a520da2c66ed518b8541a91637238e2cbce16e670f"",""target"":""b7d10000""}}}
 
         ", @"
 
-{""method"":""submit"",""params"":{""id"":""672296271781987"",""job_id"":""00000022979abe5b"",""nonce"":""4e010c20"",""result"":""3fbc7b9a8b0df08b1067d87daa1cd8aa23ad7baffed4312691f6c3bc3dc40000""},""id"":1}
+{""method"":""submit"",""params"":{""id"":""421970933313569"",""job_id"":""00000022979abe5b"",""nonce"":""4e010c20"",""result"":""3fbc7b9a8b0df08b1067d87daa1cd8aa23ad7baffed4312691f6c3bc3dc40000""},""id"":1}
 
         ", "200C014D");
     }
@@ -515,9 +532,9 @@ namespace HD.Tests
       night.ProcessStep14();
       night.ProcessStep15();
 
-      Assert.IsTrue(night.result.bResult[0] == 118);
-      Assert.IsTrue(night.result.bResult[1] == 187);
-      Assert.IsTrue(night.result.bResult[31] == 81);
+      Assert.IsTrue(night.ctx.bResult[0] == 118);
+      Assert.IsTrue(night.ctx.bResult[1] == 187);
+      Assert.IsTrue(night.ctx.bResult[31] == 81);
 
     }
 
@@ -838,21 +855,14 @@ namespace HD.Tests
       CryptoNight night = new CryptoNight();
       night.Process(newJob.Result.Job);
 
-      Assert.IsTrue(night.result.sJobID == "000000228b507492");
-      Assert.IsTrue(night.bWorkBlob.Length == 112);
       Assert.IsTrue(night.bWorkBlob[0] == 6);
       Assert.IsTrue(night.bWorkBlob[5] == 207);
       Assert.IsTrue(night.bWorkBlob[73] == 118);
       Assert.IsTrue(night.bWorkBlob[75] == 1);
-      Assert.IsTrue(night.bWorkBlob[76] == 0);
-      Assert.IsTrue(night.bWorkBlob[109] == 0);
-      Assert.IsTrue(night.bWorkBlob[111] == 0);
-      Assert.IsTrue(night.iWorkSize == 76);
       Assert.IsTrue(night.iTarget == (ulong)230584300921369);
       Assert.IsTrue(night.iJobDiff == (ulong)80000);
       Assert.IsTrue(night.iCount == 0);
       Assert.IsTrue(night.piNonce == 2449473536);
-      Assert.IsTrue(night.result.iNonce == 2449473536);
     }
 
 
@@ -865,20 +875,15 @@ namespace HD.Tests
       night.Process(newJob.Result.Job);
 
       // Passing
-      Assert.AreEqual(night.bWorkBlob.Length, 112);
       Assert.AreEqual(night.bWorkBlob[0], 4);
       Assert.AreEqual(night.bWorkBlob[5], 207);
       Assert.AreEqual(night.bWorkBlob[73], 144);
       Assert.AreEqual(night.bWorkBlob[75], 2);
-      Assert.AreEqual(night.bWorkBlob[76], 0);
-      Assert.AreEqual(night.bWorkBlob[109], 0);
-      Assert.AreEqual(night.bWorkBlob[111], 0);
       Assert.AreEqual(night.piNonce, (uint)1778384896);
 
       night.ProcessStep2();
 
       Assert.IsTrue(night.piNonce == 1778384897);
-      Assert.IsTrue(night.result.iNonce == 1778384897);
       Assert.IsTrue(night.bWorkBlob[38] == 138);
       Assert.IsTrue(night.bWorkBlob[39] == 1);
       Assert.IsTrue(night.bWorkBlob[42] == 106);
