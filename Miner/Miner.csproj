@@ -66,7 +66,6 @@
     <Compile Include="Algorithms\MiningAlgorithm.cs" />
     <Compile Include="Algorithms\NewFolder1\AesEngine.cs" />
     <Compile Include="Algorithms\NewFolder1\Arrays.cs" />
-    <Compile Include="Algorithms\NewFolder1\Check.cs" />
     <Compile Include="Algorithms\NewFolder1\CryptoException.cs" />
     <Compile Include="Algorithms\NewFolder1\CryptoHelpers.cs" />
     <Compile Include="Algorithms\NewFolder1\DataLengthException.cs" />
@@ -78,6 +77,7 @@
     <Compile Include="Data\Beneficiaries\Beneficiaries.cs" />
     <Compile Include="Utils\ByteArrayExtensions.cs" />
     <Compile Include="Utils\StringExtensions.cs" />
+    <Compile Include="Utils\UlongExtensions.cs" />
     <Compile Include="Utils\UintExtensions.cs" />
     <Compile Include="Utils\Windows\FileObserver.cs" />
     <Compile Include="Utils\Windows\HardwareMonitor.cs" />

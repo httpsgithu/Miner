@@ -1,5 +1,4 @@
-﻿using Org.BouncyCastle.Crypto.Engines;
-using System;
+﻿using System;
 
 namespace HD.Algorithms
 {
@@ -10,17 +9,17 @@ namespace HD.Algorithms
   /// </summary>
   public class CryptoNightDataPerThread
   {
-    public readonly byte[] keccakHash = new byte[200];
-    public readonly byte[] scratchpad = new byte[2097152];
-    public readonly byte[] bResult = new byte[32];
+    public readonly byte[] keccakHash = new byte[CryptoNight.sizeOfKeccakHash];
+    public readonly byte[] scratchpad = new byte[CryptoNight.sizeOfScratchpad];
+    public readonly byte[] bResult = new byte[CryptoNight.sizeOfResult];
 
-    public readonly byte[] memoryHardLoop_A = new byte[16];
-    public readonly byte[] memoryHardLoop_B = new byte[16];
+    public readonly byte[] memoryHardLoop_A = new byte[CryptoNight.sizeOfBlock];
+    public readonly byte[] memoryHardLoop_B = new byte[CryptoNight.sizeOfBlock];
     /// <summary>
     /// byte[8][16]
     /// </summary>
-    public readonly byte[][] blocks = new byte[8][];
-    public readonly byte[] key = new byte[32];
+    public readonly byte[][] blocks = new byte[CryptoNight.numberOfBlocks][];
+    public readonly byte[] key = new byte[CryptoNight.sizeOfKey];
 
     public readonly AesEngine aes = new AesEngine();
 
@@ -28,15 +27,15 @@ namespace HD.Algorithms
     {
       get
       {
-        return BitConverter.ToUInt64(bResult, 24);
+        return BitConverter.ToUInt64(bResult, CryptoNight.hashValOffsetInResult);
       }
     }
 
     public CryptoNightDataPerThread()
     {
-      for (int i = 0; i < blocks.Length; i++)
+      for (int i = 0; i < CryptoNight.numberOfBlocks; i++)
       {
-        blocks[i] = new byte[16];
+        blocks[i] = new byte[CryptoNight.sizeOfBlock];
       }
     }
   }

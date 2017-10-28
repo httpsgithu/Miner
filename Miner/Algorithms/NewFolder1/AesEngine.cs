@@ -2,11 +2,16 @@
 using System.Diagnostics;
 
 using Org.BouncyCastle.Crypto.Utilities;
-using Org.BouncyCastle.Utilities;
+using Org.BouncyCastle.Crypto;
 
-namespace Org.BouncyCastle.Crypto.Engines
+namespace HD
 {
   /**
+   * This is a slightly modified version of BouncyCastle's original implementation of AES.  
+   * Adapted to work with CryptoNight.
+   * 
+   * 
+   * 
   * an implementation of the AES (Rijndael), from FIPS-197.
   * <p>
   * For further details see: <a href="http://csrc.nist.gov/encryption/aes/">http://csrc.nist.gov/encryption/aes/</a>.
@@ -32,8 +37,9 @@ namespace Org.BouncyCastle.Crypto.Engines
   */
   public sealed class AesEngine
   {
+    #region Data
     // The S box
-    private static readonly byte[] S =
+    static readonly byte[] S =
     {
             99, 124, 119, 123, 242, 107, 111, 197,
             48, 1, 103, 43, 254, 215, 171, 118,
@@ -70,7 +76,7 @@ namespace Org.BouncyCastle.Crypto.Engines
         };
 
     // The inverse S-box
-    private static readonly byte[] Si =
+    static readonly byte[] Si =
     {
             82, 9, 106, 213, 48, 54, 165, 56,
             191, 64, 163, 158, 129, 243, 215, 251,
@@ -107,14 +113,14 @@ namespace Org.BouncyCastle.Crypto.Engines
         };
 
     // vector used in calculating key schedule (powers of x in GF(256))
-    private static readonly byte[] rcon =
+    static readonly byte[] rcon =
     {
             0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a,
             0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5, 0x91
         };
 
     // precomputation tables of calculations for rounds
-    private static readonly uint[] T0 =
+    static readonly uint[] T0 =
     {
             0xa56363c6, 0x847c7cf8, 0x997777ee, 0x8d7b7bf6, 0x0df2f2ff,
             0xbd6b6bd6, 0xb16f6fde, 0x54c5c591, 0x50303060, 0x03010102,
@@ -170,7 +176,7 @@ namespace Org.BouncyCastle.Crypto.Engines
             0x3a16162c
         };
 
-    private static readonly uint[] Tinv0 =
+    static readonly uint[] Tinv0 =
     {
             0x50a7f451, 0x5365417e, 0xc3a4171a, 0x965e273a, 0xcb6bab3b,
             0xf1459d1f, 0xab58faac, 0x9303e34b, 0x55fa3020, 0xf66d76ad,
@@ -226,281 +232,85 @@ namespace Org.BouncyCastle.Crypto.Engines
             0x4257b8d0
         };
 
-    private static uint Shift(uint r, int shift)
-    {
-      return (r >> shift) | (r << (32 - shift));
-    }
-
     /* multiply four bytes in GF(2^8) by 'x' {02} in parallel */
 
-    private const uint m1 = 0x80808080;
-    private const uint m2 = 0x7f7f7f7f;
-    private const uint m3 = 0x0000001b;
-    private const uint m4 = 0xC0C0C0C0;
-    private const uint m5 = 0x3f3f3f3f;
+    const uint m1 = 0x80808080;
+    const uint m2 = 0x7f7f7f7f;
+    const uint m3 = 0x0000001b;
+    const uint m4 = 0xC0C0C0C0;
+    const uint m5 = 0x3f3f3f3f;
 
-    private static uint FFmulX(uint x)
-    {
-      return ((x & m2) << 1) ^ (((x & m1) >> 7) * m3);
-    }
+    const int BLOCK_SIZE = 16;
 
-    private static uint FFmulX2(uint x)
-    {
-      uint t0 = (x & m5) << 2;
-      uint t1 = (x & m4);
-      t1 ^= (t1 >> 1);
-      return t0 ^ (t1 >> 2) ^ (t1 >> 5);
-    }
+    public const int numberOfWorkingKeys = 10;
+    public const int numberOfUintsPerKey = 4;
 
-    /*
-    The following defines provide alternative definitions of FFmulX that might
-    give improved performance if a fast 32-bit multiply is not available.
+    /// <summary>
+    /// TODO fixed size
+    /// </summary>
+    public readonly uint[][] WorkingKey; // should be private
+    int ROUNDS;
+    uint C0, C1, C2, C3;
+    #endregion
 
-    private int FFmulX(int x) { int u = x & m1; u |= (u >> 1); return ((x & m2) << 1) ^ ((u >>> 3) | (u >>> 6)); }
-    private static final int  m4 = 0x1b1b1b1b;
-    private int FFmulX(int x) { int u = x & m1; return ((x & m2) << 1) ^ ((u - (u >>> 7)) & m4); }
-
-    */
-
-    private static uint Inv_Mcol(uint x)
-    {
-      uint t0, t1;
-      t0 = x;
-      t1 = t0 ^ Shift(t0, 8);
-      t0 ^= FFmulX(t1);
-      t1 ^= FFmulX2(t0);
-      t0 ^= t1 ^ Shift(t1, 16);
-      return t0;
-    }
-
-    private static uint SubWord(uint x)
-    {
-      return (uint)S[x & 255]
-          | (((uint)S[(x >> 8) & 255]) << 8)
-          | (((uint)S[(x >> 16) & 255]) << 16)
-          | (((uint)S[(x >> 24) & 255]) << 24);
-    }
-
-    /**
-    * Calculate the necessary round keys
-    * The number of calculations depends on key size and block size
-    * AES specified a fixed block size of 128 bits and key sizes 128/192/256 bits
-    * This code is written assuming those are the only possible values
-    */
-    private uint[][] GenerateWorkingKey(
-      byte[] key)
-    {
-      int keyLen = key.Length;
-      if (keyLen < 16 || keyLen > 32 || (keyLen & 7) != 0)
-        throw new ArgumentException("Key length not 128/192/256 bits.");
-
-      int KC;
-
-      KC = keyLen >> 2;
-      this.ROUNDS = 10;
-
-      uint[][] W = new uint[ROUNDS][]; // 4 words in a block
-      for (int i = 0; i < ROUNDS; ++i)
-      {
-        W[i] = new uint[4];
-      }
-
-      switch (KC)
-      {
-        case 4:
-          {
-            uint t0 = Pack.LE_To_UInt32(key, 0); W[0][0] = t0;
-            uint t1 = Pack.LE_To_UInt32(key, 4); W[0][1] = t1;
-            uint t2 = Pack.LE_To_UInt32(key, 8); W[0][2] = t2;
-            uint t3 = Pack.LE_To_UInt32(key, 12); W[0][3] = t3;
-
-            for (int i = 1; i <= 10; ++i)
-            {
-              uint u = SubWord(Shift(t3, 8)) ^ rcon[i - 1];
-              t0 ^= u; W[i][0] = t0;
-              t1 ^= t0; W[i][1] = t1;
-              t2 ^= t1; W[i][2] = t2;
-              t3 ^= t2; W[i][3] = t3;
-            }
-
-            break;
-          }
-        case 6:
-          {
-            uint t0 = Pack.LE_To_UInt32(key, 0); W[0][0] = t0;
-            uint t1 = Pack.LE_To_UInt32(key, 4); W[0][1] = t1;
-            uint t2 = Pack.LE_To_UInt32(key, 8); W[0][2] = t2;
-            uint t3 = Pack.LE_To_UInt32(key, 12); W[0][3] = t3;
-            uint t4 = Pack.LE_To_UInt32(key, 16); W[1][0] = t4;
-            uint t5 = Pack.LE_To_UInt32(key, 20); W[1][1] = t5;
-
-            uint rcon = 1;
-            uint u = SubWord(Shift(t5, 8)) ^ rcon; rcon <<= 1;
-            t0 ^= u; W[1][2] = t0;
-            t1 ^= t0; W[1][3] = t1;
-            t2 ^= t1; W[2][0] = t2;
-            t3 ^= t2; W[2][1] = t3;
-            t4 ^= t3; W[2][2] = t4;
-            t5 ^= t4; W[2][3] = t5;
-
-            for (int i = 3; i < 12; i += 3)
-            {
-              u = SubWord(Shift(t5, 8)) ^ rcon; rcon <<= 1;
-              t0 ^= u; W[i][0] = t0;
-              t1 ^= t0; W[i][1] = t1;
-              t2 ^= t1; W[i][2] = t2;
-              t3 ^= t2; W[i][3] = t3;
-              t4 ^= t3; W[i + 1][0] = t4;
-              t5 ^= t4; W[i + 1][1] = t5;
-              u = SubWord(Shift(t5, 8)) ^ rcon; rcon <<= 1;
-              t0 ^= u; W[i + 1][2] = t0;
-              t1 ^= t0; W[i + 1][3] = t1;
-              t2 ^= t1; W[i + 2][0] = t2;
-              t3 ^= t2; W[i + 2][1] = t3;
-              t4 ^= t3; W[i + 2][2] = t4;
-              t5 ^= t4; W[i + 2][3] = t5;
-            }
-
-            u = SubWord(Shift(t5, 8)) ^ rcon;
-            t0 ^= u; W[12][0] = t0;
-            t1 ^= t0; W[12][1] = t1;
-            t2 ^= t1; W[12][2] = t2;
-            t3 ^= t2; W[12][3] = t3;
-
-            break;
-          }
-        case 8:
-          {
-            uint t0 = Pack.LE_To_UInt32(key, 0); W[0][0] = t0;
-            uint t1 = Pack.LE_To_UInt32(key, 4); W[0][1] = t1;
-            uint t2 = Pack.LE_To_UInt32(key, 8); W[0][2] = t2;
-            uint t3 = Pack.LE_To_UInt32(key, 12); W[0][3] = t3;
-            uint t4 = Pack.LE_To_UInt32(key, 16); W[1][0] = t4;
-            uint t5 = Pack.LE_To_UInt32(key, 20); W[1][1] = t5;
-            uint t6 = Pack.LE_To_UInt32(key, 24); W[1][2] = t6;
-            uint t7 = Pack.LE_To_UInt32(key, 28); W[1][3] = t7;
-
-            uint u, rcon = 1;
-
-            for (int i = 2; i < 10; i += 2) // was i < 14
-            {
-              u = SubWord(Shift(t7, 8)) ^ rcon; rcon <<= 1;
-              t0 ^= u; W[i][0] = t0;
-              t1 ^= t0; W[i][1] = t1;
-              t2 ^= t1; W[i][2] = t2;
-              t3 ^= t2; W[i][3] = t3;
-              u = SubWord(t3);
-              t4 ^= u; W[i + 1][0] = t4;
-              t5 ^= t4; W[i + 1][1] = t5;
-              t6 ^= t5; W[i + 1][2] = t6;
-              t7 ^= t6; W[i + 1][3] = t7;
-            }
-
-            //u = SubWord(Shift(t7, 8)) ^ rcon;
-            //t0 ^= u; W[14][0] = t0;
-            //t1 ^= t0; W[14][1] = t1;
-            //t2 ^= t1; W[14][2] = t2;
-            //t3 ^= t2; W[14][3] = t3;
-
-            break;
-          }
-        default:
-          {
-            throw new InvalidOperationException("Should never get here");
-          }
-      }
-
-      return W;
-    }
-
-    private int ROUNDS;
-    public uint[][] WorkingKey; // should be private
-    private uint C0, C1, C2, C3;
-
-    private const int BLOCK_SIZE = 16;
-
-    /**
-    * default constructor - 128 bit block size.
-    */
+    #region Init
     public AesEngine()
     {
+      WorkingKey = new uint[numberOfWorkingKeys][];
+      for (int i = 0; i < numberOfWorkingKeys; ++i)
+      {
+        WorkingKey[i] = new uint[numberOfUintsPerKey];
+      }
     }
+    #endregion
 
-    /**
-    * initialise an AES cipher.
-    *
-    * @param parameters the parameters required to set up the cipher.
-    * @exception ArgumentException if the parameters argument is
-    * inappropriate.
-    */
+    #region Public API
     public void Init(
-        byte[] key)
+      byte[] key)
     {
       Debug.Assert(key != null);
 
-      WorkingKey = GenerateWorkingKey(key);
+      GenerateWorkingKey(key);
     }
 
-    public string AlgorithmName
-    {
-      get { return "AES"; }
-    }
-
-    public bool IsPartialBlockOkay
-    {
-      get { return false; }
-    }
-
-    public int GetBlockSize()
-    {
-      return BLOCK_SIZE;
-    }
-
-    public int ProcessBlock(
+    public void ProcessBlock(
         byte[] input,
         int inOff,
         byte[] output,
         int outOff)
     {
-      if (WorkingKey == null)
-        throw new InvalidOperationException("AES engine not initialised");
-
-      Check.DataLength(input, inOff, 16, "input buffer too short");
-      Check.OutputLength(output, outOff, 16, "output buffer too short");
+      Debug.Assert(WorkingKey != null);
+      Debug.Assert(input.Length >= 16 + inOff);
+      Debug.Assert(output.Length >= 16 + outOff);
 
       UnPackBlock(input, inOff);
-      DoRounds(output, outOff);
-
-      return BLOCK_SIZE;
-    }
-
-
-    public void DoRounds(byte[] input, int inOff, uint[] key, byte[] output, int outOff)
-    {
-      UnPackBlock(input, inOff);
-
-      EncryptBlock(key);
-
-      PackBlock(output, outOff);
-    }
-
-    public void DoRounds(byte[] output, int outOff)
-    {
       for (int key = 0; key < WorkingKey.Length; key++)
       {
         EncryptBlock(WorkingKey[key]);
       }
-
       PackBlock(output, outOff);
     }
 
-    public void Reset()
+    /// <summary>
+    /// This uses the key provided instead of the 10 internal working keys generated on Init.
+    /// </summary>
+    public void Encrypt(
+      byte[] input,
+      int inOff,
+      uint[] key,
+      byte[] output,
+      int outOff)
     {
+      UnPackBlock(input, inOff);
+      EncryptBlock(key);
+      PackBlock(output, outOff);
     }
+    #endregion
 
-    private void UnPackBlock(
-        byte[] bytes,
-        int off)
+    #region Helpers
+    void UnPackBlock(
+      byte[] bytes,
+      int off)
     {
       C0 = Pack.LE_To_UInt32(bytes, off);
       C1 = Pack.LE_To_UInt32(bytes, off + 4);
@@ -508,9 +318,9 @@ namespace Org.BouncyCastle.Crypto.Engines
       C3 = Pack.LE_To_UInt32(bytes, off + 12);
     }
 
-    private void PackBlock(
-        byte[] bytes,
-        int off)
+    void PackBlock(
+      byte[] bytes,
+      int off)
     {
       Pack.UInt32_To_LE(C0, bytes, off);
       Pack.UInt32_To_LE(C1, bytes, off + 4);
@@ -518,7 +328,7 @@ namespace Org.BouncyCastle.Crypto.Engines
       Pack.UInt32_To_LE(C3, bytes, off + 12);
     }
 
-    public void EncryptBlock(
+    void EncryptBlock(
       uint[] kw)
     {
       uint t0 = C0 ^ kw[0];
@@ -537,42 +347,181 @@ namespace Org.BouncyCastle.Crypto.Engines
       C0 = tempC0;
     }
 
-    private void DecryptBlock(uint[][] KW)
+    static uint Shift(
+      uint r,
+      int shift)
     {
-      uint[] kw = KW[ROUNDS];
-      uint t0 = this.C0 ^ kw[0];
-      uint t1 = this.C1 ^ kw[1];
-      uint t2 = this.C2 ^ kw[2];
-
-      uint r0, r1, r2, r3 = this.C3 ^ kw[3];
-      int r = ROUNDS - 1;
-      while (r > 1)
-      {
-        kw = KW[r--];
-        r0 = Tinv0[t0 & 255] ^ Shift(Tinv0[(r3 >> 8) & 255], 24) ^ Shift(Tinv0[(t2 >> 16) & 255], 16) ^ Shift(Tinv0[(t1 >> 24) & 255], 8) ^ kw[0];
-        r1 = Tinv0[t1 & 255] ^ Shift(Tinv0[(t0 >> 8) & 255], 24) ^ Shift(Tinv0[(r3 >> 16) & 255], 16) ^ Shift(Tinv0[(t2 >> 24) & 255], 8) ^ kw[1];
-        r2 = Tinv0[t2 & 255] ^ Shift(Tinv0[(t1 >> 8) & 255], 24) ^ Shift(Tinv0[(t0 >> 16) & 255], 16) ^ Shift(Tinv0[(r3 >> 24) & 255], 8) ^ kw[2];
-        r3 = Tinv0[r3 & 255] ^ Shift(Tinv0[(t2 >> 8) & 255], 24) ^ Shift(Tinv0[(t1 >> 16) & 255], 16) ^ Shift(Tinv0[(t0 >> 24) & 255], 8) ^ kw[3];
-        kw = KW[r--];
-        t0 = Tinv0[r0 & 255] ^ Shift(Tinv0[(r3 >> 8) & 255], 24) ^ Shift(Tinv0[(r2 >> 16) & 255], 16) ^ Shift(Tinv0[(r1 >> 24) & 255], 8) ^ kw[0];
-        t1 = Tinv0[r1 & 255] ^ Shift(Tinv0[(r0 >> 8) & 255], 24) ^ Shift(Tinv0[(r3 >> 16) & 255], 16) ^ Shift(Tinv0[(r2 >> 24) & 255], 8) ^ kw[1];
-        t2 = Tinv0[r2 & 255] ^ Shift(Tinv0[(r1 >> 8) & 255], 24) ^ Shift(Tinv0[(r0 >> 16) & 255], 16) ^ Shift(Tinv0[(r3 >> 24) & 255], 8) ^ kw[2];
-        r3 = Tinv0[r3 & 255] ^ Shift(Tinv0[(r2 >> 8) & 255], 24) ^ Shift(Tinv0[(r1 >> 16) & 255], 16) ^ Shift(Tinv0[(r0 >> 24) & 255], 8) ^ kw[3];
-      }
-
-      kw = KW[1];
-      r0 = Tinv0[t0 & 255] ^ Shift(Tinv0[(r3 >> 8) & 255], 24) ^ Shift(Tinv0[(t2 >> 16) & 255], 16) ^ Shift(Tinv0[(t1 >> 24) & 255], 8) ^ kw[0];
-      r1 = Tinv0[t1 & 255] ^ Shift(Tinv0[(t0 >> 8) & 255], 24) ^ Shift(Tinv0[(r3 >> 16) & 255], 16) ^ Shift(Tinv0[(t2 >> 24) & 255], 8) ^ kw[1];
-      r2 = Tinv0[t2 & 255] ^ Shift(Tinv0[(t1 >> 8) & 255], 24) ^ Shift(Tinv0[(t0 >> 16) & 255], 16) ^ Shift(Tinv0[(r3 >> 24) & 255], 8) ^ kw[2];
-      r3 = Tinv0[r3 & 255] ^ Shift(Tinv0[(t2 >> 8) & 255], 24) ^ Shift(Tinv0[(t1 >> 16) & 255], 16) ^ Shift(Tinv0[(t0 >> 24) & 255], 8) ^ kw[3];
-
-      // the final round's table is a simple function of Si so we don't use a whole other four tables for it
-
-      kw = KW[0];
-      this.C0 = (uint)Si[r0 & 255] ^ (((uint)Si[(r3 >> 8) & 255]) << 8) ^ (((uint)Si[(r2 >> 16) & 255]) << 16) ^ (((uint)Si[(r1 >> 24) & 255]) << 24) ^ kw[0];
-      this.C1 = (uint)Si[r1 & 255] ^ (((uint)Si[(r0 >> 8) & 255]) << 8) ^ (((uint)Si[(r3 >> 16) & 255]) << 16) ^ (((uint)Si[(r2 >> 24) & 255]) << 24) ^ kw[1];
-      this.C2 = (uint)Si[r2 & 255] ^ (((uint)Si[(r1 >> 8) & 255]) << 8) ^ (((uint)Si[(r0 >> 16) & 255]) << 16) ^ (((uint)Si[(r3 >> 24) & 255]) << 24) ^ kw[2];
-      this.C3 = (uint)Si[r3 & 255] ^ (((uint)Si[(r2 >> 8) & 255]) << 8) ^ (((uint)Si[(r1 >> 16) & 255]) << 16) ^ (((uint)Si[(r0 >> 24) & 255]) << 24) ^ kw[3];
+      return (r >> shift) | (r << (32 - shift));
     }
+
+    static uint FFmulX(
+      uint x)
+    {
+      return ((x & m2) << 1) ^ (((x & m1) >> 7) * m3);
+    }
+
+    static uint FFmulX2(
+      uint x)
+    {
+      uint t0 = (x & m5) << 2;
+      uint t1 = (x & m4);
+      t1 ^= (t1 >> 1);
+      return t0 ^ (t1 >> 2) ^ (t1 >> 5);
+    }
+
+    /*
+    The following defines provide alternative definitions of FFmulX that might
+    give improved performance if a fast 32-bit multiply is not available.
+
+    private int FFmulX(int x) { int u = x & m1; u |= (u >> 1); return ((x & m2) << 1) ^ ((u >>> 3) | (u >>> 6)); }
+    private static final int  m4 = 0x1b1b1b1b;
+    private int FFmulX(int x) { int u = x & m1; return ((x & m2) << 1) ^ ((u - (u >>> 7)) & m4); }
+
+    */
+
+    static uint Inv_Mcol(
+      uint x)
+    {
+      uint t0, t1;
+      t0 = x;
+      t1 = t0 ^ Shift(t0, 8);
+      t0 ^= FFmulX(t1);
+      t1 ^= FFmulX2(t0);
+      t0 ^= t1 ^ Shift(t1, 16);
+      return t0;
+    }
+
+    static uint SubWord(
+      uint x)
+    {
+      return (uint)S[x & 255]
+        | (((uint)S[(x >> 8) & 255]) << 8)
+        | (((uint)S[(x >> 16) & 255]) << 16)
+        | (((uint)S[(x >> 24) & 255]) << 24);
+    }
+
+    /**
+    * Calculate the necessary round keys
+    * The number of calculations depends on key size and block size
+    * AES specified a fixed block size of 128 bits and key sizes 128/192/256 bits
+    * This code is written assuming those are the only possible values
+    */
+    void GenerateWorkingKey(
+      byte[] key)
+    {
+      int keyLen = key.Length;
+
+      Debug.Assert(keyLen >= 16 && keyLen <= 32 && (keyLen & 7) == 0);
+
+      int KC;
+
+      KC = keyLen >> 2;
+      this.ROUNDS = numberOfWorkingKeys;
+      switch (KC)
+      {
+        case 4:
+          {
+            uint t0 = Pack.LE_To_UInt32(key, 0); WorkingKey[0][0] = t0;
+            uint t1 = Pack.LE_To_UInt32(key, 4); WorkingKey[0][1] = t1;
+            uint t2 = Pack.LE_To_UInt32(key, 8); WorkingKey[0][2] = t2;
+            uint t3 = Pack.LE_To_UInt32(key, 12); WorkingKey[0][3] = t3;
+
+            for (int i = 1; i <= 10; ++i)
+            {
+              uint u = SubWord(Shift(t3, 8)) ^ rcon[i - 1];
+              t0 ^= u; WorkingKey[i][0] = t0;
+              t1 ^= t0; WorkingKey[i][1] = t1;
+              t2 ^= t1; WorkingKey[i][2] = t2;
+              t3 ^= t2; WorkingKey[i][3] = t3;
+            }
+
+            break;
+          }
+        case 6:
+          {
+            uint t0 = Pack.LE_To_UInt32(key, 0); WorkingKey[0][0] = t0;
+            uint t1 = Pack.LE_To_UInt32(key, 4); WorkingKey[0][1] = t1;
+            uint t2 = Pack.LE_To_UInt32(key, 8); WorkingKey[0][2] = t2;
+            uint t3 = Pack.LE_To_UInt32(key, 12); WorkingKey[0][3] = t3;
+            uint t4 = Pack.LE_To_UInt32(key, 16); WorkingKey[1][0] = t4;
+            uint t5 = Pack.LE_To_UInt32(key, 20); WorkingKey[1][1] = t5;
+
+            uint rcon = 1;
+            uint u = SubWord(Shift(t5, 8)) ^ rcon; rcon <<= 1;
+            t0 ^= u; WorkingKey[1][2] = t0;
+            t1 ^= t0; WorkingKey[1][3] = t1;
+            t2 ^= t1; WorkingKey[2][0] = t2;
+            t3 ^= t2; WorkingKey[2][1] = t3;
+            t4 ^= t3; WorkingKey[2][2] = t4;
+            t5 ^= t4; WorkingKey[2][3] = t5;
+
+            for (int i = 3; i < 12; i += 3)
+            {
+              u = SubWord(Shift(t5, 8)) ^ rcon; rcon <<= 1;
+              t0 ^= u; WorkingKey[i][0] = t0;
+              t1 ^= t0; WorkingKey[i][1] = t1;
+              t2 ^= t1; WorkingKey[i][2] = t2;
+              t3 ^= t2; WorkingKey[i][3] = t3;
+              t4 ^= t3; WorkingKey[i + 1][0] = t4;
+              t5 ^= t4; WorkingKey[i + 1][1] = t5;
+              u = SubWord(Shift(t5, 8)) ^ rcon; rcon <<= 1;
+              t0 ^= u; WorkingKey[i + 1][2] = t0;
+              t1 ^= t0; WorkingKey[i + 1][3] = t1;
+              t2 ^= t1; WorkingKey[i + 2][0] = t2;
+              t3 ^= t2; WorkingKey[i + 2][1] = t3;
+              t4 ^= t3; WorkingKey[i + 2][2] = t4;
+              t5 ^= t4; WorkingKey[i + 2][3] = t5;
+            }
+
+            u = SubWord(Shift(t5, 8)) ^ rcon;
+            t0 ^= u; WorkingKey[12][0] = t0;
+            t1 ^= t0; WorkingKey[12][1] = t1;
+            t2 ^= t1; WorkingKey[12][2] = t2;
+            t3 ^= t2; WorkingKey[12][3] = t3;
+
+            break;
+          }
+        case 8:
+          {
+            uint t0 = Pack.LE_To_UInt32(key, 0); WorkingKey[0][0] = t0;
+            uint t1 = Pack.LE_To_UInt32(key, 4); WorkingKey[0][1] = t1;
+            uint t2 = Pack.LE_To_UInt32(key, 8); WorkingKey[0][2] = t2;
+            uint t3 = Pack.LE_To_UInt32(key, 12); WorkingKey[0][3] = t3;
+            uint t4 = Pack.LE_To_UInt32(key, 16); WorkingKey[1][0] = t4;
+            uint t5 = Pack.LE_To_UInt32(key, 20); WorkingKey[1][1] = t5;
+            uint t6 = Pack.LE_To_UInt32(key, 24); WorkingKey[1][2] = t6;
+            uint t7 = Pack.LE_To_UInt32(key, 28); WorkingKey[1][3] = t7;
+
+            uint u, rcon = 1;
+
+            for (int i = 2; i < 10; i += 2) // was i < 14
+            {
+              u = SubWord(Shift(t7, 8)) ^ rcon; rcon <<= 1;
+              t0 ^= u; WorkingKey[i][0] = t0;
+              t1 ^= t0; WorkingKey[i][1] = t1;
+              t2 ^= t1; WorkingKey[i][2] = t2;
+              t3 ^= t2; WorkingKey[i][3] = t3;
+              u = SubWord(t3);
+              t4 ^= u; WorkingKey[i + 1][0] = t4;
+              t5 ^= t4; WorkingKey[i + 1][1] = t5;
+              t6 ^= t5; WorkingKey[i + 1][2] = t6;
+              t7 ^= t6; WorkingKey[i + 1][3] = t7;
+            }
+
+            //u = SubWord(Shift(t7, 8)) ^ rcon;
+            //t0 ^= u; W[14][0] = t0;
+            //t1 ^= t0; W[14][1] = t1;
+            //t2 ^= t1; W[14][2] = t2;
+            //t3 ^= t2; W[14][3] = t3;
+
+            break;
+          }
+        default:
+          {
+            throw new InvalidOperationException("Should never get here");
+          }
+      }
+    }
+    #endregion
   }
 }

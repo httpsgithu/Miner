@@ -465,18 +465,13 @@ namespace HD.Tests
       while (true) // TODO move the loop into code not test
       {
         night.Step2_IncrementNonce();
-        night.Step3_KeccakHash();
-        night.Step4_InitAesKey();
-        night.Step5_ExtractBlocksToEncrypt();
-        //night.Step6_EncryptBlocks();
-        //night.Step7_CopyBlocksToScratchpad();
-        night.Step7_LoopScratchpad();
-        night.ProcessStep9();
+        night.Step3_HashAndExtractBlocks();
+        night.Step4_EncryptBlocksCreateScratchpad();
+        night.Step5_InitHardLoopAAndB();
         night.ProcessStep10();
         night.ProcessStep11();
         night.ProcessStep12();
         night.ProcessStep13();
-        night.ProcessStep14();
         night.Step15_FinalHash();
 
         if (night.ctx.piHashVal < night.iTarget)
@@ -502,13 +497,9 @@ namespace HD.Tests
       CryptoNight night = new CryptoNight();
       night.Process(newJob.Result.Job);
       night.Step2_IncrementNonce();
-      night.Step3_KeccakHash();
-      night.Step4_InitAesKey();
-      night.Step5_ExtractBlocksToEncrypt();
-      //night.Step6_EncryptBlocks();
-      //night.Step7_CopyBlocksToScratchpad();
-      night.Step7_LoopScratchpad();
-      night.ProcessStep9();
+      night.Step3_HashAndExtractBlocks();
+      night.Step4_EncryptBlocksCreateScratchpad();
+      night.Step5_InitHardLoopAAndB();
       night.ProcessStep10();
 
       Assert.IsTrue(night.ctx.scratchpad[0] == 251);
@@ -529,18 +520,13 @@ namespace HD.Tests
       CryptoNight night = new CryptoNight();
       night.Process(newJob.Result.Job);
       night.Step2_IncrementNonce();
-      night.Step3_KeccakHash();
-      night.Step4_InitAesKey();
-      night.Step5_ExtractBlocksToEncrypt();
-      //night.Step6_EncryptBlocks();
-      //night.Step7_CopyBlocksToScratchpad();
-      night.Step7_LoopScratchpad();
-      night.ProcessStep9();
+      night.Step3_HashAndExtractBlocks();
+      night.Step4_EncryptBlocksCreateScratchpad();
+      night.Step5_InitHardLoopAAndB();
       night.ProcessStep10();
       night.ProcessStep11();
       night.ProcessStep12();
       night.ProcessStep13();
-      night.ProcessStep14();
       night.Step15_FinalHash();
 
       Assert.IsTrue(night.ctx.bResult[0] == 118);
@@ -551,37 +537,7 @@ namespace HD.Tests
 
 
 
-
-
-    [TestMethod()]
-    public void Step14()
-    {
-
-      NewJob newJob = JsonConvert.DeserializeObject<NewJob>(@"
-
-{""jsonrpc"":""2.0"",""id"":1,""error"":null,""result"":{""id"":""770893074783710"",""status"":""OK"",""job"":{""job_id"":""000000229377aa06"",""blob"":""0606889bcdcf056eefdfd76b7bf3387b5477f5d6e88f4daf315ee8623f887b90bd257e3ce584c4000000b1271ca0670f14b0586c35a92785256980598d1913acd27e901f4638e2edcf553406"",""target"":""b7d10000""}}}
-
-");
-      CryptoNight night = new CryptoNight();
-      night.Process(newJob.Result.Job);
-      night.Step2_IncrementNonce();
-      night.Step3_KeccakHash();
-      night.Step4_InitAesKey();
-      night.Step5_ExtractBlocksToEncrypt();
-      //night.Step6_EncryptBlocks();
-      //night.Step7_CopyBlocksToScratchpad();
-      night.Step7_LoopScratchpad();
-      night.ProcessStep9();
-      night.ProcessStep10();
-      night.ProcessStep11();
-      night.ProcessStep12();
-      night.ProcessStep13();
-      night.ProcessStep14();
-
-      Assert.IsTrue(night.hashID == 0);
-    }
-
-
+    
 
 
 
@@ -597,13 +553,9 @@ namespace HD.Tests
       CryptoNight night = new CryptoNight();
       night.Process(newJob.Result.Job);
       night.Step2_IncrementNonce();
-      night.Step3_KeccakHash();
-      night.Step4_InitAesKey();
-      night.Step5_ExtractBlocksToEncrypt();
-      //night.Step6_EncryptBlocks();
-      //night.Step7_CopyBlocksToScratchpad();
-      night.Step7_LoopScratchpad();
-      night.ProcessStep9();
+      night.Step3_HashAndExtractBlocks();
+      night.Step4_EncryptBlocksCreateScratchpad();
+      night.Step5_InitHardLoopAAndB();
       night.ProcessStep10();
       night.ProcessStep11();
       night.ProcessStep12();
@@ -633,13 +585,9 @@ namespace HD.Tests
       CryptoNight night = new CryptoNight();
       night.Process(newJob.Result.Job);
       night.Step2_IncrementNonce();
-      night.Step3_KeccakHash();
-      night.Step4_InitAesKey();
-      night.Step5_ExtractBlocksToEncrypt();
-      //night.Step6_EncryptBlocks();
-      //night.Step7_CopyBlocksToScratchpad();
-      night.Step7_LoopScratchpad();
-      night.ProcessStep9();
+      night.Step3_HashAndExtractBlocks();
+      night.Step4_EncryptBlocksCreateScratchpad();
+      night.Step5_InitHardLoopAAndB();
       night.ProcessStep10();
       night.ProcessStep11();
       night.ProcessStep12();
@@ -665,13 +613,9 @@ namespace HD.Tests
       CryptoNight night = new CryptoNight();
       night.Process(newJob.Result.Job);
       night.Step2_IncrementNonce();
-      night.Step3_KeccakHash();
-      night.Step4_InitAesKey();
-      night.Step5_ExtractBlocksToEncrypt();
-      //night.Step6_EncryptBlocks();
-      //night.Step7_CopyBlocksToScratchpad();
-      night.Step7_LoopScratchpad();
-      night.ProcessStep9();
+      night.Step3_HashAndExtractBlocks();
+      night.Step4_EncryptBlocksCreateScratchpad();
+      night.Step5_InitHardLoopAAndB();
       night.ProcessStep10();
       night.ProcessStep11();
 
@@ -695,13 +639,9 @@ namespace HD.Tests
       CryptoNight night = new CryptoNight();
       night.Process(newJob.Result.Job);
       night.Step2_IncrementNonce();
-      night.Step3_KeccakHash();
-      night.Step4_InitAesKey();
-      night.Step5_ExtractBlocksToEncrypt();
-      //night.Step6_EncryptBlocks();
-      //night.Step7_CopyBlocksToScratchpad();
-      night.Step7_LoopScratchpad();
-      night.ProcessStep9();
+      night.Step3_HashAndExtractBlocks();
+      night.Step4_EncryptBlocksCreateScratchpad();
+      night.Step5_InitHardLoopAAndB();
       night.ProcessStep10();
 
       Assert.IsTrue(night.ctx.scratchpad[0] == 251);
@@ -724,13 +664,9 @@ namespace HD.Tests
       CryptoNight night = new CryptoNight();
       night.Process(newJob.Result.Job);
       night.Step2_IncrementNonce();
-      night.Step3_KeccakHash();
-      night.Step4_InitAesKey();
-      night.Step5_ExtractBlocksToEncrypt();
-      //night.Step6_EncryptBlocks();
-      //night.Step7_CopyBlocksToScratchpad();
-      night.Step7_LoopScratchpad();
-      night.ProcessStep9();
+      night.Step3_HashAndExtractBlocks();
+      night.Step4_EncryptBlocksCreateScratchpad();
+      night.Step5_InitHardLoopAAndB();
 
       Assert.IsTrue(night.ctx.memoryHardLoop_A[0] == 132);
       Assert.IsTrue(night.ctx.memoryHardLoop_A[1] == 94);
@@ -755,12 +691,8 @@ namespace HD.Tests
       CryptoNight night = new CryptoNight();
       night.Process(newJob.Result.Job);
       night.Step2_IncrementNonce();
-      night.Step3_KeccakHash();
-      night.Step4_InitAesKey();
-      night.Step5_ExtractBlocksToEncrypt();
-      //night.Step6_EncryptBlocks();
-      //night.Step7_CopyBlocksToScratchpad();
-      night.Step7_LoopScratchpad();
+      night.Step3_HashAndExtractBlocks();
+      night.Step4_EncryptBlocksCreateScratchpad();
 
 
       Assert.IsTrue(night.ctx.scratchpad[0] == 205);
@@ -779,8 +711,7 @@ namespace HD.Tests
       CryptoNight night = new CryptoNight();
       night.Process(newJob.Result.Job);
       night.Step2_IncrementNonce();
-      night.Step3_KeccakHash();
-      night.Step4_InitAesKey();
+      night.Step3_HashAndExtractBlocks();
 
       Assert.IsTrue(night.ctx.aes.WorkingKey[0][0] == 620964217);
       Assert.IsTrue(night.ctx.aes.WorkingKey[1][0] == 46193916);
@@ -794,9 +725,7 @@ namespace HD.Tests
       CryptoNight night = new CryptoNight();
       night.Process(newJob.Result.Job);
       night.Step2_IncrementNonce();
-      night.Step3_KeccakHash();
-      night.Step4_InitAesKey();
-      night.Step5_ExtractBlocksToEncrypt();
+      night.Step3_HashAndExtractBlocks();
 
       Assert.IsTrue(night.ctx.blocks[0][0] == 73);
       Assert.IsTrue(night.ctx.blocks[0][1] == 255);
@@ -804,7 +733,6 @@ namespace HD.Tests
       Assert.IsTrue(night.ctx.blocks[5][2] == 209);
       Assert.IsTrue(night.ctx.blocks[5][9] == 80);
       Assert.IsTrue(night.ctx.blocks[7][15] == 76);
-      Assert.IsTrue(night.ctx.blocks.Length == 8);
     }
 
     /// <summary>
@@ -848,7 +776,7 @@ namespace HD.Tests
       Assert.IsTrue(night.bWorkBlob[39] == 1);
       Assert.IsTrue(night.bWorkBlob[42] == 106);
 
-      night.Step3_KeccakHash();
+      night.Step3_HashAndExtractBlocks();
 
       Assert.IsTrue(night.ctx.keccakHash[0] == 79);
       Assert.IsTrue(night.ctx.keccakHash[10] == 11);
