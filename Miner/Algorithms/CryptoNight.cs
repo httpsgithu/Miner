@@ -3,80 +3,34 @@ using System.Diagnostics;
 using DotNetStratumMiner;
 using Org.BouncyCastle.Crypto.Engines;
 using BigMath;
-using HashLib;
 using Newtonsoft.Json;
-using System.Text;
-using System.Security.Cryptography;
+using CryptoHash;
 
 namespace HD
 {
+  /// <summary>
+  /// I believe this is the only information which differs per thread.
+  /// 
+  /// TODO perf: reuse the arrays
+  /// </summary>
   public class cryptonight_ctx
   {
     public readonly byte[] keccakHash = new byte[200]; 
     public readonly byte[] scratchpad = new byte[2097152]; 
   }
 
-  // {"method":"submit","params":{"id":"421970933313569","job_id":"000000228b11006d","nonce":"0508047b","result":"edeabc3dd5ee2bb84fe36f107f302982fa3da606ece6db32ca9bf77820350000"},"id":1}
-  public class FinalResultJson
-  {
-    public string method = "submit";
-    public FinalResultJsonParams @params { get; set; }
-    public long id { get; set; }
-
-    public FinalResultJson(
-      long id,
-      string jobId,
-      uint nonce,
-      byte[] result)
-    {
-      this.id = id;
-      this.@params = new FinalResultJsonParams(jobId, nonce, result);
-    }
-  }
-
-  public class FinalResultJsonParams
-  {
-    public string id = "421970933313569"; // TODO where does this number come from?
-    public string job_id { get; set; }
-    public string nonce { get; set; }
-    public string result { get; set; }
-
-    public FinalResultJsonParams(
-      string job_id,
-      uint nonce,
-      byte[] result)
-    {
-      this.job_id = job_id;
-      this.nonce = nonce.ToString("x");
-      this.result = ByteArrayToString(result);
-    }
-
-    public static string ByteArrayToString(byte[] ba)
-    {
-      StringBuilder hex = new StringBuilder(ba.Length * 2);
-      foreach (byte b in ba)
-        hex.AppendFormat("{0:x2}", b);
-      return hex.ToString();
-    }
-  }
-
-
-  public class job_result
+  public class SomethingSomethingWIPResultStuff
   {
     public byte[] bResult;
     public string sJobID;
     public uint iNonce;
 
-    public job_result(
+    public SomethingSomethingWIPResultStuff(
       string sJobID)
     {
-      var bResult = new byte[32]; // TODO where does this come from
-      Debug.Assert(bResult.Length == 32);
-
-      this.bResult = bResult;
       this.sJobID = sJobID;
     }
-  };
+  }
 
   public class CryptoNight
   {
@@ -85,7 +39,7 @@ namespace HD
     const int iResumeCnt = 0; // What's this for?
 
     public byte[] bWorkBlob = new byte[112];
-    public job_result result;
+    public SomethingSomethingWIPResultStuff result;
     public cryptonight_ctx ctx;
 
     public int iWorkSize;
@@ -148,7 +102,7 @@ namespace HD
       iJobDiff = t64_to_diff(iTarget);
 
       iCount = 0;
-      result = new job_result(
+      result = new SomethingSomethingWIPResultStuff(
         newJob.Job_Id);
       result.iNonce = calc_nicehash_nonce(piNonce, iResumeCnt);
       if(nonceOverride != null)
@@ -170,7 +124,7 @@ namespace HD
     public string GetResultJson()
     {
       // TODO I think the Id is the original request ID...
-      FinalResultJson json = new FinalResultJson(1, newJob.Job_Id, result.iNonce, result.bResult);
+      Algorithms.NiceHashResultJson json = new Algorithms.NiceHashResultJson(1, newJob.Job_Id, result.iNonce, result.bResult);
 
       return JsonConvert.SerializeObject(json);
     }
@@ -471,67 +425,37 @@ namespace HD
     }
     public void ProcessStep15()
     {
+      Digest hash;
       switch (hashID)
       {
         case 0:
           {
-            BlakeSharp.Blake256 hash = new BlakeSharp.Blake256();
-            result.bResult = hash.ComputeHash(ctx.keccakHash);
-
-            //Blake hash2 = new Blake();
-            //byte[] otherResuls = hash2.Hash(ctx.keccakHash);
-
-            //// This does not work...
-            //IHash hash2 = HashLib.HashFactory.Crypto.SHA3.CreateBlake256();
-            //byte[] other = hash2.ComputeBytes(ctx.keccakHash).GetBytes();
-
+            hash = new BLAKE256();
             break;
           }
         case 1:
           {
-            // TODO test this case
-            result.bResult = DoHash1(ctx.keccakHash);
+            hash = new Groestl256();
             break;
           }
         case 2:
           {
-            // TODO test this case
-            IHash hash = HashLib.HashFactory.Crypto.SHA3.CreateJH256();
-            result.bResult = hash.ComputeBytes(ctx.keccakHash).GetBytes();
+            hash = new JH256();
             break;
           }
         case 3:
           {
-            // TODO test this case
-            IHash hash = HashLib.HashFactory.Crypto.SHA3.CreateSkein256();
-            result.bResult = hash.ComputeBytes(ctx.keccakHash).GetBytes();
+            hash = new Skein256();
             break;
           }
+        default:
+          Debug.Fail("Missing hash?!");
+          hash = null;
+          break;
       }
-    }
 
-    public static byte[] DoHash1(byte[] dataToHash)
-    {
-
-      Groestl256 hash = new Groestl256();
-      hash.update(dataToHash);
-      return hash.digest();
-
-
-      //return null;
-      // TODO!
-      //Groestl256 hash = new Groestl256();
-      //return hash.ComputeHash(dataToHash);
-
-      //IHash hash = HashLib.HashFactory.Crypto.SHA3.CreateGroestl256();
-      //return hash.ComputeBytes(dataToHash).GetBytes();
-
-      //IHash hash = HashFactory.Crypto.SHA3.CreateGroestl256();
-      //HashAlgorithm hashAlgo = HashFactory.Wrappers.HashToHashAlgorithm(hash);
-      //// Now hashAlgo can be used the same as any .NET HashAlgorithm, e.g.:
-
-      //// Create byte input from string encoded as UTF-8
-      //return hashAlgo.ComputeHash(dataToHash);
+      hash.update(ctx.keccakHash);
+      result.bResult = hash.digest();
     }
 
     byte hf_hex2bin(byte c, ref bool err)

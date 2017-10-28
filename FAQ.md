@@ -8,6 +8,10 @@ The Hardly Difficult Miner is an application which will mine blockchain while yo
 
 Streamers, like myself, depend on generous support from viewers in order to make a living. This program offers just another way of helping your favorite streamers make it.  It may be particularly compelling for those that are not able to financially support today, this is like watching ads for bits... but it simply runs in the background.
 
+<hr></details><details><summary>Is this legal / stealing?</summary>
+
+Yes it's legal, no it's not stealing.  Mining is the process of verifying and securing transactions.  Built into this process is a reward to miners for doing that work.
+
 <hr></details><details><summary>What is Blockchain?</summary>
 
 A blockchain is a trusted history.  A set of events, commonly transactions, are grouped together into a block.  That block is secured by miners and attached to the previous block, forming a chain all the way back to the very first transaction.
@@ -28,15 +32,6 @@ This mining application uses just a single algorithm at the moment.  It will con
 
 <hr></details>
 
-# More About Cryptocurrency
-
-<details><summary>Is Bitcoin Private?</summary>
-
-No.  Bitcoin is a history of transactions.  In order to confirm someone's account standing, you can walk the history to make sure they have the money they claim.  This means that the history is open for anyone to view.  
-
-There are cryptocurrencies looking to create more private options.
-
-<hr></details>
 
 # Profitability
 
@@ -72,9 +67,9 @@ If that same machine ran 100%, it would be about $0.33 / day or $9.90 / month.  
 
 # About NiceHash
 
-<details><summary>Why Bitcoin specifically, why not mine other currencies?</summary>
+<details><summary>Are we mining Bitcoin?</summary>
 
-We are.  NiceHash pays in Bitcoin for the work completed, but that work may include mining any blockchain (e.g. Bitcoin or zCash).
+No.  We are mining cryptonote currencies such as Monero.  NiceHash pays in Bitcoin for the work completed, but that work may include mining any blockchain.
 
 <hr></details><details><summary>Is This a "Pool"?</summary>
 

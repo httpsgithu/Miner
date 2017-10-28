@@ -59,28 +59,26 @@
     <Compile Include="Algorithms\Data\BitInt256.cs" />
     <Compile Include="Algorithms\Data\Crc32.cs" />
     <Compile Include="Algorithms\Data\ExtendedBitConverter.cs" />
+    <Compile Include="Algorithms\Data\Json\NiceHashResultJson.cs" />
+    <Compile Include="Algorithms\Data\Json\NiceHashResultJsonParams.cs" />
     <Compile Include="Algorithms\Data\MathUtils.cs" />
     <Compile Include="Algorithms\Data\MethodLogin.cs" />
     <Compile Include="Algorithms\Data\NewJob.cs" />
     <Compile Include="Algorithms\MiningAlgorithm.cs" />
     <Compile Include="Algorithms\NewFolder1\AesEngine.cs" />
     <Compile Include="Algorithms\NewFolder1\Arrays.cs" />
-    <Compile Include="Algorithms\NewFolder1\Blake256.cs" />
     <Compile Include="Algorithms\NewFolder1\Check.cs" />
     <Compile Include="Algorithms\NewFolder1\CryptoException.cs" />
     <Compile Include="Algorithms\NewFolder1\CryptoHelpers.cs" />
     <Compile Include="Algorithms\NewFolder1\DataLengthException.cs" />
-    <Compile Include="Algorithms\NewFolder1\Sphlib\DigestEngine.cs" />
-    <Compile Include="Algorithms\NewFolder1\Sphlib\Groestl256.cs" />
-    <Compile Include="Algorithms\NewFolder1\Sphlib\GroestlSmallCore.cs" />
     <Compile Include="Algorithms\NewFolder1\ICipherParameters.cs" />
     <Compile Include="Algorithms\NewFolder1\KeccakDigest.cs" />
     <Compile Include="Algorithms\NewFolder1\OutputLengthException.cs" />
     <Compile Include="Algorithms\NewFolder1\Pack.cs" />
-    <Compile Include="Algorithms\NewFolder1\Sphlib\Digest.cs" />
     <Compile Include="Algorithms\Utilities.cs" />
     <Compile Include="Data\Beneficiaries\Beneficiary.cs" />
     <Compile Include="Data\Beneficiaries\Beneficiaries.cs" />
+    <Compile Include="Utils\ByteArrayExtensions.cs" />
     <Compile Include="Utils\Windows\FileObserver.cs" />
     <Compile Include="Utils\Windows\HardwareMonitor.cs" />
     <Compile Include="Utils\Windows\IdleChecker.cs" />
@@ -100,6 +98,12 @@
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Sphlib\Sphlib.csproj">
+      <Project>{fd17900c-d573-4122-a8c0-cfa3a815d99c}</Project>
+      <Name>Sphlib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
