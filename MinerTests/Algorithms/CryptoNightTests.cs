@@ -447,6 +447,7 @@ namespace HD.Tests
       catch
       {
         result = JsonConvert.DeserializeObject<NewBlock>(jsonIn).@params;
+
       }
       CryptoNight night = new CryptoNight();
       night.Process(result, nonce);
@@ -468,7 +469,7 @@ namespace HD.Tests
         night.ProcessStep14();
         night.ProcessStep15();
 
-        if (night.piHashVal < night.iTarget)
+        if (night.ctx.piHashVal < night.iTarget)
         {
           break;
         }
@@ -664,9 +665,9 @@ namespace HD.Tests
       night.ProcessStep10();
       night.ProcessStep11();
 
-      Assert.IsTrue(night.aes.WorkingKey[0][0] == 448915449);
-      Assert.IsTrue(night.aes.WorkingKey[0][3] == 1450329266);
-      Assert.IsTrue(night.aes.WorkingKey[9][3] == 4003620890);
+      Assert.IsTrue(night.ctx.aes.WorkingKey[0][0] == 448915449);
+      Assert.IsTrue(night.ctx.aes.WorkingKey[0][3] == 1450329266);
+      Assert.IsTrue(night.ctx.aes.WorkingKey[9][3] == 4003620890);
     }
 
 
@@ -721,14 +722,14 @@ namespace HD.Tests
       night.ProcessStep8();
       night.ProcessStep9();
 
-      Assert.IsTrue(night.a[0] == 132);
-      Assert.IsTrue(night.a[1] == 94);
-      Assert.IsTrue(night.a[7] == 235);
-      Assert.IsTrue(night.a[8] == 80);
+      Assert.IsTrue(night.ctx.memoryHardLoop_A[0] == 132);
+      Assert.IsTrue(night.ctx.memoryHardLoop_A[1] == 94);
+      Assert.IsTrue(night.ctx.memoryHardLoop_A[7] == 235);
+      Assert.IsTrue(night.ctx.memoryHardLoop_A[8] == 80);
 
-      Assert.IsTrue(night.b[0] == 207);
-      Assert.IsTrue(night.b[6] == 143);
-      Assert.IsTrue(night.b[15] == 157);
+      Assert.IsTrue(night.ctx.memoryHardLoop_B[0] == 207);
+      Assert.IsTrue(night.ctx.memoryHardLoop_B[6] == 143);
+      Assert.IsTrue(night.ctx.memoryHardLoop_B[15] == 157);
     }
 
 
@@ -802,12 +803,12 @@ namespace HD.Tests
       night.ProcessStep5();
       night.ProcessStep6();
 
-      Assert.IsTrue(night.blocks[0][0] == 205);
-      Assert.IsTrue(night.blocks[0][1] == 115);
-      Assert.IsTrue(night.blocks[0][15] == 205);
-      Assert.IsTrue(night.blocks[7][0] == 123);
-      Assert.IsTrue(night.blocks[7][6] == 115);
-      Assert.IsTrue(night.blocks[7][15] == 241);
+      Assert.IsTrue(night.ctx.blocks[0][0] == 205);
+      Assert.IsTrue(night.ctx.blocks[0][1] == 115);
+      Assert.IsTrue(night.ctx.blocks[0][15] == 205);
+      Assert.IsTrue(night.ctx.blocks[7][0] == 123);
+      Assert.IsTrue(night.ctx.blocks[7][6] == 115);
+      Assert.IsTrue(night.ctx.blocks[7][15] == 241);
     }
 
     [TestMethod()]
@@ -820,10 +821,10 @@ namespace HD.Tests
       night.ProcessStep3();
       night.ProcessStep4();
 
-      Assert.IsTrue(night.aes.WorkingKey[0][0] == 620964217);
-      Assert.IsTrue(night.aes.WorkingKey[1][0] == 46193916);
-      Assert.IsTrue(night.aes.WorkingKey[7][1] == 3590950729);
-      Assert.IsTrue(night.aes.WorkingKey[9][3] == 407388248);
+      Assert.IsTrue(night.ctx.aes.WorkingKey[0][0] == 620964217);
+      Assert.IsTrue(night.ctx.aes.WorkingKey[1][0] == 46193916);
+      Assert.IsTrue(night.ctx.aes.WorkingKey[7][1] == 3590950729);
+      Assert.IsTrue(night.ctx.aes.WorkingKey[9][3] == 407388248);
     }
     [TestMethod()]
     public void Step5_ConfirmBlocks()
@@ -836,13 +837,13 @@ namespace HD.Tests
       night.ProcessStep4();
       night.ProcessStep5();
 
-      Assert.IsTrue(night.blocks[0][0] == 73);
-      Assert.IsTrue(night.blocks[0][1] == 255);
-      Assert.IsTrue(night.blocks[0][2] == 189);
-      Assert.IsTrue(night.blocks[5][2] == 209);
-      Assert.IsTrue(night.blocks[5][9] == 80);
-      Assert.IsTrue(night.blocks[7][15] == 76);
-      Assert.IsTrue(night.blocks.Length == 8);
+      Assert.IsTrue(night.ctx.blocks[0][0] == 73);
+      Assert.IsTrue(night.ctx.blocks[0][1] == 255);
+      Assert.IsTrue(night.ctx.blocks[0][2] == 189);
+      Assert.IsTrue(night.ctx.blocks[5][2] == 209);
+      Assert.IsTrue(night.ctx.blocks[5][9] == 80);
+      Assert.IsTrue(night.ctx.blocks[7][15] == 76);
+      Assert.IsTrue(night.ctx.blocks.Length == 8);
     }
 
     /// <summary>
@@ -860,8 +861,6 @@ namespace HD.Tests
       Assert.IsTrue(night.bWorkBlob[73] == 118);
       Assert.IsTrue(night.bWorkBlob[75] == 1);
       Assert.IsTrue(night.iTarget == (ulong)230584300921369);
-      Assert.IsTrue(night.iJobDiff == (ulong)80000);
-      Assert.IsTrue(night.iCount == 0);
       Assert.IsTrue(night.piNonce == 2449473536);
     }
 
@@ -894,6 +893,19 @@ namespace HD.Tests
       Assert.IsTrue(night.ctx.keccakHash[10] == 11);
       Assert.IsTrue(night.ctx.keccakHash[129] == 59);
       Assert.IsTrue(night.ctx.keccakHash[199] == 76);
+    }
+
+    
+  }
+
+  public static class TestExtensions
+  {
+    public static void Process(
+      this CryptoNight night,
+      Job job,
+      string nonceOverride = null)
+    {
+      night.Process(1, job.Job_Id, job.Blob, job.Target, nonceOverride);
     }
   }
 }

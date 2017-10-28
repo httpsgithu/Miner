@@ -23,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -75,10 +76,11 @@
     <Compile Include="Algorithms\NewFolder1\KeccakDigest.cs" />
     <Compile Include="Algorithms\NewFolder1\OutputLengthException.cs" />
     <Compile Include="Algorithms\NewFolder1\Pack.cs" />
-    <Compile Include="Algorithms\Utilities.cs" />
     <Compile Include="Data\Beneficiaries\Beneficiary.cs" />
     <Compile Include="Data\Beneficiaries\Beneficiaries.cs" />
     <Compile Include="Utils\ByteArrayExtensions.cs" />
+    <Compile Include="Utils\StringExtensions.cs" />
+    <Compile Include="Utils\UintExtensions.cs" />
     <Compile Include="Utils\Windows\FileObserver.cs" />
     <Compile Include="Utils\Windows\HardwareMonitor.cs" />
     <Compile Include="Utils\Windows\IdleChecker.cs" />

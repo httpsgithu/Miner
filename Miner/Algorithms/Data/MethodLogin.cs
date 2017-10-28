@@ -17,7 +17,7 @@ namespace HD
       MethodLoginParams methodParams)
     {
       this.method = "login";
-      this.id = 1;
+      this.id = 1; // TODO this should count
       this.@params = methodParams;
     }
   }
