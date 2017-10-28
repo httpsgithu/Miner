@@ -14,9 +14,6 @@ namespace HD.Tests
   {
 
 
-
-
-
     /// <summary>
     /// piNonce == 3C0C01E3
     /// nonce in result == e3010c3c
@@ -25,16 +22,6 @@ namespace HD.Tests
     /// {"params":{"job_id":"0000002297b75770","blob":"0606fc97d2cf0546124d70ebc3a23268f0680de3b5e1fb4e9b3f51cb96f5dabfaf7e8ee025e5bd0000003ca5256c6cd1e24032196c96b92f756853714756778d9d84a6e0510340122bc85f06","target":"b7d10000"},"jsonrpc":"2.0","method":"job"}
     /// {"method":"submit","params":{"id":"658828527673356","job_id":"0000002297b75770","nonce":"e3010c3c","result":"c731f8e552f380a8063afe8cee7ff64ef9b18220ffca901de333571a20c50000"},"id":1}
     /// </summary>
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -318,7 +305,6 @@ namespace HD.Tests
     //      }
     //    }
 
-
     [TestMethod()]
     public void E2E5Fake3Steps()
     {
@@ -353,7 +339,6 @@ namespace HD.Tests
         ", "200C014D");
     }
 
-
     [TestMethod()]
     public void E2E5()
     {
@@ -371,9 +356,6 @@ namespace HD.Tests
         ");
     }
 
-
-
-
     [TestMethod()]
     public void E2E1Fake()
     {
@@ -385,7 +367,7 @@ namespace HD.Tests
 
 {""method"":""submit"",""params"":{""id"":""421970933313569"",""job_id"":""000000228b2212a9"",""nonce"":""07110c7b"",""result"":""e5d18403a03ff4fdc27152202482bed2dfc5fdfd09e77a6ea7d471f2fa0c0000""},""id"":1}
 
-        ", "07110c7a");
+        ", "7b0c1106");
     }
 
     [TestMethod()]
@@ -400,6 +382,20 @@ namespace HD.Tests
 {""method"":""submit"",""params"":{""id"":""421970933313569"",""job_id"":""000000228b2212a9"",""nonce"":""07110c7b"",""result"":""e5d18403a03ff4fdc27152202482bed2dfc5fdfd09e77a6ea7d471f2fa0c0000""},""id"":1}
 
         ");
+    }
+
+    [TestMethod()]
+    public void E2E2Fake()
+    {
+      EndToEnd(@"
+
+{""jsonrpc"":""2.0"",""id"":1,""error"":null,""result"":{""id"":""421970933313569"",""status"":""OK"",""job"":{""job_id"":""0000002294244353"",""blob"":""0606f4eacdcf0510093efcf3c6ac3137a543059b364a9921a4f6dfadebe7989386e54d63c2145e000000ab3b19b1c82b839ccb543e5462f495f77ad1a9ccfa7954c97bed372c7f1350f4f807"",""target"":""b7d10000""}}}
+
+        ", @"
+
+{""method"":""submit"",""params"":{""id"":""421970933313569"",""job_id"":""0000002294244353"",""nonce"":""64020cab"",""result"":""afdd1376741ad538b44272b827ae1d799b5e28b663a83b7e7e8bc2b727a60000""},""id"":1}
+
+        ", "ab0c0263");
     }
 
     [TestMethod()]
@@ -430,6 +426,20 @@ namespace HD.Tests
         ");
     }
 
+    [TestMethod()]
+    public void E2E3Fake()
+    {
+      EndToEnd(@"
+
+{""params"":{""job_id"":""000000228b11006d"",""blob"":""0606f382c3cf053219fe60635f528da9f6732fc95f1e27585c552a2e62df8405243e0b731a59350000007bed6320ecf337b1818d9e9d5ce81964b9bc4a2af3535af3d22fd0ed9747d6490704"",""target"":""b7d10000""},""jsonrpc"":""2.0"",""method"":""job""}
+
+        ", @"
+
+{""method"":""submit"",""params"":{""id"":""421970933313569"",""job_id"":""000000228b11006d"",""nonce"":""0508047b"",""result"":""edeabc3dd5ee2bb84fe36f107f302982fa3da606ece6db32ca9bf77820350000""},""id"":1}
+
+        ", "7b040804");
+    }
+
     static void EndToEnd(
       string jsonIn,
       string jsonOut,
@@ -454,20 +464,20 @@ namespace HD.Tests
       
       while (true) // TODO move the loop into code not test
       {
-        night.ProcessStep2();
-        night.ProcessStep3();
-        night.ProcessStep4();
-        night.ProcessStep5();
-        night.ProcessStep6();
-        night.ProcessStep7();
-        night.ProcessStep8();
+        night.Step2_IncrementNonce();
+        night.Step3_KeccakHash();
+        night.Step4_InitAesKey();
+        night.Step5_ExtractBlocksToEncrypt();
+        //night.Step6_EncryptBlocks();
+        //night.Step7_CopyBlocksToScratchpad();
+        night.Step7_LoopScratchpad();
         night.ProcessStep9();
         night.ProcessStep10();
         night.ProcessStep11();
         night.ProcessStep12();
         night.ProcessStep13();
         night.ProcessStep14();
-        night.ProcessStep15();
+        night.Step15_FinalHash();
 
         if (night.ctx.piHashVal < night.iTarget)
         {
@@ -491,13 +501,13 @@ namespace HD.Tests
 ");
       CryptoNight night = new CryptoNight();
       night.Process(newJob.Result.Job);
-      night.ProcessStep2();
-      night.ProcessStep3();
-      night.ProcessStep4();
-      night.ProcessStep5();
-      night.ProcessStep6();
-      night.ProcessStep7();
-      night.ProcessStep8();
+      night.Step2_IncrementNonce();
+      night.Step3_KeccakHash();
+      night.Step4_InitAesKey();
+      night.Step5_ExtractBlocksToEncrypt();
+      //night.Step6_EncryptBlocks();
+      //night.Step7_CopyBlocksToScratchpad();
+      night.Step7_LoopScratchpad();
       night.ProcessStep9();
       night.ProcessStep10();
 
@@ -518,20 +528,20 @@ namespace HD.Tests
 ");
       CryptoNight night = new CryptoNight();
       night.Process(newJob.Result.Job);
-      night.ProcessStep2();
-      night.ProcessStep3();
-      night.ProcessStep4();
-      night.ProcessStep5();
-      night.ProcessStep6();
-      night.ProcessStep7();
-      night.ProcessStep8();
+      night.Step2_IncrementNonce();
+      night.Step3_KeccakHash();
+      night.Step4_InitAesKey();
+      night.Step5_ExtractBlocksToEncrypt();
+      //night.Step6_EncryptBlocks();
+      //night.Step7_CopyBlocksToScratchpad();
+      night.Step7_LoopScratchpad();
       night.ProcessStep9();
       night.ProcessStep10();
       night.ProcessStep11();
       night.ProcessStep12();
       night.ProcessStep13();
       night.ProcessStep14();
-      night.ProcessStep15();
+      night.Step15_FinalHash();
 
       Assert.IsTrue(night.ctx.bResult[0] == 118);
       Assert.IsTrue(night.ctx.bResult[1] == 187);
@@ -554,13 +564,13 @@ namespace HD.Tests
 ");
       CryptoNight night = new CryptoNight();
       night.Process(newJob.Result.Job);
-      night.ProcessStep2();
-      night.ProcessStep3();
-      night.ProcessStep4();
-      night.ProcessStep5();
-      night.ProcessStep6();
-      night.ProcessStep7();
-      night.ProcessStep8();
+      night.Step2_IncrementNonce();
+      night.Step3_KeccakHash();
+      night.Step4_InitAesKey();
+      night.Step5_ExtractBlocksToEncrypt();
+      //night.Step6_EncryptBlocks();
+      //night.Step7_CopyBlocksToScratchpad();
+      night.Step7_LoopScratchpad();
       night.ProcessStep9();
       night.ProcessStep10();
       night.ProcessStep11();
@@ -586,13 +596,13 @@ namespace HD.Tests
 ");
       CryptoNight night = new CryptoNight();
       night.Process(newJob.Result.Job);
-      night.ProcessStep2();
-      night.ProcessStep3();
-      night.ProcessStep4();
-      night.ProcessStep5();
-      night.ProcessStep6();
-      night.ProcessStep7();
-      night.ProcessStep8();
+      night.Step2_IncrementNonce();
+      night.Step3_KeccakHash();
+      night.Step4_InitAesKey();
+      night.Step5_ExtractBlocksToEncrypt();
+      //night.Step6_EncryptBlocks();
+      //night.Step7_CopyBlocksToScratchpad();
+      night.Step7_LoopScratchpad();
       night.ProcessStep9();
       night.ProcessStep10();
       night.ProcessStep11();
@@ -622,13 +632,13 @@ namespace HD.Tests
 ");
       CryptoNight night = new CryptoNight();
       night.Process(newJob.Result.Job);
-      night.ProcessStep2();
-      night.ProcessStep3();
-      night.ProcessStep4();
-      night.ProcessStep5();
-      night.ProcessStep6();
-      night.ProcessStep7();
-      night.ProcessStep8();
+      night.Step2_IncrementNonce();
+      night.Step3_KeccakHash();
+      night.Step4_InitAesKey();
+      night.Step5_ExtractBlocksToEncrypt();
+      //night.Step6_EncryptBlocks();
+      //night.Step7_CopyBlocksToScratchpad();
+      night.Step7_LoopScratchpad();
       night.ProcessStep9();
       night.ProcessStep10();
       night.ProcessStep11();
@@ -654,13 +664,13 @@ namespace HD.Tests
 ");
       CryptoNight night = new CryptoNight();
       night.Process(newJob.Result.Job);
-      night.ProcessStep2();
-      night.ProcessStep3();
-      night.ProcessStep4();
-      night.ProcessStep5();
-      night.ProcessStep6();
-      night.ProcessStep7();
-      night.ProcessStep8();
+      night.Step2_IncrementNonce();
+      night.Step3_KeccakHash();
+      night.Step4_InitAesKey();
+      night.Step5_ExtractBlocksToEncrypt();
+      //night.Step6_EncryptBlocks();
+      //night.Step7_CopyBlocksToScratchpad();
+      night.Step7_LoopScratchpad();
       night.ProcessStep9();
       night.ProcessStep10();
       night.ProcessStep11();
@@ -684,13 +694,13 @@ namespace HD.Tests
 ");
       CryptoNight night = new CryptoNight();
       night.Process(newJob.Result.Job);
-      night.ProcessStep2();
-      night.ProcessStep3();
-      night.ProcessStep4();
-      night.ProcessStep5();
-      night.ProcessStep6();
-      night.ProcessStep7();
-      night.ProcessStep8();
+      night.Step2_IncrementNonce();
+      night.Step3_KeccakHash();
+      night.Step4_InitAesKey();
+      night.Step5_ExtractBlocksToEncrypt();
+      //night.Step6_EncryptBlocks();
+      //night.Step7_CopyBlocksToScratchpad();
+      night.Step7_LoopScratchpad();
       night.ProcessStep9();
       night.ProcessStep10();
 
@@ -713,13 +723,13 @@ namespace HD.Tests
 ");
       CryptoNight night = new CryptoNight();
       night.Process(newJob.Result.Job);
-      night.ProcessStep2();
-      night.ProcessStep3();
-      night.ProcessStep4();
-      night.ProcessStep5();
-      night.ProcessStep6();
-      night.ProcessStep7();
-      night.ProcessStep8();
+      night.Step2_IncrementNonce();
+      night.Step3_KeccakHash();
+      night.Step4_InitAesKey();
+      night.Step5_ExtractBlocksToEncrypt();
+      //night.Step6_EncryptBlocks();
+      //night.Step7_CopyBlocksToScratchpad();
+      night.Step7_LoopScratchpad();
       night.ProcessStep9();
 
       Assert.IsTrue(night.ctx.memoryHardLoop_A[0] == 132);
@@ -744,13 +754,13 @@ namespace HD.Tests
 ");
       CryptoNight night = new CryptoNight();
       night.Process(newJob.Result.Job);
-      night.ProcessStep2();
-      night.ProcessStep3();
-      night.ProcessStep4();
-      night.ProcessStep5();
-      night.ProcessStep6();
-      night.ProcessStep7();
-      night.ProcessStep8();
+      night.Step2_IncrementNonce();
+      night.Step3_KeccakHash();
+      night.Step4_InitAesKey();
+      night.Step5_ExtractBlocksToEncrypt();
+      //night.Step6_EncryptBlocks();
+      //night.Step7_CopyBlocksToScratchpad();
+      night.Step7_LoopScratchpad();
 
 
       Assert.IsTrue(night.ctx.scratchpad[0] == 205);
@@ -762,64 +772,15 @@ namespace HD.Tests
       Assert.IsTrue(night.ctx.scratchpad[2097151] == 191);
     }
 
-
-
-    [TestMethod()]
-    public void Step7_StoreInScratch()
-    {
-      NewJob newJob = JsonConvert.DeserializeObject<NewJob>(@"
-
-{""jsonrpc"":""2.0"",""id"":1,""error"":null,""result"":{""id"":""236837541229689"",""status"":""OK"",""job"":{""job_id"":""000000228ffb9d4b"",""blob"":""0606cacac8cf05536e5b97528e2f1dc190fc7ebb494494303fc0b9d2e71df6b6926d7db934a2e5000000275ad8b6a20aa530fba2a492780ac934dfd8a359df3dd02c88d38be3c1dd15edb507"",""target"":""b7d10000""}}}
-
-");
-      CryptoNight night = new CryptoNight();
-      night.Process(newJob.Result.Job);
-      night.ProcessStep2();
-      night.ProcessStep3();
-      night.ProcessStep4();
-      night.ProcessStep5();
-      night.ProcessStep6();
-      night.ProcessStep7();
-
-      Assert.IsTrue(night.ctx.scratchpad[0] == 205);
-      Assert.IsTrue(night.ctx.scratchpad[3] == 28);
-      Assert.IsTrue(night.ctx.scratchpad[99] == 87);
-      Assert.IsTrue(night.ctx.scratchpad[127] == 241);
-    }
-
-    [TestMethod()]
-    public void Step6_OneRoundPerBlock()
-    {
-      NewJob newJob = JsonConvert.DeserializeObject<NewJob>(@"
-
-{""jsonrpc"":""2.0"",""id"":1,""error"":null,""result"":{""id"":""236837541229689"",""status"":""OK"",""job"":{""job_id"":""000000228ffb9d4b"",""blob"":""0606cacac8cf05536e5b97528e2f1dc190fc7ebb494494303fc0b9d2e71df6b6926d7db934a2e5000000275ad8b6a20aa530fba2a492780ac934dfd8a359df3dd02c88d38be3c1dd15edb507"",""target"":""b7d10000""}}}
-
-");
-      CryptoNight night = new CryptoNight();
-      night.Process(newJob.Result.Job);
-      night.ProcessStep2();
-      night.ProcessStep3();
-      night.ProcessStep4();
-      night.ProcessStep5();
-      night.ProcessStep6();
-
-      Assert.IsTrue(night.ctx.blocks[0][0] == 205);
-      Assert.IsTrue(night.ctx.blocks[0][1] == 115);
-      Assert.IsTrue(night.ctx.blocks[0][15] == 205);
-      Assert.IsTrue(night.ctx.blocks[7][0] == 123);
-      Assert.IsTrue(night.ctx.blocks[7][6] == 115);
-      Assert.IsTrue(night.ctx.blocks[7][15] == 241);
-    }
-
     [TestMethod()]
     public void Step4_ConfirmAESKey()
     {
       NewJob newJob = JsonConvert.DeserializeObject<NewJob>("{\"jsonrpc\":\"2.0\",\"id\":1,\"error\":null,\"result\":{\"id\":\"935427267220117\",\"status\":\"OK\",\"job\":{\"job_id\":\"000000228f4f7dce\",\"blob\":\"0606aae6c7cf05be009d308985e25cfeaadc4f3198458dba946bce18810a8ce747259738f932980000000d504b50169cbf70974edce6b18a47b094c0604047762a9d998b58e54cf8b0d71707\",\"target\":\"b7d10000\"}}}");
       CryptoNight night = new CryptoNight();
       night.Process(newJob.Result.Job);
-      night.ProcessStep2();
-      night.ProcessStep3();
-      night.ProcessStep4();
+      night.Step2_IncrementNonce();
+      night.Step3_KeccakHash();
+      night.Step4_InitAesKey();
 
       Assert.IsTrue(night.ctx.aes.WorkingKey[0][0] == 620964217);
       Assert.IsTrue(night.ctx.aes.WorkingKey[1][0] == 46193916);
@@ -832,10 +793,10 @@ namespace HD.Tests
       NewJob newJob = JsonConvert.DeserializeObject<NewJob>("{\"jsonrpc\":\"2.0\",\"id\":1,\"error\":null,\"result\":{\"id\":\"935427267220117\",\"status\":\"OK\",\"job\":{\"job_id\":\"000000228f4f7dce\",\"blob\":\"0606aae6c7cf05be009d308985e25cfeaadc4f3198458dba946bce18810a8ce747259738f932980000000d504b50169cbf70974edce6b18a47b094c0604047762a9d998b58e54cf8b0d71707\",\"target\":\"b7d10000\"}}}");
       CryptoNight night = new CryptoNight();
       night.Process(newJob.Result.Job);
-      night.ProcessStep2();
-      night.ProcessStep3();
-      night.ProcessStep4();
-      night.ProcessStep5();
+      night.Step2_IncrementNonce();
+      night.Step3_KeccakHash();
+      night.Step4_InitAesKey();
+      night.Step5_ExtractBlocksToEncrypt();
 
       Assert.IsTrue(night.ctx.blocks[0][0] == 73);
       Assert.IsTrue(night.ctx.blocks[0][1] == 255);
@@ -880,14 +841,14 @@ namespace HD.Tests
       Assert.AreEqual(night.bWorkBlob[75], 2);
       Assert.AreEqual(night.piNonce, (uint)1778384896);
 
-      night.ProcessStep2();
+      night.Step2_IncrementNonce();
 
       Assert.IsTrue(night.piNonce == 1778384897);
       Assert.IsTrue(night.bWorkBlob[38] == 138);
       Assert.IsTrue(night.bWorkBlob[39] == 1);
       Assert.IsTrue(night.bWorkBlob[42] == 106);
 
-      night.ProcessStep3();
+      night.Step3_KeccakHash();
 
       Assert.IsTrue(night.ctx.keccakHash[0] == 79);
       Assert.IsTrue(night.ctx.keccakHash[10] == 11);

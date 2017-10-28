@@ -48,12 +48,10 @@
     <Reference Include="System" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Numerics.Vectors" />
-    <Reference Include="ValueTuple">
-      <HintPath>..\..\ValueTupleForDotNet3_5\ValueTuple.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Algorithms\CryptoNight.cs" />
+    <Compile Include="Algorithms\CryptoNightDataPerThread.cs" />
     <Compile Include="Algorithms\CryptoNightMiner.cs" />
     <Compile Include="Algorithms\Data\ArrayUtils.cs" />
     <Compile Include="Algorithms\Data\BigInt128.cs" />
