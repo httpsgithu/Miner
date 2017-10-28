@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using BigMath;
 using Newtonsoft.Json;
 using CryptoHash;
 using HD.Algorithms;
@@ -136,8 +135,6 @@ namespace HD
       // TODO can we reuse these?
       byte[] cx = new byte[sizeOfBlock];
       uint[] key = new uint[AesEngine.numberOfUintsPerKey];
-      byte[] mulHigh = new byte[sizeof(ulong)];
-      byte[] mulLow = new byte[sizeof(ulong)];
 
       for (int i = 0; i < hardLoopIterrationCount; i++)
       {
@@ -169,28 +166,16 @@ namespace HD
         cl = BitConverter.ToUInt64(ctx.scratchpad, (int)(idx0 & scratchpadAddressBitmask));
         ch = BitConverter.ToUInt64(ctx.scratchpad, (int)(idx0 & scratchpadAddressBitmask) + sizeof(ulong));
 
-        Int128 mul = new Int128(0, idx0) * new Int128(0, cl);
-        Int128 aInt = new Int128(BitConverter.ToUInt64(ctx.memoryHardLoop_A, 8), BitConverter.ToUInt64(ctx.memoryHardLoop_A, 0));
-
+        idx0.UnsignedMultiply128(cl, out ulong mulIntLow, out ulong mulIntHigh);
+        ulong aIntLow = BitConverter.ToUInt64(ctx.memoryHardLoop_A, 0);
+        ulong aIntHigh = BitConverter.ToUInt64(ctx.memoryHardLoop_A, 8);
         unchecked
         {
-          aInt = new Int128(mul.Low + aInt.High, mul.High + aInt.Low);
+          aIntLow += mulIntHigh;
+          aIntHigh += mulIntLow;
         }
-
-        aInt.High.GetBytes(mulHigh);
-        aInt.Low.GetBytes(mulLow);
-
-        for (int aIndex = 0; aIndex < sizeOfBlock; aIndex++)
-        {
-          if (aIndex >= 8)
-          {
-            ctx.memoryHardLoop_A[aIndex] = mulHigh[aIndex - 8];
-          }
-          else
-          {
-            ctx.memoryHardLoop_A[aIndex] = mulLow[aIndex];
-          }
-        }
+        aIntLow.GetBytes(ctx.memoryHardLoop_A, 0);
+        aIntHigh.GetBytes(ctx.memoryHardLoop_A, sizeof(ulong));
 
         for (int aIndex = 0; aIndex < sizeOfBlock; aIndex++)
         {
@@ -274,7 +259,7 @@ namespace HD
     public void Step15_FinalHash()
     {
       Digest hash;
-      switch (ctx.keccakHash[0] & 0b0011)
+      switch (ctx.keccakHash[0] & 3)
       {
         case 0:
           {
