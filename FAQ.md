@@ -112,6 +112,10 @@ We did look into implementing the entire thing in C# but it was taking too long 
 
 Yes.
 
+Dependencies:
+
+ - https://github.com/hardlydifficult/Sphlib
+
 <hr></details><details><summary>Why CPU Only?</summary>
 
 We could add GPU support if there is interest in this.  It adds a fair bit of complexity, in order to do this well.
