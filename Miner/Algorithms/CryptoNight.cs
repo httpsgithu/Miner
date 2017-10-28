@@ -95,14 +95,8 @@ namespace HD
         AesEngine aes = new AesEngine();
 
         byte* blockData = stackalloc byte[numberOfBlocks * sizeOfBlock];
-
-        // byte[8][16]
-        byte[][] blocks = new byte[numberOfBlocks][]; // stackalloc
-        for (int i = 0; i < numberOfBlocks; i++)
-        {
-          blocks[i] = new byte[sizeOfBlock];
-        }
-
+        ulong* blockDataUlong = (ulong*)blockData;
+        uint* blockDataUint = (uint*)blockData;
 
         ulong memoryHardLoop_Afirst;
         ulong memoryHardLoop_Asecond;
@@ -111,65 +105,57 @@ namespace HD
 
         while (true) // TODO move the loop into code not test
         {
-          piNonce++; // TODO thinking maybe a shared counter starting from a random number -- but note valid bounds
-
-          KeccakDigest.keccak(bWorkBlob, iWorkSize, ctxkeccakHash, sizeOfKeccakHash);
-          ExtractAndInitAesKey(aes, true, ctxkey, ctxkeccakHash);
-          ExtractBlocksFromHash(blocks, ctxkeccakHash);
-
-          for (int scratchIndex = 0; scratchIndex < numberOfScratchpadSegments; scratchIndex++)
-          {
-            for (int blockIndex = 0; blockIndex < numberOfBlocks; blockIndex++)
-            {
-              fixed (byte* blockBytes = blocks[blockIndex])
-              {
-                uint* blockUints = (uint*)blockBytes;
-
-                aes.ProcessBlock(blockUints);
-              }
-            }
-
-            for (int blockIndex = 0; blockIndex < numberOfBlocks; blockIndex++)
-            {
-              byte[] block = blocks[blockIndex];
-              for (int byteIndex = 0; byteIndex < sizeOfBlock; byteIndex++)
-              {
-                int index = scratchIndex * numberOfBlocks * sizeOfBlock + blockIndex * sizeOfBlock + byteIndex;
-                ctxscratchpad[index] = block[byteIndex];
-              }
-            }
-          }
-
-          fixed (byte* key = ctxkey)
-          {
-            ulong* longKey = (ulong*)key;
-
-            fixed (byte* hash2 = ctxkeccakHash)
-            {
-              ulong* longHash = (ulong*)hash2;
-
-              memoryHardLoop_Afirst = longKey[0] ^ longHash[sizeOfKey / sizeof(long)];
-              memoryHardLoop_Asecond = longKey[1] ^ longHash[sizeOfKey / sizeof(long) + 1];
-              memoryHardLoop_Bfirst = longKey[2] ^ longHash[sizeOfKey / sizeof(long) + 2];
-              memoryHardLoop_Bsecond = longKey[3] ^ longHash[sizeOfKey / sizeof(long) + 3];
-            }
-          }
-
-          // TODO test ctx locally
-
-          int idx0Address = (int)(memoryHardLoop_Afirst & scratchpadAddressBitmask) / sizeof(long);
-
-          uint* keyAsUint = stackalloc uint[AesEngine.numberOfUintsPerKey];
-          ulong* keyAsUlong = (ulong*)keyAsUint;
-
-          ulong* tempBlockAsUlong = stackalloc ulong[sizeOfBlock / sizeof(ulong)];
-          uint* tempBlockAsUint = (uint*)tempBlockAsUlong;
-
-          // TODO don't need bytes anymore?
-          // TODO test stackalloc scratchpad?
-          fixed (byte* scratchpadBytes = ctxscratchpad)
+          fixed (byte* scratchpadBytes = ctxscratchpad) // TODO fixed outsid ethe loop
           {
             ulong* scratchpadLong = (ulong*)scratchpadBytes;
+            piNonce++; // TODO thinking maybe a shared counter starting from a random number -- but note valid bounds
+
+            KeccakDigest.keccak(bWorkBlob, iWorkSize, ctxkeccakHash, sizeOfKeccakHash);
+            ExtractAndInitAesKey(aes, true, ctxkey, ctxkeccakHash);
+            ExtractBlocksFromHash(blockDataUlong, ctxkeccakHash);
+
+            for (int scratchIndex = 0; scratchIndex < numberOfScratchpadSegments; scratchIndex++)
+            {
+              for (int blockIndex = 0; blockIndex < numberOfBlocks; blockIndex++)
+              {
+                aes.ProcessBlock(blockDataUint + blockIndex * sizeOfBlock / sizeof(uint));
+              }
+
+              for (int blockIndex = 0; blockIndex < numberOfBlocks; blockIndex++)
+              {
+                int index = (scratchIndex * numberOfBlocks * sizeOfBlock + blockIndex * sizeOfBlock) / sizeof(ulong);
+                scratchpadLong[index] = blockDataUlong[blockIndex * 2];
+                scratchpadLong[index + 1] = blockDataUlong[blockIndex * 2 + 1];
+              }
+            }
+
+            fixed (byte* key = ctxkey)
+            {
+              ulong* longKey = (ulong*)key;
+
+              fixed (byte* hash2 = ctxkeccakHash)
+              {
+                ulong* longHash = (ulong*)hash2;
+
+                memoryHardLoop_Afirst = longKey[0] ^ longHash[sizeOfKey / sizeof(long)];
+                memoryHardLoop_Asecond = longKey[1] ^ longHash[sizeOfKey / sizeof(long) + 1];
+                memoryHardLoop_Bfirst = longKey[2] ^ longHash[sizeOfKey / sizeof(long) + 2];
+                memoryHardLoop_Bsecond = longKey[3] ^ longHash[sizeOfKey / sizeof(long) + 3];
+              }
+            }
+
+            // TODO test ctx locally
+
+            int idx0Address = (int)(memoryHardLoop_Afirst & scratchpadAddressBitmask) / sizeof(long);
+
+            uint* keyAsUint = stackalloc uint[AesEngine.numberOfUintsPerKey];
+            ulong* keyAsUlong = (ulong*)keyAsUint;
+
+            ulong* tempBlockAsUlong = stackalloc ulong[sizeOfBlock / sizeof(ulong)];
+            uint* tempBlockAsUint = (uint*)tempBlockAsUlong;
+
+            // TODO don't need bytes anymore?
+            // TODO test stackalloc scratchpad?
 
             for (int i = 0; i < hardLoopIterrationCount; i++)
             {
@@ -209,24 +195,22 @@ namespace HD
 
               idx0Address = (int)(memoryHardLoop_Afirst & scratchpadAddressBitmask) / sizeof(long);
             }
-          }
 
 
-          ExtractAndInitAesKey(aes, false, ctxkey, ctxkeccakHash);
-          ExtractBlocksFromHash(blocks, ctxkeccakHash);
+            ExtractAndInitAesKey(aes, false, ctxkey, ctxkeccakHash);
+            ExtractBlocksFromHash(blockDataUlong, ctxkeccakHash);
 
-          for (int scratchIndex = 0; scratchIndex < numberOfScratchpadSegments; scratchIndex++)
-          {
-            for (int blockIndex = 0; blockIndex < 8; blockIndex++)
+            for (int scratchIndex = 0; scratchIndex < numberOfScratchpadSegments; scratchIndex++)
             {
-              for (int byteIndex = 0; byteIndex < 16; byteIndex++)
+              for (int blockIndex = 0; blockIndex < 8; blockIndex++)
               {
-                blocks[blockIndex][byteIndex] ^=
-                  ctxscratchpad[byteIndex + scratchIndex * 128 + blockIndex * blocks[blockIndex].Length];
+                int index = (scratchIndex * 128 + blockIndex * sizeOfBlock) / sizeof(ulong);
+                blockDataUlong[blockIndex * 2] ^= scratchpadLong[index];
+                blockDataUlong[blockIndex * 2 + 1] ^= scratchpadLong[index + 1];
               }
-            }
 
-            EncryptBlocks(aes, blocks);
+              EncryptBlocks(aes, blockDataUint);
+            }
           }
 
 
@@ -234,7 +218,7 @@ namespace HD
           {
             for (int byteIndex = 0; byteIndex < 16; byteIndex++)
             {
-              ctxkeccakHash[64 + byteIndex + blockIndex * 16] = blocks[blockIndex][byteIndex];
+              ctxkeccakHash[64 + byteIndex + blockIndex * 16] = blockData[blockIndex * sizeOfBlock + byteIndex];
             }
           }
 
@@ -311,7 +295,7 @@ namespace HD
     }
 
     unsafe void ExtractBlocksFromHash(
-      byte[][] blocks,
+      ulong* blocks,
       byte[] ctxkeccakHash)
     {
       fixed (byte* hashBytes = ctxkeccakHash)
@@ -320,28 +304,19 @@ namespace HD
 
         for (int blockIndex = 0; blockIndex < numberOfBlocks; blockIndex++)
         {
-          fixed (byte* blockBytes = blocks[blockIndex])
-          {
-            ulong* blockLong = (ulong*)blockBytes;
-            blockLong[0] = hashLong[(64 + blockIndex * 16) / sizeof(ulong)];
-            blockLong[1] = hashLong[(64 + blockIndex * 16) / sizeof(ulong) + 1];
-          }
+          blocks[blockIndex * 2] = hashLong[(64 + blockIndex * 16) / sizeof(ulong)];
+          blocks[blockIndex * 2 + 1] = hashLong[(64 + blockIndex * 16) / sizeof(ulong) + 1];
         }
       }
     }
 
     unsafe void EncryptBlocks(
       AesEngine aes,
-      byte[][] blocks)
+      uint* blocks)
     {
       for (int blockIndex = 0; blockIndex < 8; blockIndex++)
       {
-        fixed (byte* blockBytes = blocks[blockIndex])
-        {
-          uint* blockUints = (uint*)blockBytes;
-
-          aes.ProcessBlock(blockUints);
-        }
+        aes.ProcessBlock(blocks + blockIndex * sizeOfBlock / sizeof(uint));
       }
     }
 
