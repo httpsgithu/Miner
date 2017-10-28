@@ -249,8 +249,8 @@ namespace HD
     /// TODO fixed size
     /// </summary>
     public readonly uint[][] WorkingKey; // should be private
+
     const int ROUNDS = numberOfWorkingKeys;
-    uint C0, C1, C2, C3;
     #endregion
 
     #region Init
@@ -271,22 +271,18 @@ namespace HD
       GenerateWorkingKey(key);
     }
 
-    public void ProcessBlock(
-        byte[] input,
-        int inOff,
-        byte[] output,
-        int outOff)
+    public unsafe void ProcessBlock(
+       uint* data)
     {
       Debug.Assert(WorkingKey != null);
-      Debug.Assert(input.Length >= 16 + inOff);
-      Debug.Assert(output.Length >= 16 + outOff);
 
-      UnPackBlock(input, inOff);
       for (int key = 0; key < WorkingKey.Length; key++)
       {
-        EncryptBlock(WorkingKey[key]);
+        fixed(uint* keyData = WorkingKey[key])
+        {
+          EncryptBlock(keyData, data);
+        }
       }
-      PackBlock(output, outOff);
     }
 
     /// <summary>
@@ -301,26 +297,6 @@ namespace HD
     #endregion
 
     #region Helpers
-    void UnPackBlock(
-      byte[] bytes,
-      int off)
-    {
-      C0 = Pack.LE_To_UInt32(bytes, off);
-      C1 = Pack.LE_To_UInt32(bytes, off + 4);
-      C2 = Pack.LE_To_UInt32(bytes, off + 8);
-      C3 = Pack.LE_To_UInt32(bytes, off + 12);
-    }
-    
-    void PackBlock(
-      byte[] bytes,
-      int off)
-    {
-      Pack.UInt32_To_LE(C0, bytes, off);
-      Pack.UInt32_To_LE(C1, bytes, off + 4);
-      Pack.UInt32_To_LE(C2, bytes, off + 8);
-      Pack.UInt32_To_LE(C3, bytes, off + 12);
-    }
-
     unsafe void EncryptBlock(
       uint* kw,
       uint* data)
@@ -339,25 +315,6 @@ namespace HD
       data[2] = tempdata2;
       data[1] = tempdata1;
       data[0] = tempdata0;
-    }
-
-    void EncryptBlock(
-      uint[] kw)
-    {
-      uint t0 = C0 ^ kw[0];
-      uint t1 = C1 ^ kw[1];
-      uint t2 = C2 ^ kw[2];
-
-      // TODO perf, maybe pre-calc T1, etc which are just shifted versions of T0.
-      uint tempC3 = T0[C3 & 255] ^ Shift(T0[(C0 >> 8) & 255], 24) ^ Shift(T0[(C1 >> 16) & 255], 16) ^ Shift(T0[(C2 >> 24) & 255], 8) ^ kw[3];
-      uint tempC2 = T0[C2 & 255] ^ Shift(T0[(C3 >> 8) & 255], 24) ^ Shift(T0[(C0 >> 16) & 255], 16) ^ Shift(T0[(C1 >> 24) & 255], 8) ^ kw[2];
-      uint tempC1 = T0[C1 & 255] ^ Shift(T0[(C2 >> 8) & 255], 24) ^ Shift(T0[(C3 >> 16) & 255], 16) ^ Shift(T0[(C0 >> 24) & 255], 8) ^ kw[1];
-      uint tempC0 = T0[C0 & 255] ^ Shift(T0[(C1 >> 8) & 255], 24) ^ Shift(T0[(C2 >> 16) & 255], 16) ^ Shift(T0[(C3 >> 24) & 255], 8) ^ kw[0];
-
-      C3 = tempC3;
-      C2 = tempC2;
-      C1 = tempC1;
-      C0 = tempC0;
     }
 
     static uint Shift(

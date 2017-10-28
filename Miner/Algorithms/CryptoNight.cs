@@ -93,6 +93,7 @@ namespace HD
         blocks[i] = new byte[CryptoNight.sizeOfBlock];
       }
 
+
       ulong memoryHardLoop_Afirst;
       ulong memoryHardLoop_Asecond;
       ulong memoryHardLoop_Bfirst;
@@ -110,7 +111,12 @@ namespace HD
         {
           for (int blockIndex = 0; blockIndex < numberOfBlocks; blockIndex++)
           {
-            aes.ProcessBlock(blocks[blockIndex], 0, blocks[blockIndex], 0);
+            fixed (byte* blockBytes = blocks[blockIndex])
+            {
+              uint* blockUints = (uint*)blockBytes;
+
+              aes.ProcessBlock(blockUints);
+            }
           }
 
           for (int blockIndex = 0; blockIndex < numberOfBlocks; blockIndex++)
@@ -295,27 +301,39 @@ namespace HD
       }
     }
 
-    void ExtractBlocksFromHash(
+    unsafe void ExtractBlocksFromHash(
       CryptoNightDataPerThread ctx,
       byte[][] blocks)
     {
-      for (int blockIndex = 0; blockIndex < 8; blockIndex++)
+      fixed (byte* hashBytes = ctx.keccakHash)
       {
-        for (int byteIndex = 0; byteIndex < 16; byteIndex++)
+        ulong* hashLong = (ulong*)hashBytes;
+
+        for (int blockIndex = 0; blockIndex < numberOfBlocks; blockIndex++)
         {
-          blocks[blockIndex][byteIndex] = ctx.keccakHash[64 + blockIndex * 16 + byteIndex];
+          fixed (byte* blockBytes = blocks[blockIndex])
+          {
+            ulong* blockLong = (ulong*)blockBytes;
+            blockLong[0] = hashLong[(64 + blockIndex * 16) / sizeof(ulong)];
+            blockLong[1] = hashLong[(64 + blockIndex * 16) / sizeof(ulong) + 1];
+          }
         }
       }
     }
 
-    void EncryptBlocks(
+    unsafe void EncryptBlocks(
       CryptoNightDataPerThread ctx,
       AesEngine aes,
       byte[][] blocks)
     {
       for (int blockIndex = 0; blockIndex < 8; blockIndex++)
       {
-        aes.ProcessBlock(blocks[blockIndex], 0, blocks[blockIndex], 0);
+        fixed (byte* blockBytes = blocks[blockIndex])
+        {
+          uint* blockUints = (uint*)blockBytes;
+
+          aes.ProcessBlock(blockUints);
+        }
       }
     }
 
