@@ -306,7 +306,7 @@ namespace HD.Tests
     //    }
 
     [TestMethod()]
-    public void E2E5Fake3Steps()
+    public void E2E5Fast3Steps()
     {
       // piNonce == job_result.nonce == 537657678 == 200C014E -- is this wrong?
       // in json nonce is 4e010c20 == 1308691488
@@ -323,7 +323,7 @@ namespace HD.Tests
     }
 
     [TestMethod()]
-    public void E2E5Fake()
+    public void E2E5Fast()
     {
       // piNonce == job_result.nonce == 537657678 == 200C014E -- is this wrong?
       // in json nonce is 4e010c20 == 1308691488
@@ -357,7 +357,7 @@ namespace HD.Tests
     }
 
     [TestMethod()]
-    public void E2E1Fake()
+    public void E2E1Fast()
     {
       EndToEnd(@"
 
@@ -385,7 +385,7 @@ namespace HD.Tests
     }
 
     [TestMethod()]
-    public void E2E2Fake()
+    public void E2E2Fast()
     {
       EndToEnd(@"
 
@@ -427,7 +427,7 @@ namespace HD.Tests
     }
 
     [TestMethod()]
-    public void E2E3Fake()
+    public void E2E3Fast()
     {
       EndToEnd(@"
 
@@ -457,334 +457,10 @@ namespace HD.Tests
       catch
       {
         result = JsonConvert.DeserializeObject<NewBlock>(jsonIn).@params;
-
       }
       CryptoNight night = new CryptoNight();
-      night.Process(result, nonce);
-      
-      while (true) // TODO move the loop into code not test
-      {
-        night.Step2_IncrementNonce();
-        night.Step3_HashAndExtractBlocks();
-        night.Step4_EncryptBlocksCreateScratchpad();
-        night.Step5_InitHardLoopAAndB();
-        night.ProcessStep10();
-        night.ProcessStep11();
-        night.ProcessStep12();
-        night.ProcessStep13();
-        night.Step15_FinalHash();
-
-        if (night.ctx.piHashVal < night.iTarget)
-        {
-          break;
-        }
-      }
-
-
-      string resultJson = night.GetResultJson();
-
-      Assert.IsTrue(resultJson == jsonOut);
+      night.Process(result, (json) => Assert.IsTrue(json == jsonOut), nonce);
     }
-
-    [TestMethod()]
-    public void AdHoc()
-    {
-
-      NewJob newJob = JsonConvert.DeserializeObject<NewJob>(@"
-
-{""jsonrpc"":""2.0"",""id"":1,""error"":null,""result"":{""id"":""958279617719034"",""status"":""OK"",""job"":{""job_id"":""00000022914b1fba"",""blob"":""06069595cacf05621a11850207b551cb5324b43ac2bb9c6d12710ad60fc8f39be8ae67342913b2000000c1acdfded1636bc63a54387009741881078b0aeb1bad0fabaf23e0f9387a47f7b608"",""target"":""b7d10000""}}}
-");
-      CryptoNight night = new CryptoNight();
-      night.Process(newJob.Result.Job);
-      night.Step2_IncrementNonce();
-      night.Step3_HashAndExtractBlocks();
-      night.Step4_EncryptBlocksCreateScratchpad();
-      night.Step5_InitHardLoopAAndB();
-      night.ProcessStep10();
-
-      Assert.IsTrue(night.ctx.scratchpad[0] == 251);
-      Assert.IsTrue(night.ctx.scratchpad[1231392] == 152);
-    }
-
-
-
-    [TestMethod()]
-    public void Step15()
-    {
-
-      NewJob newJob = JsonConvert.DeserializeObject<NewJob>(@"
-
-{""jsonrpc"":""2.0"",""id"":1,""error"":null,""result"":{""id"":""770893074783710"",""status"":""OK"",""job"":{""job_id"":""000000229377aa06"",""blob"":""0606889bcdcf056eefdfd76b7bf3387b5477f5d6e88f4daf315ee8623f887b90bd257e3ce584c4000000b1271ca0670f14b0586c35a92785256980598d1913acd27e901f4638e2edcf553406"",""target"":""b7d10000""}}}
-
-");
-      CryptoNight night = new CryptoNight();
-      night.Process(newJob.Result.Job);
-      night.Step2_IncrementNonce();
-      night.Step3_HashAndExtractBlocks();
-      night.Step4_EncryptBlocksCreateScratchpad();
-      night.Step5_InitHardLoopAAndB();
-      night.ProcessStep10();
-      night.ProcessStep11();
-      night.ProcessStep12();
-      night.ProcessStep13();
-      night.Step15_FinalHash();
-
-      Assert.IsTrue(night.ctx.bResult[0] == 118);
-      Assert.IsTrue(night.ctx.bResult[1] == 187);
-      Assert.IsTrue(night.ctx.bResult[31] == 81);
-
-    }
-
-
-
-    
-
-
-
-    [TestMethod()]
-    public void Step13()
-    {
-
-      NewJob newJob = JsonConvert.DeserializeObject<NewJob>(@"
-
-{""jsonrpc"":""2.0"",""id"":1,""error"":null,""result"":{""id"":""770893074783710"",""status"":""OK"",""job"":{""job_id"":""000000229377aa06"",""blob"":""0606889bcdcf056eefdfd76b7bf3387b5477f5d6e88f4daf315ee8623f887b90bd257e3ce584c4000000b1271ca0670f14b0586c35a92785256980598d1913acd27e901f4638e2edcf553406"",""target"":""b7d10000""}}}
-
-");
-      CryptoNight night = new CryptoNight();
-      night.Process(newJob.Result.Job);
-      night.Step2_IncrementNonce();
-      night.Step3_HashAndExtractBlocks();
-      night.Step4_EncryptBlocksCreateScratchpad();
-      night.Step5_InitHardLoopAAndB();
-      night.ProcessStep10();
-      night.ProcessStep11();
-      night.ProcessStep12();
-      night.ProcessStep13();
-
-      Assert.IsTrue(night.ctx.keccakHash[0] == 100);
-      Assert.IsTrue(night.ctx.keccakHash[1] == 111);
-      Assert.IsTrue(night.ctx.keccakHash[169] == 140);
-      Assert.IsTrue(night.ctx.keccakHash[170] == 6);
-      Assert.IsTrue(night.ctx.keccakHash[199] == 133);
-    }
-
-
-
-
-
-
-    [TestMethod()]
-    public void Step12()
-    {
-
-      NewJob newJob = JsonConvert.DeserializeObject<NewJob>(@"
-
-{""jsonrpc"":""2.0"",""id"":1,""error"":null,""result"":{""id"":""282481223474240"",""status"":""OK"",""job"":{""job_id"":""00000022936482b0"",""blob"":""0202f18acdcf05e7c56332c76be812ae86f7ed748b112fc4e5901195a8722208373a9e03ecaa37000000940c3e45aff1f308ecdec122c0735f0552a670bd91f00aa27ed54955e77f58ab3504"",""target"":""b7d10000""}}}
-
-");
-      CryptoNight night = new CryptoNight();
-      night.Process(newJob.Result.Job);
-      night.Step2_IncrementNonce();
-      night.Step3_HashAndExtractBlocks();
-      night.Step4_EncryptBlocksCreateScratchpad();
-      night.Step5_InitHardLoopAAndB();
-      night.ProcessStep10();
-      night.ProcessStep11();
-      night.ProcessStep12();
-
-
-      Assert.IsTrue(night.ctx.keccakHash[0] == 123);
-      Assert.IsTrue(night.ctx.keccakHash[1] == 246);
-      Assert.IsTrue(night.ctx.keccakHash[169] == 152);
-      Assert.IsTrue(night.ctx.keccakHash[170] == 248);
-      Assert.IsTrue(night.ctx.keccakHash[199] == 166);
-    }
-
-
-    [TestMethod()]
-    public void Step11()
-    {
-
-      NewJob newJob = JsonConvert.DeserializeObject<NewJob>(@"
-
-{""jsonrpc"":""2.0"",""id"":1,""error"":null,""result"":{""id"":""958279617719034"",""status"":""OK"",""job"":{""job_id"":""00000022914b1fba"",""blob"":""06069595cacf05621a11850207b551cb5324b43ac2bb9c6d12710ad60fc8f39be8ae67342913b2000000c1acdfded1636bc63a54387009741881078b0aeb1bad0fabaf23e0f9387a47f7b608"",""target"":""b7d10000""}}}
-
-");
-      CryptoNight night = new CryptoNight();
-      night.Process(newJob.Result.Job);
-      night.Step2_IncrementNonce();
-      night.Step3_HashAndExtractBlocks();
-      night.Step4_EncryptBlocksCreateScratchpad();
-      night.Step5_InitHardLoopAAndB();
-      night.ProcessStep10();
-      night.ProcessStep11();
-
-      Assert.IsTrue(night.ctx.aes.WorkingKey[0][0] == 448915449);
-      Assert.IsTrue(night.ctx.aes.WorkingKey[0][3] == 1450329266);
-      Assert.IsTrue(night.ctx.aes.WorkingKey[9][3] == 4003620890);
-    }
-
-
-
-
-
-
-    [TestMethod()]
-    public void Step10_HardLoop()
-    {
-      NewJob newJob = JsonConvert.DeserializeObject<NewJob>(@"
-
-{""jsonrpc"":""2.0"",""id"":1,""error"":null,""result"":{""id"":""958279617719034"",""status"":""OK"",""job"":{""job_id"":""00000022914b1fba"",""blob"":""06069595cacf05621a11850207b551cb5324b43ac2bb9c6d12710ad60fc8f39be8ae67342913b2000000c1acdfded1636bc63a54387009741881078b0aeb1bad0fabaf23e0f9387a47f7b608"",""target"":""b7d10000""}}}
-");
-      CryptoNight night = new CryptoNight();
-      night.Process(newJob.Result.Job);
-      night.Step2_IncrementNonce();
-      night.Step3_HashAndExtractBlocks();
-      night.Step4_EncryptBlocksCreateScratchpad();
-      night.Step5_InitHardLoopAAndB();
-      night.ProcessStep10();
-
-      Assert.IsTrue(night.ctx.scratchpad[0] == 251);
-      Assert.IsTrue(night.ctx.scratchpad[1231392] == 152);
-    }
-
-
-
-
-
-    [TestMethod()]
-    public void Step9_AB()
-    {
-      NewJob newJob = JsonConvert.DeserializeObject<NewJob>(@"
-
-{""jsonrpc"":""2.0"",""id"":1,""error"":null,""result"":{""id"":""284736284218945"",""status"":""OK"",""job"":{""job_id"":""00000022903015a0"",""blob"":""0606c2e7c8cf0593ae736ed60c197b674b1f8db1d83e0ea17349a0f062ea80d684e52e0325f5de000000758e40ef9ecefbac1cd699cbbc997986a678af8e5f6a8c64eb77a9de2ad24f54d008"",""target"":""b7d10000""}}}
-
-
-");
-      CryptoNight night = new CryptoNight();
-      night.Process(newJob.Result.Job);
-      night.Step2_IncrementNonce();
-      night.Step3_HashAndExtractBlocks();
-      night.Step4_EncryptBlocksCreateScratchpad();
-      night.Step5_InitHardLoopAAndB();
-
-      Assert.IsTrue(night.ctx.memoryHardLoop_A[0] == 132);
-      Assert.IsTrue(night.ctx.memoryHardLoop_A[1] == 94);
-      Assert.IsTrue(night.ctx.memoryHardLoop_A[7] == 235);
-      Assert.IsTrue(night.ctx.memoryHardLoop_A[8] == 80);
-
-      Assert.IsTrue(night.ctx.memoryHardLoop_B[0] == 207);
-      Assert.IsTrue(night.ctx.memoryHardLoop_B[6] == 143);
-      Assert.IsTrue(night.ctx.memoryHardLoop_B[15] == 157);
-    }
-
-
-
-    [TestMethod()]
-    public void Step8_CompleteScratch()
-    {
-      NewJob newJob = JsonConvert.DeserializeObject<NewJob>(@"
-
-{""jsonrpc"":""2.0"",""id"":1,""error"":null,""result"":{""id"":""236837541229689"",""status"":""OK"",""job"":{""job_id"":""000000228ffb9d4b"",""blob"":""0606cacac8cf05536e5b97528e2f1dc190fc7ebb494494303fc0b9d2e71df6b6926d7db934a2e5000000275ad8b6a20aa530fba2a492780ac934dfd8a359df3dd02c88d38be3c1dd15edb507"",""target"":""b7d10000""}}}
-
-");
-      CryptoNight night = new CryptoNight();
-      night.Process(newJob.Result.Job);
-      night.Step2_IncrementNonce();
-      night.Step3_HashAndExtractBlocks();
-      night.Step4_EncryptBlocksCreateScratchpad();
-
-
-      Assert.IsTrue(night.ctx.scratchpad[0] == 205);
-      Assert.IsTrue(night.ctx.scratchpad[3] == 28);
-      Assert.IsTrue(night.ctx.scratchpad[99] == 87);
-      Assert.IsTrue(night.ctx.scratchpad[127] == 241);
-      Assert.IsTrue(night.ctx.scratchpad[128] == 29);
-      Assert.IsTrue(night.ctx.scratchpad[209711] == 52);
-      Assert.IsTrue(night.ctx.scratchpad[2097151] == 191);
-    }
-
-    [TestMethod()]
-    public void Step4_ConfirmAESKey()
-    {
-      NewJob newJob = JsonConvert.DeserializeObject<NewJob>("{\"jsonrpc\":\"2.0\",\"id\":1,\"error\":null,\"result\":{\"id\":\"935427267220117\",\"status\":\"OK\",\"job\":{\"job_id\":\"000000228f4f7dce\",\"blob\":\"0606aae6c7cf05be009d308985e25cfeaadc4f3198458dba946bce18810a8ce747259738f932980000000d504b50169cbf70974edce6b18a47b094c0604047762a9d998b58e54cf8b0d71707\",\"target\":\"b7d10000\"}}}");
-      CryptoNight night = new CryptoNight();
-      night.Process(newJob.Result.Job);
-      night.Step2_IncrementNonce();
-      night.Step3_HashAndExtractBlocks();
-
-      Assert.IsTrue(night.ctx.aes.WorkingKey[0][0] == 620964217);
-      Assert.IsTrue(night.ctx.aes.WorkingKey[1][0] == 46193916);
-      Assert.IsTrue(night.ctx.aes.WorkingKey[7][1] == 3590950729);
-      Assert.IsTrue(night.ctx.aes.WorkingKey[9][3] == 407388248);
-    }
-    [TestMethod()]
-    public void Step5_ConfirmBlocks()
-    {
-      NewJob newJob = JsonConvert.DeserializeObject<NewJob>("{\"jsonrpc\":\"2.0\",\"id\":1,\"error\":null,\"result\":{\"id\":\"935427267220117\",\"status\":\"OK\",\"job\":{\"job_id\":\"000000228f4f7dce\",\"blob\":\"0606aae6c7cf05be009d308985e25cfeaadc4f3198458dba946bce18810a8ce747259738f932980000000d504b50169cbf70974edce6b18a47b094c0604047762a9d998b58e54cf8b0d71707\",\"target\":\"b7d10000\"}}}");
-      CryptoNight night = new CryptoNight();
-      night.Process(newJob.Result.Job);
-      night.Step2_IncrementNonce();
-      night.Step3_HashAndExtractBlocks();
-
-      Assert.IsTrue(night.ctx.blocks[0][0] == 73);
-      Assert.IsTrue(night.ctx.blocks[0][1] == 255);
-      Assert.IsTrue(night.ctx.blocks[0][2] == 189);
-      Assert.IsTrue(night.ctx.blocks[5][2] == 209);
-      Assert.IsTrue(night.ctx.blocks[5][9] == 80);
-      Assert.IsTrue(night.ctx.blocks[7][15] == 76);
-    }
-
-    /// <summary>
-    /// Up to while(iGlobalJobNo.load(std::memory_order_relaxed) == iJobNo)
-    /// </summary>
-    [TestMethod()]
-    public void ProcessTest()
-    {
-      NewJob newJob = JsonConvert.DeserializeObject<NewJob>("{\"jsonrpc\":\"2.0\",\"id\":1,\"error\":null,\"result\":{\"id\":\"831431040790814\",\"status\":\"OK\",\"job\":{\"job_id\":\"000000228b507492\",\"blob\":\"0606aea6c3cf055b878e5f92902e6691cb6be34012b2d20f6cd1fe74ebc7306b35e3cb55e4782000000092444031f7a6023a17838d25035743300cf2b8db6dcb539e1fc6e303475c5d763501\",\"target\":\"b7d10000\"}}}");
-      CryptoNight night = new CryptoNight();
-      night.Process(newJob.Result.Job);
-
-      Assert.IsTrue(night.bWorkBlob[0] == 6);
-      Assert.IsTrue(night.bWorkBlob[5] == 207);
-      Assert.IsTrue(night.bWorkBlob[73] == 118);
-      Assert.IsTrue(night.bWorkBlob[75] == 1);
-      Assert.IsTrue(night.iTarget == (ulong)230584300921369);
-      Assert.IsTrue(night.piNonce == 2449473536);
-    }
-
-
-
-    [TestMethod()]
-    public void ProcessTest2()
-    {
-      NewJob newJob = JsonConvert.DeserializeObject<NewJob>("{\"jsonrpc\":\"2.0\",\"id\":1,\"error\":null,\"result\":{\"id\":\"905120989173307\",\"status\":\"OK\",\"job\":{\"job_id\":\"000000228b601b20\",\"blob\":\"0405eeafc3cf0584f60a594f4850e6315aae83ae95cf980d8407346037895c65a2e324e858e18a0000006a3c7ebcfcf867030b6e03b52c736cfecdf3f1a9ccc06bb69382669b3b49c6905f02\",\"target\":\"b7d10000\"}}}");
-      CryptoNight night = new CryptoNight();
-      night.Process(newJob.Result.Job);
-
-      // Passing
-      Assert.AreEqual(night.bWorkBlob[0], 4);
-      Assert.AreEqual(night.bWorkBlob[5], 207);
-      Assert.AreEqual(night.bWorkBlob[73], 144);
-      Assert.AreEqual(night.bWorkBlob[75], 2);
-      Assert.AreEqual(night.piNonce, (uint)1778384896);
-
-      night.Step2_IncrementNonce();
-
-      Assert.IsTrue(night.piNonce == 1778384897);
-      Assert.IsTrue(night.bWorkBlob[38] == 138);
-      Assert.IsTrue(night.bWorkBlob[39] == 1);
-      Assert.IsTrue(night.bWorkBlob[42] == 106);
-
-      night.Step3_HashAndExtractBlocks();
-
-      Assert.IsTrue(night.ctx.keccakHash[0] == 79);
-      Assert.IsTrue(night.ctx.keccakHash[10] == 11);
-      Assert.IsTrue(night.ctx.keccakHash[129] == 59);
-      Assert.IsTrue(night.ctx.keccakHash[199] == 76);
-    }
-
-    
   }
 
   public static class TestExtensions
@@ -792,9 +468,10 @@ namespace HD.Tests
     public static void Process(
       this CryptoNight night,
       Job job,
+      Action<string> onComplete = null,
       string nonceOverride = null)
     {
-      night.Process(1, job.Job_Id, job.Blob, job.Target, nonceOverride);
+      night.Process(onComplete, 1, job.Job_Id, job.Blob, job.Target, nonceOverride);
     }
   }
 }

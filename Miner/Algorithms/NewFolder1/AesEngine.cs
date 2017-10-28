@@ -292,16 +292,11 @@ namespace HD
     /// <summary>
     /// This uses the key provided instead of the 10 internal working keys generated on Init.
     /// </summary>
-    public void Encrypt(
-      byte[] input,
-      int inOff,
-      uint[] key,
-      byte[] output,
-      int outOff)
+    public unsafe void Encrypt(
+      uint* data,
+      uint* key)
     {
-      UnPackBlock(input, inOff);
-      EncryptBlock(key);
-      PackBlock(output, outOff);
+      EncryptBlock(key, data);
     }
     #endregion
 
@@ -315,7 +310,7 @@ namespace HD
       C2 = Pack.LE_To_UInt32(bytes, off + 8);
       C3 = Pack.LE_To_UInt32(bytes, off + 12);
     }
-
+    
     void PackBlock(
       byte[] bytes,
       int off)
@@ -324,6 +319,26 @@ namespace HD
       Pack.UInt32_To_LE(C1, bytes, off + 4);
       Pack.UInt32_To_LE(C2, bytes, off + 8);
       Pack.UInt32_To_LE(C3, bytes, off + 12);
+    }
+
+    unsafe void EncryptBlock(
+      uint* kw,
+      uint* data)
+    {
+      uint t0 = data[0] ^ kw[0];
+      uint t1 = data[1] ^ kw[1];
+      uint t2 = data[2] ^ kw[2];
+
+      // TODO perf, maybe pre-calc T1, etc which are just shifted versions of T0.
+      uint tempdata3 = T0[data[3] & 255] ^ Shift(T0[(data[0] >> 8) & 255], 24) ^ Shift(T0[(data[1] >> 16) & 255], 16) ^ Shift(T0[(data[2] >> 24) & 255], 8) ^ kw[3];
+      uint tempdata2 = T0[data[2] & 255] ^ Shift(T0[(data[3] >> 8) & 255], 24) ^ Shift(T0[(data[0] >> 16) & 255], 16) ^ Shift(T0[(data[1] >> 24) & 255], 8) ^ kw[2];
+      uint tempdata1 = T0[data[1] & 255] ^ Shift(T0[(data[2] >> 8) & 255], 24) ^ Shift(T0[(data[3] >> 16) & 255], 16) ^ Shift(T0[(data[0] >> 24) & 255], 8) ^ kw[1];
+      uint tempdata0 = T0[data[0] & 255] ^ Shift(T0[(data[1] >> 8) & 255], 24) ^ Shift(T0[(data[2] >> 16) & 255], 16) ^ Shift(T0[(data[3] >> 24) & 255], 8) ^ kw[0];
+
+      data[3] = tempdata3;
+      data[2] = tempdata2;
+      data[1] = tempdata1;
+      data[0] = tempdata0;
     }
 
     void EncryptBlock(

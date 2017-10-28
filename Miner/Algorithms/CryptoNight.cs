@@ -29,17 +29,12 @@ namespace HD
     const int iThreadNo = 0;
     const int iResumeCnt = 0;
 
-    public readonly byte[] bWorkBlob = new byte[iWorkSize];
+    public readonly byte[] bWorkBlob = new byte[iWorkSize]; // TODO is this shared or per thread
 
     /// <summary>
     /// Not readonly as it changes each time a new job is requested.
     /// </summary>
     public string jobId;
-
-    /// <summary>
-    /// This is the only per-thread information
-    /// </summary>
-    public readonly CryptoNightDataPerThread ctx = new CryptoNightDataPerThread();
 
     /// <summary>
     /// Defines the goal RE the difficultly requirement.
@@ -62,254 +57,232 @@ namespace HD
         value.GetBytes(bWorkBlob, nonceIndexInWorkBlob);
       }
     }
+
+    event Action<string> onComplete;
     #endregion
 
     #region Public API
     public void Process(
+      Action<string> onComplete,
       int requestId,
       string jobId,
       string blob,
       string target,
       string nonceOverride = null)
     {
+      this.onComplete = onComplete;
       this.requestId = requestId;
       this.jobId = jobId;
       blob.ToByteArrayFromHex(bWorkBlob);
       iTarget = t32_to_t64(hex2bin(target));
       InitNonce(nonceOverride);
+
+      RunPerThread(requestId, jobId);
     }
 
-    public string GetResultJson()
+    unsafe void RunPerThread(int requestId, string jobId)
     {
-      NiceHashResultJson json = new NiceHashResultJson(requestId, jobId, piNonce, ctx.bResult);
-      return JsonConvert.SerializeObject(json);
-    }
-    #endregion
+      CryptoNightDataPerThread ctx = new CryptoNightDataPerThread();
 
-    public void Step2_IncrementNonce()
-    {
-      piNonce++; // TODO thinking maybe a shared counter starting from a random number -- but note valid bounds
-    }
+      AesEngine aes = new AesEngine();
 
-    public void Step3_HashAndExtractBlocks()
-    {
-      KeccakDigest.keccak(bWorkBlob, iWorkSize, ctx.keccakHash, sizeOfKeccakHash);
-      ExtractAndInitAesKey(true);
-      ExtractBlocksFromHash();
-    }
-
-    public void Step4_EncryptBlocksCreateScratchpad()
-    {
-      for (int scratchIndex = 0; scratchIndex < numberOfScratchpadSegments; scratchIndex++)
+      // byte[8][16]
+      byte[][] blocks = new byte[CryptoNight.numberOfBlocks][];
+      for (int i = 0; i < CryptoNight.numberOfBlocks; i++)
       {
-        for (int blockIndex = 0; blockIndex < numberOfBlocks; blockIndex++)
-        {
-          ctx.aes.ProcessBlock(ctx.blocks[blockIndex], 0, ctx.blocks[blockIndex], 0);
-        }
+        blocks[i] = new byte[CryptoNight.sizeOfBlock];
+      }
 
-        for (int blockIndex = 0; blockIndex < numberOfBlocks; blockIndex++)
+      ulong memoryHardLoop_Afirst;
+      ulong memoryHardLoop_Asecond;
+      ulong memoryHardLoop_Bfirst;
+      ulong memoryHardLoop_Bsecond;
+
+      while (true) // TODO move the loop into code not test
+      {
+        piNonce++; // TODO thinking maybe a shared counter starting from a random number -- but note valid bounds
+
+        KeccakDigest.keccak(bWorkBlob, iWorkSize, ctx.keccakHash, sizeOfKeccakHash);
+        ExtractAndInitAesKey(ctx, aes, true);
+        ExtractBlocksFromHash(ctx, blocks);
+
+        for (int scratchIndex = 0; scratchIndex < numberOfScratchpadSegments; scratchIndex++)
         {
-          byte[] block = ctx.blocks[blockIndex];
-          for (int byteIndex = 0; byteIndex < sizeOfBlock; byteIndex++)
+          for (int blockIndex = 0; blockIndex < numberOfBlocks; blockIndex++)
           {
-            int index = scratchIndex * numberOfBlocks * sizeOfBlock + blockIndex * sizeOfBlock + byteIndex;
-            ctx.scratchpad[index] = block[byteIndex];
+            aes.ProcessBlock(blocks[blockIndex], 0, blocks[blockIndex], 0);
+          }
+
+          for (int blockIndex = 0; blockIndex < numberOfBlocks; blockIndex++)
+          {
+            byte[] block = blocks[blockIndex];
+            for (int byteIndex = 0; byteIndex < sizeOfBlock; byteIndex++)
+            {
+              int index = scratchIndex * numberOfBlocks * sizeOfBlock + blockIndex * sizeOfBlock + byteIndex;
+              ctx.scratchpad[index] = block[byteIndex];
+            }
           }
         }
-      }
-    }
 
-    public unsafe void Step5_InitHardLoopAAndB()
-    {
-      fixed(byte* key = ctx.key)
-      {
-        ulong* longKey = (ulong*)key;
-
-        fixed(byte* hash = ctx.keccakHash)
+        fixed (byte* key = ctx.key)
         {
-          ulong* longHash = (ulong*)hash;
+          ulong* longKey = (ulong*)key;
 
-          ctx.memoryHardLoop_Afirst = longKey[0] ^ longHash[sizeOfKey / sizeof(long)];
-          ctx.memoryHardLoop_Asecond = longKey[1] ^ longHash[sizeOfKey / sizeof(long) + 1];
-          ctx.memoryHardLoop_Bfirst = longKey[2] ^ longHash[sizeOfKey / sizeof(long) + 2];
-          ctx.memoryHardLoop_Bsecond = longKey[3] ^ longHash[sizeOfKey / sizeof(long) + 3];
-        }
-      }
+          fixed (byte* hash2 = ctx.keccakHash)
+          {
+            ulong* longHash = (ulong*)hash2;
 
-
-      for (int i = 0; i < sizeOfBlock; i++)
-      {
-        ctx.memoryHardLoop_A[i] = (byte)(ctx.key[i] ^ ctx.keccakHash[sizeOfKey + i]);
-        ctx.memoryHardLoop_B[i] = (byte)(ctx.key[i + sizeOfBlock] ^ ctx.keccakHash[sizeOfKey + i + sizeOfBlock]);
-      }
-
-      Console.WriteLine();
-    }
-
-    public void ProcessStep10()
-    {
-      ulong idx0 = BitConverter.ToUInt64(ctx.memoryHardLoop_A, 0);
-      int idx0Address = (int)(idx0 & scratchpadAddressBitmask);
-
-      // TODO can we reuse these?
-      byte[] tempBlock = new byte[sizeOfBlock];
-      uint[] key = new uint[AesEngine.numberOfUintsPerKey];
-
-      for (int i = 0; i < hardLoopIterrationCount; i++)
-      {
-        for (int tempIndex = 0; tempIndex < sizeOfBlock; tempIndex++)
-        {
-          tempBlock[tempIndex] = ctx.scratchpad[idx0Address + tempIndex];
+            memoryHardLoop_Afirst = longKey[0] ^ longHash[sizeOfKey / sizeof(long)];
+            memoryHardLoop_Asecond = longKey[1] ^ longHash[sizeOfKey / sizeof(long) + 1];
+            memoryHardLoop_Bfirst = longKey[2] ^ longHash[sizeOfKey / sizeof(long) + 2];
+            memoryHardLoop_Bsecond = longKey[3] ^ longHash[sizeOfKey / sizeof(long) + 3];
+          }
         }
 
-        for (int keyIndex = 0; keyIndex < AesEngine.numberOfUintsPerKey; keyIndex++)
+        // TODO test ctx locally
+
+        int idx0Address = (int)(memoryHardLoop_Afirst & scratchpadAddressBitmask) / sizeof(long);
+
+        uint* keyAsUint = stackalloc uint[AesEngine.numberOfUintsPerKey];
+        ulong* keyAsUlong = (ulong*)keyAsUint;
+
+        ulong* tempBlockAsUlong = stackalloc ulong[sizeOfBlock / sizeof(ulong)];
+        uint* tempBlockAsUint = (uint*)tempBlockAsUlong;
+
+        // TODO don't need bytes anymore?
+        // TODO test stackalloc scratchpad?
+        fixed (byte* scratchpadBytes = ctx.scratchpad)
         {
-          key[keyIndex] = BitConverter.ToUInt32(ctx.memoryHardLoop_A, keyIndex * 4);
+          ulong* scratchpadLong = (ulong*)scratchpadBytes;
+
+          for (int i = 0; i < hardLoopIterrationCount; i++)
+          {
+            tempBlockAsUlong[0] = scratchpadLong[idx0Address];
+            tempBlockAsUlong[1] = scratchpadLong[idx0Address + 1];
+
+            keyAsUlong[0] = memoryHardLoop_Afirst;
+            keyAsUlong[1] = memoryHardLoop_Asecond;
+
+            aes.Encrypt(tempBlockAsUint, keyAsUint);
+
+            scratchpadLong[idx0Address] = tempBlockAsUlong[0] ^ memoryHardLoop_Bfirst;
+            scratchpadLong[idx0Address + 1] = tempBlockAsUlong[1] ^ memoryHardLoop_Bsecond;
+
+            idx0Address = (int)(tempBlockAsUlong[0] & scratchpadAddressBitmask) / sizeof(long);
+
+            memoryHardLoop_Bfirst = tempBlockAsUlong[0];
+            memoryHardLoop_Bsecond = tempBlockAsUlong[1];
+
+            tempBlockAsUlong[0].UnsignedMultiply128(scratchpadLong[idx0Address],
+              out ulong mulIntFirst, out ulong mulIntSecond);
+
+            unchecked
+            {
+              memoryHardLoop_Afirst += mulIntSecond;
+              memoryHardLoop_Asecond += mulIntFirst;
+            }
+
+            tempBlockAsUlong[0] = scratchpadLong[idx0Address];
+            tempBlockAsUlong[1] = scratchpadLong[idx0Address + 1];
+
+            scratchpadLong[idx0Address] = memoryHardLoop_Afirst;
+            scratchpadLong[idx0Address + 1] = memoryHardLoop_Asecond;
+
+            memoryHardLoop_Afirst ^= tempBlockAsUlong[0];
+            memoryHardLoop_Asecond ^= tempBlockAsUlong[1];
+
+            idx0Address = (int)(memoryHardLoop_Afirst & scratchpadAddressBitmask) / sizeof(long);
+          }
         }
 
-        ctx.aes.Encrypt(tempBlock, 0, key, tempBlock, 0);
 
-        for (int bIndex = 0; bIndex < sizeOfBlock; bIndex++)
+        ExtractAndInitAesKey(ctx, aes, false);
+        ExtractBlocksFromHash(ctx, blocks);
+
+        for (int scratchIndex = 0; scratchIndex < numberOfScratchpadSegments; scratchIndex++)
         {
-          ctx.scratchpad[idx0Address + bIndex] 
-            = (byte)(tempBlock[bIndex] ^ ctx.memoryHardLoop_B[bIndex]);
+          for (int blockIndex = 0; blockIndex < 8; blockIndex++)
+          {
+            for (int byteIndex = 0; byteIndex < 16; byteIndex++)
+            {
+              blocks[blockIndex][byteIndex] ^=
+                ctx.scratchpad[byteIndex + scratchIndex * 128 + blockIndex * blocks[blockIndex].Length];
+            }
+          }
+
+          EncryptBlocks(ctx, aes, blocks);
         }
 
-        idx0 = BitConverter.ToUInt64(tempBlock, 0);
-        idx0Address = (int)(idx0 & scratchpadAddressBitmask);
 
-        for (int bIndex = 0; bIndex < sizeOfBlock; bIndex++)
-        {
-          ctx.memoryHardLoop_B[bIndex] = tempBlock[bIndex];
-        }
-
-        ulong cl = BitConverter.ToUInt64(ctx.scratchpad, idx0Address);
-
-        idx0.UnsignedMultiply128(cl, out ulong mulIntLow, out ulong mulIntHigh);
-        ulong aIntLow = BitConverter.ToUInt64(ctx.memoryHardLoop_A, 0);
-        ulong aIntHigh = BitConverter.ToUInt64(ctx.memoryHardLoop_A, 8);
-        unchecked
-        {
-          aIntLow += mulIntHigh;
-          aIntHigh += mulIntLow;
-        }
-        aIntLow.GetBytes(ctx.memoryHardLoop_A, 0);
-        aIntHigh.GetBytes(ctx.memoryHardLoop_A, sizeof(ulong));
-
-        for (int aIndex = 0; aIndex < sizeOfBlock; aIndex++)
-        {
-          tempBlock[aIndex] = ctx.scratchpad[idx0Address + aIndex];
-        }
-
-        for (int aIndex = 0; aIndex < sizeOfBlock; aIndex++)
-        {
-          ctx.scratchpad[idx0Address + aIndex] = ctx.memoryHardLoop_A[aIndex];
-          ctx.memoryHardLoop_A[aIndex] ^= tempBlock[aIndex];
-        }
-
-        idx0 = BitConverter.ToUInt64(ctx.memoryHardLoop_A, 0);
-        idx0Address = (int)(idx0 & scratchpadAddressBitmask);
-      }
-    }
-
-    public void ProcessStep11()
-    {
-      ExtractAndInitAesKey(false);
-    }
-
-
-
-    public void ProcessStep12()
-    {
-      ExtractBlocksFromHash();
-
-      //for (int byteIndex = 0; byteIndex < 128; byteIndex++)
-      //{
-      //  byte hashValue = ctx.hash_state[byteIndex + 64];
-      //  byte scratchValue = ctx.long_state[byteIndex];
-      //  ctx.long_state[byteIndex] = (byte)(hashValue ^ scratchValue);
-      //}
-
-      for (int scratchIndex = 0; scratchIndex < numberOfScratchpadSegments; scratchIndex++)
-      {
         for (int blockIndex = 0; blockIndex < 8; blockIndex++)
         {
           for (int byteIndex = 0; byteIndex < 16; byteIndex++)
           {
-            ctx.blocks[blockIndex][byteIndex] ^=
-              ctx.scratchpad[byteIndex + scratchIndex * 128 + blockIndex * ctx.blocks[blockIndex].Length];
+            ctx.keccakHash[64 + byteIndex + blockIndex * 16] = blocks[blockIndex][byteIndex];
           }
         }
 
-        EncryptBlocks();
-      }
 
-
-      for (int blockIndex = 0; blockIndex < 8; blockIndex++)
-      {
-        for (int byteIndex = 0; byteIndex < 16; byteIndex++)
+        ulong[] tempLong = new ulong[sizeOfKeccakHash / sizeof(ulong) / sizeof(byte)];
+        for (int i = 0; i < tempLong.Length; i++)
         {
-          ctx.keccakHash[64 + byteIndex + blockIndex * 16] = ctx.blocks[blockIndex][byteIndex];
+          tempLong[i] = BitConverter.ToUInt64(ctx.keccakHash, i * sizeof(ulong) / sizeof(byte));
         }
-      }
 
-    }
+        KeccakDigest.keccakf(tempLong, KeccakDigest.KECCAK_ROUNDS);
 
-    public void ProcessStep13()
-    {
-      ulong[] tempLong = new ulong[sizeOfKeccakHash / sizeof(ulong) / sizeof(byte)];
-      for (int i = 0; i < tempLong.Length; i++)
-      {
-        tempLong[i] = BitConverter.ToUInt64(ctx.keccakHash, i * sizeof(ulong) / sizeof(byte));
-      }
-
-      KeccakDigest.keccakf(tempLong, KeccakDigest.KECCAK_ROUNDS);
-
-      for (int longIndex = 0; longIndex < tempLong.Length; longIndex++)
-      {
-        byte[] longData = BitConverter.GetBytes(tempLong[longIndex]);
-        for (int byteIndex = 0; byteIndex < 8; byteIndex++)
+        for (int longIndex = 0; longIndex < tempLong.Length; longIndex++)
         {
-          ctx.keccakHash[longIndex * sizeof(ulong) + byteIndex] = longData[byteIndex];
+          byte[] longData = BitConverter.GetBytes(tempLong[longIndex]);
+          for (int byteIndex = 0; byteIndex < 8; byteIndex++)
+          {
+            ctx.keccakHash[longIndex * sizeof(ulong) + byteIndex] = longData[byteIndex];
+          }
+        }
+
+
+        Digest hash;
+        switch (ctx.keccakHash[0] & 3)
+        {
+          case 0:
+            {
+              hash = new BLAKE256();
+              break;
+            }
+          case 1:
+            {
+              hash = new Groestl256();
+              break;
+            }
+          case 2:
+            {
+              hash = new JH256();
+              break;
+            }
+          case 3:
+            {
+              hash = new Skein256();
+              break;
+            }
+          default:
+            Debug.Fail("Missing hash?!");
+            hash = null;
+            break;
+        }
+
+        hash.update(ctx.keccakHash);
+        hash.digest(ctx.bResult, 0, 32);
+
+        if (ctx.piHashVal < iTarget)
+        {
+          NiceHashResultJson json = new NiceHashResultJson(requestId, jobId, piNonce, ctx.bResult);
+          onComplete(JsonConvert.SerializeObject(json));
+          return; // TODO should loop for another job
         }
       }
     }
+    #endregion
 
-    
-    public void Step15_FinalHash()
-    {
-      Digest hash;
-      switch (ctx.keccakHash[0] & 3)
-      {
-        case 0:
-          {
-            hash = new BLAKE256();
-            break;
-          }
-        case 1:
-          {
-            hash = new Groestl256();
-            break;
-          }
-        case 2:
-          {
-            hash = new JH256();
-            break;
-          }
-        case 3:
-          {
-            hash = new Skein256();
-            break;
-          }
-        default:
-          Debug.Fail("Missing hash?!");
-          hash = null;
-          break;
-      }
-
-      hash.update(ctx.keccakHash);
-      hash.digest(ctx.bResult, 0, 32);
-    }
 
     #region Write Helpers
     void InitNonce(
@@ -322,26 +295,33 @@ namespace HD
       }
     }
 
-    void ExtractBlocksFromHash()
+    void ExtractBlocksFromHash(
+      CryptoNightDataPerThread ctx,
+      byte[][] blocks)
     {
       for (int blockIndex = 0; blockIndex < 8; blockIndex++)
       {
         for (int byteIndex = 0; byteIndex < 16; byteIndex++)
         {
-          ctx.blocks[blockIndex][byteIndex] = ctx.keccakHash[64 + blockIndex * 16 + byteIndex];
+          blocks[blockIndex][byteIndex] = ctx.keccakHash[64 + blockIndex * 16 + byteIndex];
         }
       }
     }
 
-    void EncryptBlocks()
+    void EncryptBlocks(
+      CryptoNightDataPerThread ctx,
+      AesEngine aes,
+      byte[][] blocks)
     {
       for (int blockIndex = 0; blockIndex < 8; blockIndex++)
       {
-        ctx.aes.ProcessBlock(ctx.blocks[blockIndex], 0, ctx.blocks[blockIndex], 0);
+        aes.ProcessBlock(blocks[blockIndex], 0, blocks[blockIndex], 0);
       }
     }
 
     void ExtractAndInitAesKey(
+      CryptoNightDataPerThread ctx,
+      AesEngine aes,
       bool useFirstSegmentVsSecond)
     {
       for (int i = 0; i < sizeOfKey; i++)
@@ -354,7 +334,7 @@ namespace HD
         ctx.key[i] = ctx.keccakHash[index];
       }
 
-      ctx.aes.Init(ctx.key);
+      aes.Init(ctx.key);
     }
     #endregion
 
