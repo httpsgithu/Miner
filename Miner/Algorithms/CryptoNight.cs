@@ -83,212 +83,218 @@ namespace HD
 
     unsafe void RunPerThread()
     {
-      CryptoNightDataPerThread ctx = new CryptoNightDataPerThread();
-
-      byte[] ctxkeccakHash = new byte[CryptoNight.sizeOfKeccakHash];
-      byte[] ctxscratchpad = new byte[CryptoNight.sizeOfScratchpad];
-      byte[] ctxkey = new byte[CryptoNight.sizeOfKey];
-
-      AesEngine aes = new AesEngine();
-
-      // byte[8][16]
-      byte[][] blocks = new byte[CryptoNight.numberOfBlocks][];
-      for (int i = 0; i < CryptoNight.numberOfBlocks; i++)
+      byte[] resultData = new byte[sizeOfResult];
+      fixed (byte* resultDataPointer = resultData)
       {
-        blocks[i] = new byte[CryptoNight.sizeOfBlock];
-      }
+        ulong* piHashVal = (ulong*)(resultDataPointer + hashValOffsetInResult);
 
+        byte[] ctxkeccakHash = new byte[sizeOfKeccakHash];
+        byte[] ctxscratchpad = new byte[sizeOfScratchpad];
+        byte[] ctxkey = new byte[sizeOfKey];
 
-      ulong memoryHardLoop_Afirst;
-      ulong memoryHardLoop_Asecond;
-      ulong memoryHardLoop_Bfirst;
-      ulong memoryHardLoop_Bsecond;
+        AesEngine aes = new AesEngine();
 
-      while (true) // TODO move the loop into code not test
-      {
-        piNonce++; // TODO thinking maybe a shared counter starting from a random number -- but note valid bounds
+        byte* blockData = stackalloc byte[numberOfBlocks * sizeOfBlock];
 
-        KeccakDigest.keccak(bWorkBlob, iWorkSize, ctxkeccakHash, sizeOfKeccakHash);
-        ExtractAndInitAesKey(ctx, aes, true, ctxkey, ctxkeccakHash);
-        ExtractBlocksFromHash(ctx, blocks, ctxkeccakHash);
-
-        for (int scratchIndex = 0; scratchIndex < numberOfScratchpadSegments; scratchIndex++)
+        // byte[8][16]
+        byte[][] blocks = new byte[numberOfBlocks][]; // stackalloc
+        for (int i = 0; i < numberOfBlocks; i++)
         {
-          for (int blockIndex = 0; blockIndex < numberOfBlocks; blockIndex++)
-          {
-            fixed (byte* blockBytes = blocks[blockIndex])
-            {
-              uint* blockUints = (uint*)blockBytes;
-
-              aes.ProcessBlock(blockUints);
-            }
-          }
-
-          for (int blockIndex = 0; blockIndex < numberOfBlocks; blockIndex++)
-          {
-            byte[] block = blocks[blockIndex];
-            for (int byteIndex = 0; byteIndex < sizeOfBlock; byteIndex++)
-            {
-              int index = scratchIndex * numberOfBlocks * sizeOfBlock + blockIndex * sizeOfBlock + byteIndex;
-              ctxscratchpad[index] = block[byteIndex];
-            }
-          }
-        }
-
-        fixed (byte* key = ctxkey)
-        {
-          ulong* longKey = (ulong*)key;
-
-          fixed (byte* hash2 = ctxkeccakHash)
-          {
-            ulong* longHash = (ulong*)hash2;
-
-            memoryHardLoop_Afirst = longKey[0] ^ longHash[sizeOfKey / sizeof(long)];
-            memoryHardLoop_Asecond = longKey[1] ^ longHash[sizeOfKey / sizeof(long) + 1];
-            memoryHardLoop_Bfirst = longKey[2] ^ longHash[sizeOfKey / sizeof(long) + 2];
-            memoryHardLoop_Bsecond = longKey[3] ^ longHash[sizeOfKey / sizeof(long) + 3];
-          }
-        }
-
-        // TODO test ctx locally
-
-        int idx0Address = (int)(memoryHardLoop_Afirst & scratchpadAddressBitmask) / sizeof(long);
-
-        uint* keyAsUint = stackalloc uint[AesEngine.numberOfUintsPerKey];
-        ulong* keyAsUlong = (ulong*)keyAsUint;
-
-        ulong* tempBlockAsUlong = stackalloc ulong[sizeOfBlock / sizeof(ulong)];
-        uint* tempBlockAsUint = (uint*)tempBlockAsUlong;
-
-        // TODO don't need bytes anymore?
-        // TODO test stackalloc scratchpad?
-        fixed (byte* scratchpadBytes = ctxscratchpad)
-        {
-          ulong* scratchpadLong = (ulong*)scratchpadBytes;
-
-          for (int i = 0; i < hardLoopIterrationCount; i++)
-          {
-            tempBlockAsUlong[0] = scratchpadLong[idx0Address];
-            tempBlockAsUlong[1] = scratchpadLong[idx0Address + 1];
-
-            keyAsUlong[0] = memoryHardLoop_Afirst;
-            keyAsUlong[1] = memoryHardLoop_Asecond;
-
-            aes.Encrypt(tempBlockAsUint, keyAsUint);
-
-            scratchpadLong[idx0Address] = tempBlockAsUlong[0] ^ memoryHardLoop_Bfirst;
-            scratchpadLong[idx0Address + 1] = tempBlockAsUlong[1] ^ memoryHardLoop_Bsecond;
-
-            idx0Address = (int)(tempBlockAsUlong[0] & scratchpadAddressBitmask) / sizeof(long);
-
-            memoryHardLoop_Bfirst = tempBlockAsUlong[0];
-            memoryHardLoop_Bsecond = tempBlockAsUlong[1];
-
-            tempBlockAsUlong[0].UnsignedMultiply128(scratchpadLong[idx0Address],
-              out ulong mulIntFirst, out ulong mulIntSecond);
-
-            unchecked
-            {
-              memoryHardLoop_Afirst += mulIntSecond;
-              memoryHardLoop_Asecond += mulIntFirst;
-            }
-
-            tempBlockAsUlong[0] = scratchpadLong[idx0Address];
-            tempBlockAsUlong[1] = scratchpadLong[idx0Address + 1];
-
-            scratchpadLong[idx0Address] = memoryHardLoop_Afirst;
-            scratchpadLong[idx0Address + 1] = memoryHardLoop_Asecond;
-
-            memoryHardLoop_Afirst ^= tempBlockAsUlong[0];
-            memoryHardLoop_Asecond ^= tempBlockAsUlong[1];
-
-            idx0Address = (int)(memoryHardLoop_Afirst & scratchpadAddressBitmask) / sizeof(long);
-          }
+          blocks[i] = new byte[sizeOfBlock];
         }
 
 
-        ExtractAndInitAesKey(ctx, aes, false, ctxkey, ctxkeccakHash);
-        ExtractBlocksFromHash(ctx, blocks, ctxkeccakHash);
+        ulong memoryHardLoop_Afirst;
+        ulong memoryHardLoop_Asecond;
+        ulong memoryHardLoop_Bfirst;
+        ulong memoryHardLoop_Bsecond;
 
-        for (int scratchIndex = 0; scratchIndex < numberOfScratchpadSegments; scratchIndex++)
+        while (true) // TODO move the loop into code not test
         {
+          piNonce++; // TODO thinking maybe a shared counter starting from a random number -- but note valid bounds
+
+          KeccakDigest.keccak(bWorkBlob, iWorkSize, ctxkeccakHash, sizeOfKeccakHash);
+          ExtractAndInitAesKey(aes, true, ctxkey, ctxkeccakHash);
+          ExtractBlocksFromHash(blocks, ctxkeccakHash);
+
+          for (int scratchIndex = 0; scratchIndex < numberOfScratchpadSegments; scratchIndex++)
+          {
+            for (int blockIndex = 0; blockIndex < numberOfBlocks; blockIndex++)
+            {
+              fixed (byte* blockBytes = blocks[blockIndex])
+              {
+                uint* blockUints = (uint*)blockBytes;
+
+                aes.ProcessBlock(blockUints);
+              }
+            }
+
+            for (int blockIndex = 0; blockIndex < numberOfBlocks; blockIndex++)
+            {
+              byte[] block = blocks[blockIndex];
+              for (int byteIndex = 0; byteIndex < sizeOfBlock; byteIndex++)
+              {
+                int index = scratchIndex * numberOfBlocks * sizeOfBlock + blockIndex * sizeOfBlock + byteIndex;
+                ctxscratchpad[index] = block[byteIndex];
+              }
+            }
+          }
+
+          fixed (byte* key = ctxkey)
+          {
+            ulong* longKey = (ulong*)key;
+
+            fixed (byte* hash2 = ctxkeccakHash)
+            {
+              ulong* longHash = (ulong*)hash2;
+
+              memoryHardLoop_Afirst = longKey[0] ^ longHash[sizeOfKey / sizeof(long)];
+              memoryHardLoop_Asecond = longKey[1] ^ longHash[sizeOfKey / sizeof(long) + 1];
+              memoryHardLoop_Bfirst = longKey[2] ^ longHash[sizeOfKey / sizeof(long) + 2];
+              memoryHardLoop_Bsecond = longKey[3] ^ longHash[sizeOfKey / sizeof(long) + 3];
+            }
+          }
+
+          // TODO test ctx locally
+
+          int idx0Address = (int)(memoryHardLoop_Afirst & scratchpadAddressBitmask) / sizeof(long);
+
+          uint* keyAsUint = stackalloc uint[AesEngine.numberOfUintsPerKey];
+          ulong* keyAsUlong = (ulong*)keyAsUint;
+
+          ulong* tempBlockAsUlong = stackalloc ulong[sizeOfBlock / sizeof(ulong)];
+          uint* tempBlockAsUint = (uint*)tempBlockAsUlong;
+
+          // TODO don't need bytes anymore?
+          // TODO test stackalloc scratchpad?
+          fixed (byte* scratchpadBytes = ctxscratchpad)
+          {
+            ulong* scratchpadLong = (ulong*)scratchpadBytes;
+
+            for (int i = 0; i < hardLoopIterrationCount; i++)
+            {
+              tempBlockAsUlong[0] = scratchpadLong[idx0Address];
+              tempBlockAsUlong[1] = scratchpadLong[idx0Address + 1];
+
+              keyAsUlong[0] = memoryHardLoop_Afirst;
+              keyAsUlong[1] = memoryHardLoop_Asecond;
+
+              aes.Encrypt(tempBlockAsUint, keyAsUint);
+
+              scratchpadLong[idx0Address] = tempBlockAsUlong[0] ^ memoryHardLoop_Bfirst;
+              scratchpadLong[idx0Address + 1] = tempBlockAsUlong[1] ^ memoryHardLoop_Bsecond;
+
+              idx0Address = (int)(tempBlockAsUlong[0] & scratchpadAddressBitmask) / sizeof(long);
+
+              memoryHardLoop_Bfirst = tempBlockAsUlong[0];
+              memoryHardLoop_Bsecond = tempBlockAsUlong[1];
+
+              tempBlockAsUlong[0].UnsignedMultiply128(scratchpadLong[idx0Address],
+                out ulong mulIntFirst, out ulong mulIntSecond);
+
+              unchecked
+              {
+                memoryHardLoop_Afirst += mulIntSecond;
+                memoryHardLoop_Asecond += mulIntFirst;
+              }
+
+              tempBlockAsUlong[0] = scratchpadLong[idx0Address];
+              tempBlockAsUlong[1] = scratchpadLong[idx0Address + 1];
+
+              scratchpadLong[idx0Address] = memoryHardLoop_Afirst;
+              scratchpadLong[idx0Address + 1] = memoryHardLoop_Asecond;
+
+              memoryHardLoop_Afirst ^= tempBlockAsUlong[0];
+              memoryHardLoop_Asecond ^= tempBlockAsUlong[1];
+
+              idx0Address = (int)(memoryHardLoop_Afirst & scratchpadAddressBitmask) / sizeof(long);
+            }
+          }
+
+
+          ExtractAndInitAesKey(aes, false, ctxkey, ctxkeccakHash);
+          ExtractBlocksFromHash(blocks, ctxkeccakHash);
+
+          for (int scratchIndex = 0; scratchIndex < numberOfScratchpadSegments; scratchIndex++)
+          {
+            for (int blockIndex = 0; blockIndex < 8; blockIndex++)
+            {
+              for (int byteIndex = 0; byteIndex < 16; byteIndex++)
+              {
+                blocks[blockIndex][byteIndex] ^=
+                  ctxscratchpad[byteIndex + scratchIndex * 128 + blockIndex * blocks[blockIndex].Length];
+              }
+            }
+
+            EncryptBlocks(aes, blocks);
+          }
+
+
           for (int blockIndex = 0; blockIndex < 8; blockIndex++)
           {
             for (int byteIndex = 0; byteIndex < 16; byteIndex++)
             {
-              blocks[blockIndex][byteIndex] ^=
-                ctxscratchpad[byteIndex + scratchIndex * 128 + blockIndex * blocks[blockIndex].Length];
+              ctxkeccakHash[64 + byteIndex + blockIndex * 16] = blocks[blockIndex][byteIndex];
             }
           }
 
-          EncryptBlocks(ctx, aes, blocks);
-        }
 
-
-        for (int blockIndex = 0; blockIndex < 8; blockIndex++)
-        {
-          for (int byteIndex = 0; byteIndex < 16; byteIndex++)
+          ulong[] tempLong = new ulong[sizeOfKeccakHash / sizeof(ulong) / sizeof(byte)];
+          for (int i = 0; i < tempLong.Length; i++)
           {
-            ctxkeccakHash[64 + byteIndex + blockIndex * 16] = blocks[blockIndex][byteIndex];
+            tempLong[i] = BitConverter.ToUInt64(ctxkeccakHash, i * sizeof(ulong) / sizeof(byte));
           }
-        }
 
+          KeccakDigest.keccakf(tempLong, KeccakDigest.KECCAK_ROUNDS);
 
-        ulong[] tempLong = new ulong[sizeOfKeccakHash / sizeof(ulong) / sizeof(byte)];
-        for (int i = 0; i < tempLong.Length; i++)
-        {
-          tempLong[i] = BitConverter.ToUInt64(ctxkeccakHash, i * sizeof(ulong) / sizeof(byte));
-        }
-
-        KeccakDigest.keccakf(tempLong, KeccakDigest.KECCAK_ROUNDS);
-
-        for (int longIndex = 0; longIndex < tempLong.Length; longIndex++)
-        {
-          byte[] longData = BitConverter.GetBytes(tempLong[longIndex]);
-          for (int byteIndex = 0; byteIndex < 8; byteIndex++)
+          for (int longIndex = 0; longIndex < tempLong.Length; longIndex++)
           {
-            ctxkeccakHash[longIndex * sizeof(ulong) + byteIndex] = longData[byteIndex];
+            byte[] longData = BitConverter.GetBytes(tempLong[longIndex]);
+            for (int byteIndex = 0; byteIndex < 8; byteIndex++)
+            {
+              ctxkeccakHash[longIndex * sizeof(ulong) + byteIndex] = longData[byteIndex];
+            }
           }
-        }
 
 
-        Digest hash;
-        switch (ctxkeccakHash[0] & 3)
-        {
-          case 0:
-            {
-              hash = new BLAKE256();
+          Digest hash;
+          switch (ctxkeccakHash[0] & 3)
+          {
+            case 0:
+              {
+                hash = new BLAKE256();
+                break;
+              }
+            case 1:
+              {
+                hash = new Groestl256();
+                break;
+              }
+            case 2:
+              {
+                hash = new JH256();
+                break;
+              }
+            case 3:
+              {
+                hash = new Skein256();
+                break;
+              }
+            default:
+              Debug.Fail("Missing hash?!");
+              hash = null;
               break;
-            }
-          case 1:
-            {
-              hash = new Groestl256();
-              break;
-            }
-          case 2:
-            {
-              hash = new JH256();
-              break;
-            }
-          case 3:
-            {
-              hash = new Skein256();
-              break;
-            }
-          default:
-            Debug.Fail("Missing hash?!");
-            hash = null;
-            break;
-        }
+          }
 
-        hash.update(ctxkeccakHash);
-        hash.digest(ctx.bResult, 0, 32);
+          hash.update(ctxkeccakHash);
+          hash.digest(resultData, 0, 32);
 
-        if (ctx.piHashVal < iTarget)
-        {
-          NiceHashResultJson json = new NiceHashResultJson(requestId, jobId, piNonce, ctx.bResult);
-          onComplete(JsonConvert.SerializeObject(json));
-          return; // TODO should loop for another job
+          if (*piHashVal < iTarget)
+          {
+            NiceHashResultJson json = new NiceHashResultJson(requestId, jobId, piNonce, resultData);
+            onComplete(JsonConvert.SerializeObject(json));
+            return; // TODO should loop for another job
+          }
         }
       }
     }
@@ -305,7 +311,6 @@ namespace HD
     }
 
     unsafe void ExtractBlocksFromHash(
-      CryptoNightDataPerThread ctx,
       byte[][] blocks,
       byte[] ctxkeccakHash)
     {
@@ -326,7 +331,6 @@ namespace HD
     }
 
     unsafe void EncryptBlocks(
-      CryptoNightDataPerThread ctx,
       AesEngine aes,
       byte[][] blocks)
     {
@@ -342,7 +346,6 @@ namespace HD
     }
 
     void ExtractAndInitAesKey(
-      CryptoNightDataPerThread ctx,
       AesEngine aes,
       bool useFirstSegmentVsSecond,
       byte[] ctxkey,

@@ -12,14 +12,6 @@ namespace HD.Algorithms
 
 
 
-    public readonly byte[] bResult = new byte[CryptoNight.sizeOfResult];
-
-    public ulong piHashVal
-    {
-      get
-      {
-        return BitConverter.ToUInt64(bResult, CryptoNight.hashValOffsetInResult);
-      }
-    }
+    
   }
 }
