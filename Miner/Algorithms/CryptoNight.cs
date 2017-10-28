@@ -77,12 +77,17 @@ namespace HD
       iTarget = t32_to_t64(hex2bin(target));
       InitNonce(nonceOverride);
 
-      RunPerThread(requestId, jobId);
+      RunPerThread();
     }
+    #endregion
 
-    unsafe void RunPerThread(int requestId, string jobId)
+    unsafe void RunPerThread()
     {
       CryptoNightDataPerThread ctx = new CryptoNightDataPerThread();
+
+      byte[] ctxkeccakHash = new byte[CryptoNight.sizeOfKeccakHash];
+      byte[] ctxscratchpad = new byte[CryptoNight.sizeOfScratchpad];
+      byte[] ctxkey = new byte[CryptoNight.sizeOfKey];
 
       AesEngine aes = new AesEngine();
 
@@ -103,9 +108,9 @@ namespace HD
       {
         piNonce++; // TODO thinking maybe a shared counter starting from a random number -- but note valid bounds
 
-        KeccakDigest.keccak(bWorkBlob, iWorkSize, ctx.keccakHash, sizeOfKeccakHash);
-        ExtractAndInitAesKey(ctx, aes, true);
-        ExtractBlocksFromHash(ctx, blocks);
+        KeccakDigest.keccak(bWorkBlob, iWorkSize, ctxkeccakHash, sizeOfKeccakHash);
+        ExtractAndInitAesKey(ctx, aes, true, ctxkey, ctxkeccakHash);
+        ExtractBlocksFromHash(ctx, blocks, ctxkeccakHash);
 
         for (int scratchIndex = 0; scratchIndex < numberOfScratchpadSegments; scratchIndex++)
         {
@@ -125,16 +130,16 @@ namespace HD
             for (int byteIndex = 0; byteIndex < sizeOfBlock; byteIndex++)
             {
               int index = scratchIndex * numberOfBlocks * sizeOfBlock + blockIndex * sizeOfBlock + byteIndex;
-              ctx.scratchpad[index] = block[byteIndex];
+              ctxscratchpad[index] = block[byteIndex];
             }
           }
         }
 
-        fixed (byte* key = ctx.key)
+        fixed (byte* key = ctxkey)
         {
           ulong* longKey = (ulong*)key;
 
-          fixed (byte* hash2 = ctx.keccakHash)
+          fixed (byte* hash2 = ctxkeccakHash)
           {
             ulong* longHash = (ulong*)hash2;
 
@@ -157,7 +162,7 @@ namespace HD
 
         // TODO don't need bytes anymore?
         // TODO test stackalloc scratchpad?
-        fixed (byte* scratchpadBytes = ctx.scratchpad)
+        fixed (byte* scratchpadBytes = ctxscratchpad)
         {
           ulong* scratchpadLong = (ulong*)scratchpadBytes;
 
@@ -202,8 +207,8 @@ namespace HD
         }
 
 
-        ExtractAndInitAesKey(ctx, aes, false);
-        ExtractBlocksFromHash(ctx, blocks);
+        ExtractAndInitAesKey(ctx, aes, false, ctxkey, ctxkeccakHash);
+        ExtractBlocksFromHash(ctx, blocks, ctxkeccakHash);
 
         for (int scratchIndex = 0; scratchIndex < numberOfScratchpadSegments; scratchIndex++)
         {
@@ -212,7 +217,7 @@ namespace HD
             for (int byteIndex = 0; byteIndex < 16; byteIndex++)
             {
               blocks[blockIndex][byteIndex] ^=
-                ctx.scratchpad[byteIndex + scratchIndex * 128 + blockIndex * blocks[blockIndex].Length];
+                ctxscratchpad[byteIndex + scratchIndex * 128 + blockIndex * blocks[blockIndex].Length];
             }
           }
 
@@ -224,7 +229,7 @@ namespace HD
         {
           for (int byteIndex = 0; byteIndex < 16; byteIndex++)
           {
-            ctx.keccakHash[64 + byteIndex + blockIndex * 16] = blocks[blockIndex][byteIndex];
+            ctxkeccakHash[64 + byteIndex + blockIndex * 16] = blocks[blockIndex][byteIndex];
           }
         }
 
@@ -232,7 +237,7 @@ namespace HD
         ulong[] tempLong = new ulong[sizeOfKeccakHash / sizeof(ulong) / sizeof(byte)];
         for (int i = 0; i < tempLong.Length; i++)
         {
-          tempLong[i] = BitConverter.ToUInt64(ctx.keccakHash, i * sizeof(ulong) / sizeof(byte));
+          tempLong[i] = BitConverter.ToUInt64(ctxkeccakHash, i * sizeof(ulong) / sizeof(byte));
         }
 
         KeccakDigest.keccakf(tempLong, KeccakDigest.KECCAK_ROUNDS);
@@ -242,13 +247,13 @@ namespace HD
           byte[] longData = BitConverter.GetBytes(tempLong[longIndex]);
           for (int byteIndex = 0; byteIndex < 8; byteIndex++)
           {
-            ctx.keccakHash[longIndex * sizeof(ulong) + byteIndex] = longData[byteIndex];
+            ctxkeccakHash[longIndex * sizeof(ulong) + byteIndex] = longData[byteIndex];
           }
         }
 
 
         Digest hash;
-        switch (ctx.keccakHash[0] & 3)
+        switch (ctxkeccakHash[0] & 3)
         {
           case 0:
             {
@@ -276,7 +281,7 @@ namespace HD
             break;
         }
 
-        hash.update(ctx.keccakHash);
+        hash.update(ctxkeccakHash);
         hash.digest(ctx.bResult, 0, 32);
 
         if (ctx.piHashVal < iTarget)
@@ -287,8 +292,6 @@ namespace HD
         }
       }
     }
-    #endregion
-
 
     #region Write Helpers
     void InitNonce(
@@ -303,9 +306,10 @@ namespace HD
 
     unsafe void ExtractBlocksFromHash(
       CryptoNightDataPerThread ctx,
-      byte[][] blocks)
+      byte[][] blocks,
+      byte[] ctxkeccakHash)
     {
-      fixed (byte* hashBytes = ctx.keccakHash)
+      fixed (byte* hashBytes = ctxkeccakHash)
       {
         ulong* hashLong = (ulong*)hashBytes;
 
@@ -340,7 +344,9 @@ namespace HD
     void ExtractAndInitAesKey(
       CryptoNightDataPerThread ctx,
       AesEngine aes,
-      bool useFirstSegmentVsSecond)
+      bool useFirstSegmentVsSecond,
+      byte[] ctxkey,
+      byte[] ctxkeccakHash)
     {
       for (int i = 0; i < sizeOfKey; i++)
       {
@@ -349,10 +355,10 @@ namespace HD
         {
           index += sizeOfKey;
         }
-        ctx.key[i] = ctx.keccakHash[index];
+        ctxkey[i] = ctxkeccakHash[index];
       }
 
-      aes.Init(ctx.key);
+      aes.Init(ctxkey);
     }
     #endregion
 
