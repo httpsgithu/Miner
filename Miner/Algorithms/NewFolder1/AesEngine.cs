@@ -313,30 +313,30 @@ namespace HD
       uint* kw,
       uint* data)
     {
-      uint tempdata3 
-        = T0[data[3] & 255] 
-          ^ T24[(data[0] >> 8) & 255] 
-          ^ T16[(data[1] >> 16) & 255] 
-          ^ T8[(data[2] >> 24) & 255] 
+      uint tempdata3
+        = T0[data[3] & 255]
+          ^ T24[(data[0] >> 8) & 255]
+          ^ T16[(data[1] >> 16) & 255]
+          ^ T8[(data[2] >> 24) & 255]
           ^ kw[3];
       uint tempdata2 
         = T0[data[2] & 255] 
           ^ T24[(data[3] >> 8) & 255] 
           ^ T16[(data[0] >> 16) & 255] 
-          ^ T8[(data[1] >> 24) & 255] 
+          ^ T8[(data[1] >> 24) & 255]
           ^ kw[2];
       uint tempdata1 
         = T0[data[1] & 255] 
           ^ T24[(data[2] >> 8) & 255] 
           ^ T16[(data[3] >> 16) & 255] 
-          ^ T8[(data[0] >> 24) & 255] 
+          ^ T8[(data[0] >> 24) & 255]
           ^ kw[1];
       // No temp required for the last
       data[0] 
         = T0[data[0] & 255] 
           ^ T24[(data[1] >> 8) & 255] 
           ^ T16[(data[2] >> 16) & 255] 
-          ^ T8[(data[3] >> 24) & 255] 
+          ^ T8[(data[3] >> 24) & 255]
           ^ kw[0];
 
       data[3] = tempdata3;
