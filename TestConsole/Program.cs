@@ -47,7 +47,7 @@ namespace HD
 
 {""method"":""submit"",""params"":{""id"":""421970933313569"",""job_id"":""00000022979abe5b"",""nonce"":""4e010c20"",""result"":""3fbc7b9a8b0df08b1067d87daa1cd8aa23ad7baffed4312691f6c3bc3dc40000""},""id"":1}
 
-        ", "200C014A");
+        ", "200C004A");
 
       Console.ReadKey();
 
