@@ -14,10 +14,12 @@ namespace HD.Tests
 
   // Goal: find a faster way to replicate these two use cases:
 
-  // 1) AesEngine.Encrypt(inputAndOutput, key);
+  // 1) Process one Aes Round using the 16-byte key provided:
+  // AesEngine.Encrypt(inputAndOutput, key);
   // both params are 16 bytes.  Goal is to produce the same inputAndOutput after.
 
-  // 2) AesEngine engine = new AesEngine();
+  // 2) Process 10 Aes Rounds using 10 16-byte round keys generated from the 32-byte key provided:
+  // AesEngine engine = new AesEngine();
   // engine.Init(key); where key is 32 bytes.  This produces 10 round keys.
   // engine.ProcessBlock(inputAndOutput);
   // Goal is to produce the same inputAndOutput after.
