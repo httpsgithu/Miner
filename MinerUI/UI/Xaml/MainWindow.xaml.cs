@@ -14,6 +14,8 @@ namespace HD
     public static MainWindow instance;
 
     readonly DispatcherTimer timer = new DispatcherTimer();
+
+    readonly MiddlewareServer server;
     #endregion
 
     #region Init
@@ -22,6 +24,7 @@ namespace HD
       instance = this;
       InitializeComponent();
       mainWindow.DataContext = new MainViewModel();
+      server = new MiddlewareServer(((MainViewModel)mainWindow.DataContext).StatsBoxList[1]);
 
       timer.Interval = TimeSpan.FromMilliseconds(200);
       timer.Tick += OnTick;
@@ -29,11 +32,11 @@ namespace HD
 
       maxNumberOfThreads.Content = Environment.ProcessorCount;
       sliderNumberOfThreads.Maximum = Environment.ProcessorCount;
-      if(Miner.isFirstLaunch)
+      if (Miner.isFirstLaunch)
       {
         ((MainViewModel)DataContext).shouldStartWithWindows = true;
       }
-            sliderPercentToHD.Value = 0.2;
+      sliderPercentToHD.Value = 0.2;
     }
 
     void OnWindowClosing(
@@ -44,6 +47,7 @@ namespace HD
       timer.Tick -= OnTick;
       timer.Stop();
       Stop();
+      server.Stop();
     }
     #endregion
 
@@ -106,21 +110,21 @@ namespace HD
         mainWindow.Visibility = Visibility.Hidden;
       }
     }
-        #endregion
+    #endregion
 
-        private async void reportBug(object sender, RoutedEventArgs e)
-        {
-            await mainWindow.ShowMessageAsync("ERROR!", "There are no bugs...");
-        }
-
-        private void miningforTile_Click(object sender, RoutedEventArgs e)
-        {
-            MiningForFlyout.IsOpen = true;
-        }
-
-        private void sliderPercentToHD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            labelPercentToHD.Content = ( (int)(sliderPercentToHD.Value*100)) + "%";
-        }
+    async void reportBug(object sender, RoutedEventArgs e)
+    {
+      await mainWindow.ShowMessageAsync("ERROR!", "There are no bugs...");
     }
+
+    void miningforTile_Click(object sender, RoutedEventArgs e)
+    {
+      MiningForFlyout.IsOpen = true;
+    }
+
+    void sliderPercentToHD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+      labelPercentToHD.Content = ((int)(sliderPercentToHD.Value * 100)) + "%";
+    }
+  }
 }
