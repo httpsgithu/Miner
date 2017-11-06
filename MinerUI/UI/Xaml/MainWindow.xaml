@@ -7,7 +7,6 @@
         xmlns:local="clr-namespace:HD"
         xmlns:minerui="clr-namespace:HD"
         xmlns:tb="http://www.hardcodet.net/taskbar"
-        xmlns:Commands="clr-namespace:HD.Commands"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"

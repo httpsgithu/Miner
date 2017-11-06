@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Threading;
 using System.ComponentModel;
 using MahApps.Metro.Controls;
@@ -14,8 +13,6 @@ namespace HD
     public static MainWindow instance;
 
     readonly DispatcherTimer timer = new DispatcherTimer();
-
-    readonly MiddlewareServer server;
     #endregion
 
     #region Init
@@ -24,7 +21,6 @@ namespace HD
       instance = this;
       InitializeComponent();
       mainWindow.DataContext = new MainViewModel();
-      server = new MiddlewareServer(((MainViewModel)mainWindow.DataContext).StatsBoxList[1]);
 
       timer.Interval = TimeSpan.FromMilliseconds(200);
       timer.Tick += OnTick;
@@ -47,7 +43,6 @@ namespace HD
       timer.Tick -= OnTick;
       timer.Stop();
       Stop();
-      server.Stop();
     }
     #endregion
 

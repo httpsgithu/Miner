@@ -86,16 +86,18 @@
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>HD.App</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.8\lib\net35\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Hardcodet.NotifyIcon.Wpf.1.0.8\lib\net451\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
     </Reference>
     <Reference Include="MahApps.Metro, Version=1.5.0.23, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.5.0\lib\net45\MahApps.Metro.dll</HintPath>
     </Reference>
     <Reference Include="MahApps.Metro.IconPacks, Version=1.9.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.IconPacks.1.9.1\lib\net45\MahApps.Metro.IconPacks.dll</HintPath>
+      <HintPath>..\..\packages\MahApps.Metro.IconPacks.1.9.1\lib\net46\MahApps.Metro.IconPacks.dll</HintPath>
     </Reference>
     <Reference Include="MaterialDesignColors, Version=1.1.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MaterialDesignColors.1.1.3\lib\net45\MaterialDesignColors.dll</HintPath>
@@ -130,6 +132,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controllers\MinerController.cs" />
     <Compile Include="Data\Beneficiaries\Beneficiaries.cs" />
     <Compile Include="Data\Beneficiaries\Beneficiary.cs" />
     <Compile Include="Data\Beneficiaries\BeneficiarySorter.cs" />
@@ -138,29 +141,20 @@
     <Compile Include="Data\ViewModels\MiningStatsBoxViewModel.cs" />
     <Compile Include="Data\Config\Settings.cs" />
     <Compile Include="Data\ViewModels\StatsBoxViewModel.cs" />
-    <Compile Include="Miner.cs" />
-    <Compile Include="MiningAlgorithm.cs" />
+    <Compile Include="Controllers\Miner.cs" />
+    <Compile Include="Controllers\MiningAlgorithm.cs" />
     <Compile Include="Network\APIBitcoinPrice.cs" />
     <Compile Include="Network\APINiceHashMiningPriceList.cs" />
     <Compile Include="Network\APINiceHashWorkerList.cs" />
     <Compile Include="Network\NetworkAPI.cs" />
     <Compile Include="UI\Logic\MiddlewareServer.cs" />
     <Compile Include="UI\Logic\ShowWindowCommand.cs" />
-    <Compile Include="Utils\ByteArrayExtensions.cs" />
     <Compile Include="Utils\Log.cs" />
-    <Compile Include="Utils\RollingHistory.cs" />
-    <Compile Include="Utils\StartWithWindows.cs" />
     <Compile Include="UI\Xaml\StatsBox.xaml.cs">
       <DependentUpon>StatsBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Data\ViewModels\StatsBoxUseCase.cs" />
     <Compile Include="Data\ViewModels\ViewModel.cs" />
-    <Compile Include="Utils\UintExtensions.cs" />
-    <Compile Include="Utils\UlongExtensions.cs" />
-    <Compile Include="Utils\Windows\FileObserver.cs" />
-    <Compile Include="Utils\Windows\HardwareMonitor.cs" />
-    <Compile Include="Utils\Windows\IdleChecker.cs" />
-    <Compile Include="Utils\Windows\WindowsJob.cs" />
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -222,6 +216,14 @@
     <Resource Include="Resources\Entypo.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\HardlyCommonWindows\HardlyCommonWindows.csproj">
+      <Project>{af0b12c0-df72-4e8b-9841-32173cf7f539}</Project>
+      <Name>HardlyCommonWindows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\HardlyCommon\HardlyCommon.csproj">
+      <Project>{00174c6b-a135-42a7-af86-ca81806820a5}</Project>
+      <Name>HardlyCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CommonMiner\CommonMiner.csproj">
       <Project>{9dd43d4d-bb95-4eae-a542-679c205b20c8}</Project>
       <Name>CommonMiner</Name>
