@@ -25,38 +25,45 @@ namespace HD
 
     public void Stop()
     {
-      thread.Abort();
+      thread?.Abort();
     }
 
     public void SendMessage(
       string message)
     {
-      server.SendFrame(message);
+      socket.SendFrame(message);
     }
 
     // TODO add isConnected, use ping? with trysend
 
     #region Private
-    readonly ResponseSocket server;
+    readonly NetMQSocket socket;
 
     readonly NetMQPoller poller;
 
     Thread thread;
 
     public ZeroMqEndpoint(
-      bool isServer)
+      bool isServer,
+      int port)
     {
-      char prefix = isServer ? '@' : '>';
-      server = new ResponseSocket($"{prefix}tcp://localhost:{Globals.zeroMqPort}");
-      server.ReceiveReady += Server_ReceiveReady;
-      poller = new NetMQPoller { server };
+      if (isServer)
+      {
+        socket = new ResponseSocket($"@tcp://localhost:{port}");
+      }
+      else
+      {
+        socket = new RequestSocket($"tcp://localhost:{port}");
+      }
+      socket.ReceiveReady += Server_ReceiveReady;
+      poller = new NetMQPoller { socket };
     }
 
     void Server_ReceiveReady(
       object sender,
       NetMQSocketEventArgs e)
     {
-      string clientMessage = server.ReceiveFrameString();
+      string clientMessage = socket.ReceiveFrameString();
       onMessage?.Invoke(clientMessage);
     }
     #endregion

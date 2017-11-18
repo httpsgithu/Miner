@@ -6,14 +6,10 @@ namespace HD
   {
     readonly MiddlewareServer server;
 
-    public MinerController()
+    public MinerController(
+      MiningStatsBoxViewModel viewModel)
     {
-      //server = new MiddlewareServer(((MainViewModel)mainWindow.DataContext).StatsBoxList[1]);
-    }
-
-    internal void Stop()
-    {
-      server.Stop();
+      server = new MiddlewareServer(viewModel);
     }
   }
 }

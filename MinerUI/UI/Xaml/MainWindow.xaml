@@ -20,7 +20,7 @@
         WindowTransitionsEnabled="False"
         WindowStartupLocation="CenterScreen"
         RightWindowCommandsOverlayBehavior="Never"
-        StateChanged="mainWindow_StateChanged">
+        StateChanged="mainWindow_StateChanged" Loaded="mainWindow_Loaded">
 
     <Controls:MetroWindow.Resources>
         <ResourceDictionary>

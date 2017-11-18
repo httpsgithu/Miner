@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace HD
 {
@@ -7,13 +8,25 @@ namespace HD
     static void Main(
       string[] args)
     {
-      XmrDll dll = new XmrDll();
-      dll.StartMining("14VzFa1eQjcmHp7i3tSTCK3TcWP8kHWhLE", 1);
+      // TODO on command
+      //XmrDll dll = new XmrDll();
+      //dll.StartMining("14VzFa1eQjcmHp7i3tSTCK3TcWP8kHWhLE", 1);
       MiddlewareClient client = new MiddlewareClient();
-      client.Run();
 
-      Console.WriteLine("Fail...");
-      Console.ReadLine();
+      int count = 0;
+
+      while (true)
+      {
+        Console.ReadKey();
+
+        count++;
+        client.Send(new MiningStats("BB", count * 100, count));
+
+        Console.WriteLine("Ok");
+      }
+
+      //Console.WriteLine("Fail...");
+      //Console.ReadLine();
     }
   }
 }

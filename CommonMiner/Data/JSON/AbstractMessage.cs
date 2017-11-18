@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace HD.Data.JSON
+namespace HD
 {
-  class AbstractMessage
+  public abstract class AbstractMessage
   {
+
   }
 }

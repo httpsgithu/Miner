@@ -6,32 +6,15 @@ namespace HD
   /// <summary>
   /// Adds the JSON layer
   /// </summary>
-  public class MiddlewareClient
+  public class MiddlewareClient : MinerMiddleware
   {
-    public event Action<JsonMessage> onMessage;
 
-    readonly ZeroMqEndpoint endpoint;
-
-    public MiddlewareClient()
+    protected override bool isServer
     {
-      endpoint = new ZeroMqEndpoint(false);
-      endpoint.onMessage += Endpoint_onMessage;
-    }
-
-    public void Run()
-    {
-      endpoint.Run();
-    }
-
-    void Endpoint_onMessage(
-      string message)
-    {
-      // todo
-    }
-
-    public void Stop()
-    {
-      endpoint.Stop();
+      get
+      {
+        return false;
+      }
     }
   }
 }

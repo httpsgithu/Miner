@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Bot|AnyCPU'">
+    <OutputPath>bin\Bot\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AsyncIO, Version=0.1.25.0, Culture=neutral, PublicKeyToken=44a94435bd6f33f8, processorArchitecture=MSIL">
       <HintPath>..\packages\AsyncIO.0.1.26.0\lib\net40\AsyncIO.dll</HintPath>
@@ -66,6 +69,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\HardlyCommonWindows\HardlyCommonWindows.csproj">
+      <Project>{af0b12c0-df72-4e8b-9841-32173cf7f539}</Project>
+      <Name>HardlyCommonWindows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\HardlyCommon\HardlyCommon.csproj">
+      <Project>{00174c6b-a135-42a7-af86-ca81806820a5}</Project>
+      <Name>HardlyCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CommonMiner\CommonMiner.csproj">
       <Project>{9dd43d4d-bb95-4eae-a542-679c205b20c8}</Project>
       <Name>CommonMiner</Name>

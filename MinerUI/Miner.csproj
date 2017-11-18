@@ -89,6 +89,9 @@
   <PropertyGroup>
     <StartupObject>HD.App</StartupObject>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Bot|AnyCPU'">
+    <OutputPath>bin\Bot\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Hardcodet.NotifyIcon.Wpf.1.0.8\lib\net451\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
@@ -136,18 +139,18 @@
     <Compile Include="Data\Beneficiaries\Beneficiaries.cs" />
     <Compile Include="Data\Beneficiaries\Beneficiary.cs" />
     <Compile Include="Data\Beneficiaries\BeneficiarySorter.cs" />
+    <Compile Include="Data\MiningAlgorithm.cs" />
     <Compile Include="Data\ViewModels\MainViewModel.cs" />
     <Compile Include="Data\Config\MinerConfig.cs" />
     <Compile Include="Data\ViewModels\MiningStatsBoxViewModel.cs" />
     <Compile Include="Data\Config\Settings.cs" />
     <Compile Include="Data\ViewModels\StatsBoxViewModel.cs" />
     <Compile Include="Controllers\Miner.cs" />
-    <Compile Include="Controllers\MiningAlgorithm.cs" />
     <Compile Include="Network\APIBitcoinPrice.cs" />
     <Compile Include="Network\APINiceHashMiningPriceList.cs" />
     <Compile Include="Network\APINiceHashWorkerList.cs" />
     <Compile Include="Network\NetworkAPI.cs" />
-    <Compile Include="UI\Logic\MiddlewareServer.cs" />
+    <Compile Include="Controllers\MiddlewareServer.cs" />
     <Compile Include="UI\Logic\ShowWindowCommand.cs" />
     <Compile Include="Utils\Log.cs" />
     <Compile Include="UI\Xaml\StatsBox.xaml.cs">
