@@ -35,8 +35,9 @@ namespace HD
       get
       {
         return
-          Miner.instance.currentMiner.currentHashRateMHpS
-          * Miner.instance.settings.miningPriceList.pricePerDayInBtcFor1MH;
+          0; // TODO
+          //Miner.instance.currentMiner.currentHashRateMHpS
+          //* Miner.instance.settings.miningPriceList.pricePerDayInBtcFor1MH;
       }
     }
 
@@ -99,15 +100,15 @@ namespace HD
       switch (useCase)
       {
         case StatsBoxUseCase.IntervalEstimatedEarningsFromMe:
-          if (Miner.instance.currentMiner == null)
-          {
-           // this.btcAmount = 0;
-          }
-          else
-          {
-           // stchnaue
-           // this.btcAmount = (Miner.instance.currentMiner.currentHashRateMHpS * Miner.instance.settings.miningPriceList.pricePerDayInBtcFor1MH) * daysPerInterval;
-          }
+          //if (Miner.instance.currentMiner == null)
+          //{
+          // // this.btcAmount = 0;
+          //}
+          //else
+          //{
+          // // stchnaue
+          // // this.btcAmount = (Miner.instance.currentMiner.currentHashRateMHpS * Miner.instance.settings.miningPriceList.pricePerDayInBtcFor1MH) * daysPerInterval;
+          //}
           break;
         case StatsBoxUseCase.IntervalEstimatedEarningsFromAllCurrentMiners:
           this.btcAmount = (Miner.instance.settings.beneficiaries.totalWorkerHashRateMHpS * Miner.instance.settings.miningPriceList.pricePerDayInBtcFor1MH) * daysPerInterval;

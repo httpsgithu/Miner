@@ -139,7 +139,6 @@
     <Compile Include="Data\Beneficiaries\Beneficiaries.cs" />
     <Compile Include="Data\Beneficiaries\Beneficiary.cs" />
     <Compile Include="Data\Beneficiaries\BeneficiarySorter.cs" />
-    <Compile Include="Data\MiningAlgorithm.cs" />
     <Compile Include="Data\ViewModels\MainViewModel.cs" />
     <Compile Include="Data\Config\MinerConfig.cs" />
     <Compile Include="Data\ViewModels\MiningStatsBoxViewModel.cs" />

@@ -16,16 +16,10 @@ namespace HD
 
     public event Action onHashRateUpdate;
 
-    public MiningAlgorithm currentMiner
+    public Beneficiary currentWinner
     {
       get; private set;
     }
-
-    public Beneficiary currentWinner
-    {
-      get;private set;
-    }
-
 
     readonly WindowsJob job = new WindowsJob();
 
@@ -48,6 +42,14 @@ namespace HD
       {
         TimeSpan idleTime = IdleTimeFinder.GetIdleTime();
         return idleTime > settings.minerConfig.timeTillAutoRun;
+      }
+    }
+
+    public bool isMinerRunning
+    {
+      get
+      {
+        return middlewareProcess?.IsRunning() ?? false;
       }
     }
     #endregion
@@ -95,20 +97,30 @@ namespace HD
       }
       else
       {
-        if (currentMiner != null && DateTime.Now - lastConnectionTime < minTimeBetweenStarts)
+        if (isMinerRunning && DateTime.Now - lastConnectionTime < minTimeBetweenStarts)
         { // If running, this is a change wallet request.  Ignore b/c too soon
           return;
         }
       }
 
-      currentWinner = settings.beneficiaries.PickAWinner();
+      Beneficiary newWinner = settings.beneficiaries.PickAWinner();
+      if (currentWinner == newWinner && isMinerRunning)
+      { // No change
+        return;
+      }
+
+      currentWinner = newWinner;
       StartHelper(wasManuallyStarted);
     }
 
     public void Stop()
     {
-      currentMiner?.Close();
-      currentMiner = null;
+      try
+      {
+        middlewareProcess?.Kill();
+      }
+      catch { }
+      middlewareProcess = null;
     }
     #endregion
 
@@ -119,13 +131,7 @@ namespace HD
       lastConnectionTime = DateTime.Now;
       this.wasManuallyStarted = wasManuallyStarted;
 
-      if (currentMiner != null && currentMiner.currentBeneficiary == currentWinner)
-      { // No change
-        return;
-      }
-
-      currentMiner?.Close();
-      middlewareProcess?.Kill();
+      Stop();
 
       // This is where we select the most profitable algorithm...
       middlewareProcess = new Process();

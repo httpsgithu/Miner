@@ -59,7 +59,7 @@ namespace HD
       object sender,
       RoutedEventArgs e)
     {
-      if (Miner.instance.currentMiner != null)
+      if (Miner.instance.isMinerRunning)
       {
         Stop();
       }
@@ -80,7 +80,8 @@ namespace HD
 
     void UpdateRunningState()
     {
-      if (Miner.instance.currentMiner != null)
+      
+      if (Miner.instance.isMinerRunning)
       {
         StartStopButton.Content = "Stop";
       }
