@@ -7,7 +7,7 @@
 ### Project Setup 
 
  - Clone this repro
- - Clone [HardlyCommon](https://github.com/hardlydifficult/HardlyCommon) and [Hardly's XMR](https://github.com/hardlydifficult/xmr-stak-cpu) in the same directory (so Miner, HardlyCommon, and xmr-stak-cpu folders are side by side)
+ - Clone [HardlyCommon](https://github.com/hardlydifficult/HardlyCommon), [HardlyCommonWindows](https://github.com/hardlydifficult/HardlyCommonWindows) and [Hardly's XMR](https://github.com/hardlydifficult/xmr-stak-cpu) in the same directory (so Miner, HardlyCommon, HardlyCommondWindows, and xmr-stak-cpu folders are side by side)
  - If references are broken:
     - Open menu Tools -> NuGet Package Manager
     - Run ```Update-Package -reinstall```
