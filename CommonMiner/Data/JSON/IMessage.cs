@@ -2,8 +2,7 @@
 
 namespace HD
 {
-  public abstract class AbstractMessage
+  public interface IMessage
   {
-
   }
 }

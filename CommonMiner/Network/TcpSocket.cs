@@ -15,6 +15,8 @@ namespace HD
 
     readonly Action<string> onMessage;
 
+    readonly Action onConnection;
+
     readonly bool isServer;
 
     TcpListener serverListener;
@@ -22,9 +24,11 @@ namespace HD
 
     public TcpSocket(
       bool isServer,
+      Action onConnection,
       Action<string> onMessage)
     {
       this.isServer = isServer;
+      this.onConnection = onConnection;
       this.onMessage = onMessage;
       Init();
     }
@@ -44,6 +48,7 @@ namespace HD
           reader = new StreamReader(stream);
           writer = new StreamWriter(stream);
           ReadLoop();
+          onConnection?.Invoke();
         });
       }
       else
@@ -78,13 +83,17 @@ namespace HD
         while (true)
         {
           string message = await reader.ReadLineAsync(); 
+          if(message == null)
+          { // Disconnected
+            break;
+          }
           onMessage(message);
         }
       }
-      catch (IOException)
-      { // Disconnect, try reconnecting
-        Init();
-      }
+      catch (IOException) { }
+
+      // Disconnect, try reconnecting
+      Init();
     }
   }
 }

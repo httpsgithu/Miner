@@ -3,7 +3,7 @@
 namespace HD
 {
   [Serializable]
-  public class MiningStats : AbstractMessage
+  public class MiningStats : IMessage
   {
     public string algorithm;
 

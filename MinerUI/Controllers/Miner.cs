@@ -1,5 +1,7 @@
-﻿using System;
+﻿using JobManagement;
+using System;
 using System.Diagnostics;
+using System.IO;
 
 namespace HD
 {
@@ -18,6 +20,14 @@ namespace HD
     {
       get; private set;
     }
+
+    public Beneficiary currentWinner
+    {
+      get;private set;
+    }
+
+
+    readonly WindowsJob job = new WindowsJob();
 
     Process middlewareProcess;
 
@@ -91,8 +101,8 @@ namespace HD
         }
       }
 
-      Beneficiary winner = settings.beneficiaries.PickAWinner();
-      Start(winner, wasManuallyStarted);
+      currentWinner = settings.beneficiaries.PickAWinner();
+      StartHelper(wasManuallyStarted);
     }
 
     public void Stop()
@@ -103,14 +113,13 @@ namespace HD
     #endregion
 
     #region Helpers
-    void Start(
-      Beneficiary winner,
+    void StartHelper(
       bool wasManuallyStarted)
     {
       lastConnectionTime = DateTime.Now;
       this.wasManuallyStarted = wasManuallyStarted;
 
-      if (currentMiner != null && currentMiner.currentBeneficiary == winner)
+      if (currentMiner != null && currentMiner.currentBeneficiary == currentWinner)
       { // No change
         return;
       }
@@ -119,13 +128,17 @@ namespace HD
 
       // This is where we select the most profitable algorithm...
       middlewareProcess = new Process();
-      middlewareProcess.StartInfo.FileName = $"{Environment.CurrentDirectory}\\dllmanager";
+      middlewareProcess.StartInfo.FileName = Path.Combine(Environment.CurrentDirectory, "dllmanager");
       middlewareProcess.StartInfo.WorkingDirectory = Environment.CurrentDirectory;
       middlewareProcess.StartInfo.UseShellExecute = false;
       middlewareProcess.StartInfo.LoadUserProfile = false;
       middlewareProcess.StartInfo.CreateNoWindow = true;
       middlewareProcess.Start();
       middlewareProcess.PriorityClass = ProcessPriorityClass.BelowNormal;
+      job.AddProcess(middlewareProcess);
+
+      // TODO 
+      //      HardwareMonitor.minerProcessPerformanceCounter = new PerformanceCounter("Process", "% Processor Time", process.ProcessName);
 
     }
     #endregion

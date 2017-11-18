@@ -23,11 +23,20 @@ namespace HD
       MiningStatsBoxViewModel viewModel)
     {
       this.viewModel = viewModel;
-      onMessage += MiddlewareServer_onMessage;
+      onConnection += OnConnection;
+      onMessage += OnMessage;
     }
 
-    void MiddlewareServer_onMessage(
-      AbstractMessage message)
+    void OnConnection()
+    {
+      Send(new StartMiningRequest(
+        wallet: Miner.instance.currentWinner.wallet,
+        numberOfThreads: Miner.instance.settings.minerConfig.numberOfThreadsWhenIdle, // TODO select active or idle
+        workerName: Miner.instance.settings.minerConfig.workerName));
+    }
+
+    void OnMessage(
+      IMessage message)
     {
       MiningStats stats = (MiningStats)message;
       viewModel.btcAmount = stats.hashRate * Miner.instance.settings.miningPriceList.pricePerDayInBtcFor1MH

@@ -54,9 +54,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\Globals.cs" />
-    <Compile Include="Data\JSON\AbstractMessage.cs" />
-    <Compile Include="Data\JSON\JsonMessage.cs" />
+    <Compile Include="Data\JSON\IMessage.cs" />
     <Compile Include="Data\JSON\MiningStats.cs" />
+    <Compile Include="Data\JSON\StartMiningRequest.cs" />
     <Compile Include="Network\MinerMiddleware.cs" />
     <Compile Include="Network\TcpSocket.cs" />
     <Compile Include="Network\TcpSocketClient.cs" />

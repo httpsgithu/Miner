@@ -14,7 +14,9 @@ namespace HD
   /// </summary>
   public abstract class MinerMiddleware
   {
-    public event Action<AbstractMessage> onMessage;
+    public event Action onConnection;
+
+    public event Action<IMessage> onMessage;
 
     readonly TcpSocket socket;
 
@@ -28,7 +30,7 @@ namespace HD
     #region Init
     public MinerMiddleware()
     {
-      socket = new TcpSocket(isServer, OnMessage);
+      socket = new TcpSocket(isServer, OnConnection, OnMessage);
     }
     #endregion
 
@@ -43,11 +45,14 @@ namespace HD
       return false;
     }
 
-    public void Send(
-      AbstractMessage message)
+    public void Send<T>(
+      T message)
+      where T : IMessage
     {
-      JsonMessage jsonMessage = new JsonMessage(message);
-      string json = JsonConvert.SerializeObject(jsonMessage);
+      JsonSerializerSettings settings = new JsonSerializerSettings();
+      settings.TypeNameHandling = TypeNameHandling.All; // TODO is auto okay?
+      string json = JsonConvert.SerializeObject(message, settings);
+      //IMessage testReturn = JsonConvert.DeserializeObject<IMessage>(json);
       Send(json);
     }
 
@@ -60,6 +65,11 @@ namespace HD
       socket.Send(message);
     }
 
+    void OnConnection()
+    {
+      onConnection?.Invoke();
+    }
+
     void OnMessage(
       string message)
     {
@@ -69,13 +79,14 @@ namespace HD
         return;
       }
       else if (message == pong)
-      { 
+      {
         pingEvent.Set();
         return;
       }
 
-      JsonMessage jsonMessage = JsonConvert.DeserializeObject<JsonMessage>(message);
-      AbstractMessage abstractMessage = jsonMessage.message;
+      JsonSerializerSettings settings = new JsonSerializerSettings();
+      settings.TypeNameHandling = TypeNameHandling.All; // TODO share this with the server
+      IMessage abstractMessage = JsonConvert.DeserializeObject<IMessage>(message, settings);
       onMessage?.Invoke(abstractMessage);
     }
   }
