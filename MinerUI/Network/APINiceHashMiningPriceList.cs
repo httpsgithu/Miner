@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace HD
 {
@@ -53,7 +54,7 @@ namespace HD
           Stat stat = priceList.Result.Stats[i];
           if (stat.Algo == 22)
           {
-            pricePerDayInBtcFor1MH = double.Parse(stat.Price);
+            pricePerDayInBtcFor1MH = double.Parse(stat.Price, NumberStyles.Any, CultureInfo.InvariantCulture);
             break;
           }
         }

@@ -144,8 +144,8 @@ namespace HD
       middlewareProcess.PriorityClass = ProcessPriorityClass.BelowNormal;
       job.AddProcess(middlewareProcess);
 
-      HardwareMonitor.minerProcessPerformanceCounter 
-        = new PerformanceCounter("Process", "% Processor Time", middlewareProcess.ProcessName);
+      HardwareMonitor.minerProcessPerformanceCounter
+        = new PerformanceCounter("Process", "% Processor Time", middlewareProcess.GetInstanceName());
     }
     #endregion
   }

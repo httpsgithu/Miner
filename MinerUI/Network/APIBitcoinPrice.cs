@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace HD
 {
@@ -55,7 +56,7 @@ namespace HD
       try
       {
         BitcoinPrice price = JsonConvert.DeserializeObject<BitcoinPrice>(content);
-        dollarPerBitcoin = double.Parse(price.Bpi.USD.Rate);
+        dollarPerBitcoin = double.Parse(price.Bpi.USD.Rate, NumberStyles.Any, CultureInfo.InvariantCulture);
       }
       catch (Exception e)
       {
