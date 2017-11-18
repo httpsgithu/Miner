@@ -121,6 +121,7 @@ namespace HD
       }
       catch { }
       middlewareProcess = null;
+      HardwareMonitor.minerProcessPerformanceCounter = null;
     }
     #endregion
 
