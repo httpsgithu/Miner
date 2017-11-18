@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace HD
 {
@@ -7,5 +8,10 @@ namespace HD
     // max port 65535
     public const int zeroMqPortServer = 62817;
     public const int zeroMqPortClient = 62818;
+
+    public static readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
+    {
+      TypeNameHandling = TypeNameHandling.All, // TODO is auto okay?
+    };
   }
 }

@@ -9,28 +9,16 @@ namespace HD
     static void Main(
       string[] args)
     {
-      System.Diagnostics.Debugger.Break(); // TODO remove
-
-      // TODO on command
-      //XmrDll dll = new XmrDll();
-      //dll.StartMining("14VzFa1eQjcmHp7i3tSTCK3TcWP8kHWhLE", 1);
       MiddlewareClient client = new MiddlewareClient();
 
+      // TODO client stat reporting
       int count = 0;
-
       while (true)
       {
-        //Console.ReadKey();
-
         count++;
-        client.Send(new MiningStats("BB", count * 100, count));
+        client.Send(new MiningStats("BB", hashRate: count * 100, acceptedHashRate: count));
         Thread.Sleep(3000);
-
-        //Console.WriteLine("Ok");
       }
-
-      //Console.WriteLine("Fail...");
-      //Console.ReadLine();
     }
   }
 }

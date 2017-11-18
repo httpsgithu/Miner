@@ -12,12 +12,12 @@ namespace HD
       TcpClient client = new TcpClient();
       try
       {
-        client.Connect(new IPEndPoint(IPAddress.Loopback, port)); // TODO async
+        client.Connect(new IPEndPoint(IPAddress.Loopback, port)); 
       }
       catch
       {
-        // TODO failing here means the server is down, terminate process
-        Environment.Exit(123);
+        // Failing here means the server is down, terminate process
+        Environment.Exit(321);
       }
       return client;
     }

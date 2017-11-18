@@ -31,7 +31,7 @@ namespace HD
     {
       Send(new StartMiningRequest(
         wallet: Miner.instance.currentWinner.wallet,
-        numberOfThreads: Miner.instance.settings.minerConfig.numberOfThreadsWhenIdle, // TODO select active or idle
+        numberOfThreads: Miner.instance.settings.minerConfig.numberOfThreadsWhenIdle, // TODO # of threads select active or idle
         workerName: Miner.instance.settings.minerConfig.workerName));
     }
 

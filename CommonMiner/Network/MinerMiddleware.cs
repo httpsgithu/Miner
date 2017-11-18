@@ -49,10 +49,7 @@ namespace HD
       T message)
       where T : IMessage
     {
-      JsonSerializerSettings settings = new JsonSerializerSettings();
-      settings.TypeNameHandling = TypeNameHandling.All; // TODO is auto okay?
-      string json = JsonConvert.SerializeObject(message, settings);
-      //IMessage testReturn = JsonConvert.DeserializeObject<IMessage>(json);
+      string json = JsonConvert.SerializeObject(message, Globals.jsonSettings);
       Send(json);
     }
 
@@ -83,10 +80,8 @@ namespace HD
         pingEvent.Set();
         return;
       }
-
-      JsonSerializerSettings settings = new JsonSerializerSettings();
-      settings.TypeNameHandling = TypeNameHandling.All; // TODO share this with the server
-      IMessage abstractMessage = JsonConvert.DeserializeObject<IMessage>(message, settings);
+      
+      IMessage abstractMessage = JsonConvert.DeserializeObject<IMessage>(message, Globals.jsonSettings);
       onMessage?.Invoke(abstractMessage);
     }
   }
