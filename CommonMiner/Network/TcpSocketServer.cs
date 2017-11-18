@@ -12,12 +12,20 @@ namespace HD
     {
       TcpListener listener = new TcpListener(IPAddress.Loopback, port);
       listener.Start();
+      BeginConnection(onConnect, listener);
+
+      return listener;
+    }
+
+    static void BeginConnection(
+      Action<TcpClient> onConnect, 
+      TcpListener listener)
+    {
       listener.BeginAcceptTcpClient((ar) =>
       {
         onConnect(listener.EndAcceptTcpClient(ar));
+        BeginConnection(onConnect, listener);
       }, null);
-
-      return listener;
     }
   }
 }

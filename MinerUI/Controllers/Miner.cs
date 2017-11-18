@@ -125,6 +125,7 @@ namespace HD
       }
 
       currentMiner?.Close();
+      middlewareProcess?.Kill();
 
       // This is where we select the most profitable algorithm...
       middlewareProcess = new Process();

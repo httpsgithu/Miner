@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace HD
 {
@@ -40,6 +41,7 @@ namespace HD
         if(serverListener != null)
         {
           serverListener.Stop();
+          Thread.Sleep(3000);
         }
         serverListener = TcpSocketServer.Connect(Globals.zeroMqPortServer, (client) =>
         {
@@ -92,8 +94,11 @@ namespace HD
       }
       catch (IOException) { }
 
-      // Disconnect, try reconnecting
-      Init();
+      try
+      {
+        client.Close();
+      }
+      catch { }
     }
   }
 }
