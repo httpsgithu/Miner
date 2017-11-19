@@ -111,7 +111,10 @@ namespace HD
           //}
           break;
         case StatsBoxUseCase.IntervalEstimatedEarningsFromAllCurrentMiners:
-          this.btcAmount = (Miner.instance.settings.beneficiaries.totalWorkerHashRateMHpS * Miner.instance.settings.miningPriceList.pricePerDayInBtcFor1MH) * daysPerInterval;
+          this.btcAmount =
+            (Miner.instance.settings.beneficiaries.totalWorkerHashRateMHpS 
+            * Miner.instance.settings.miningPriceList.pricePerDayInBtcFor1MH) 
+            * daysPerInterval;
           break;
         case StatsBoxUseCase.TotalContribution:
           this.btcAmount = Miner.instance.settings.beneficiaries.totalContributionInBitcoin;

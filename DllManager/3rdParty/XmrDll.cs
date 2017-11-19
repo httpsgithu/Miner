@@ -13,10 +13,24 @@ namespace HD
     static extern bool Start(
       string configurationJson);
 
+    // TODO do we need stop?
     [DllImport("xmr-stak-cpu.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl,
                BestFitMapping = false,
                ThrowOnUnmappableChar = true)]
     static extern void Stop();
+
+    [DllImport("xmr-stak-cpu.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl,
+               BestFitMapping = false,
+               ThrowOnUnmappableChar = true)]
+    static extern double GetTotalHashRate();
+
+    public double totalHashRate
+    {
+      get
+      {
+        return GetTotalHashRate() / 1000000;
+      }
+    }
 
     public void StartMining(
       string configurationJson)
@@ -29,6 +43,8 @@ namespace HD
     {
       Stop();
     }
+
+    
   }
 }
 

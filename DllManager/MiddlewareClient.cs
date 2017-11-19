@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Threading;
 
 namespace HD
 {
@@ -33,6 +34,15 @@ namespace HD
           startMiningRequest.numberOfThreads,
           startMiningRequest.workerName);
         dll.StartMining(config);
+      }
+    }
+
+    public void Run()
+    {
+      while (true)
+      {
+        Send(new MiningStats("BB", hashRate: dll.totalHashRate, acceptedHashRate: 0));
+        Thread.Sleep(3000);
       }
     }
   }

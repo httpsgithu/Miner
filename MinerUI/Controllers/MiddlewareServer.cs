@@ -39,7 +39,9 @@ namespace HD
       IMessage message)
     {
       MiningStats stats = (MiningStats)message;
-      viewModel.btcAmount = stats.hashRate * Miner.instance.settings.miningPriceList.pricePerDayInBtcFor1MH
+      viewModel.btcAmount = 
+        stats.hashRate 
+        * Miner.instance.settings.miningPriceList.pricePerDayInBtcFor1MH
         * viewModel.daysPerInterval;
     }
   }

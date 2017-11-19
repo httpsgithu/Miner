@@ -1,20 +1,24 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace HD
 {
   [Serializable]
   public class MiningStats : IMessage
   {
-    public string algorithm;
+    [JsonProperty]
+    public readonly string algorithm;
 
-    public int hashRate;
+    [JsonProperty]
+    public readonly double hashRate;
 
-    public int acceptedHashRate;
+    [JsonProperty]
+    public readonly double acceptedHashRate;
 
     public MiningStats(
       string algorithm,
-      int hashRate,
-      int acceptedHashRate)
+      double hashRate,
+      double acceptedHashRate)
     {
       this.algorithm = algorithm;
       this.hashRate = hashRate;
