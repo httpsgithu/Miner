@@ -221,7 +221,7 @@
             <TabItem Header="About">
                 <Grid>
                     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                        <Label FontSize="60">THIS IS MINER!!1!</Label>
+                        <Label FontSize="60">103!!!</Label>
                     </ScrollViewer>
                 </Grid>
             </TabItem>

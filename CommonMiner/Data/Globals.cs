@@ -13,5 +13,6 @@ namespace HD
     {
       TypeNameHandling = TypeNameHandling.All, // TODO is auto okay?
     };
+    public const string launchedByInstallerArg = "Installed";
   }
 }

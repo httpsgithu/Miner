@@ -99,7 +99,6 @@ To go from coinbase to cash, you can:
 
 <hr></details>
 
-
 # Development 
 
 <details><summary>Why implement this in C#?</summary>
@@ -110,11 +109,7 @@ We did look into implementing the entire thing in C# but it was taking too long 
 
 <hr></details><details><summary>Is This Open Source?</summary>
 
-Yes.
-
-Dependencies:
-
- - https://github.com/hardlydifficult/Sphlib
+Yes, see [Readme](Readme.md) to get started.
 
 <hr></details><details><summary>Why CPU Only?</summary>
 

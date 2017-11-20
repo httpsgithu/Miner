@@ -2,5 +2,7 @@
 /TestResults/
 /Debug/
 /*/bin/
+*/Debug/
+*/Release/
 /*/obj/
 /packages/
