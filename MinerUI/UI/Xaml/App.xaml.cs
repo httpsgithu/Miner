@@ -26,9 +26,15 @@ namespace HD
       DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(1) };
       timer.Tick += delegate
       {
-        AutoUpdater.Start("https://www.HardlyDifficult.com/Miner/AutoUpdater.xml");
+        CheckForUpdates();
       };
+      CheckForUpdates();
       timer.Start();
+    }
+
+    static void CheckForUpdates()
+    {
+      AutoUpdater.Start("https://www.HardlyDifficult.com/Miner/AutoUpdater.xml");
     }
 
     void AutoUpdaterOnCheckForUpdateEvent(

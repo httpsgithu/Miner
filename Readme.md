@@ -16,11 +16,11 @@
 
 ### Sync your forked repository
 
-**Do this frequently if you are making changes**
+Do this frequently if you are making changes. Each project will need occasional syncing.
 
  - Change directory to your local repository.
  - Switch to master branch if you are not ```git checkout master```
- - Add the parent as a remote repository, ```git remote add upstream https://github.com/hardlydifficult/ChatBot.git```
+ - Add the parent as a remote repository, ```git remote add upstream https://github.com/hardlydifficult/Miner.git```
  - Issue ```git fetch upstream```
  - Issue ```git rebase upstream/master```
  - Check for pending merges with ```git status```
