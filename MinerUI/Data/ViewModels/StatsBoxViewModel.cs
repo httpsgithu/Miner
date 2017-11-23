@@ -10,7 +10,7 @@ namespace HD
     string _title;
     string _leftValue;
     string _rightValue;
-    Visibility _rightValueVisibility;
+    //Visibility _rightValueVisibility;
     #endregion
 
     #region Properties
@@ -56,7 +56,7 @@ namespace HD
         OnPropertyChanged(nameof(BackgroundColor));
       }
     }
-
+        /*
     public Visibility RightValueVisibility
     {
       get { return _rightValueVisibility; }
@@ -66,6 +66,7 @@ namespace HD
         OnPropertyChanged(nameof(RightValueVisibility));
       }
     }
+    */
     #endregion
   }
 }

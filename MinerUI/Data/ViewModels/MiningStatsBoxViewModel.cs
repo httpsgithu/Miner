@@ -20,12 +20,12 @@ namespace HD
           LeftValue = $"{value:N9} BTC";
           double dollarAmount = value * Miner.instance.settings.bitcoinPrice.dollarPerBitcoin;
           RightValue = $"${dollarAmount:N4}";
-          RightValueVisibility = Visibility.Visible;
+          //RightValueVisibility = Visibility.Visible;
         }
         else
         {
           LeftValue = "No data";
-          RightValueVisibility = Visibility.Collapsed;
+          //RightValueVisibility = Visibility.Collapsed;
         }
       }
     }
@@ -65,7 +65,7 @@ namespace HD
       StatsBoxUseCase useCase)
     {
       this.useCase = useCase;
-      Refresh();
+      //Refresh();
 
       switch (useCase)
       {
