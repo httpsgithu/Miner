@@ -36,11 +36,10 @@ namespace HardlyMiningUI.ViewModels
             set { _threadsUsed = value; OnPropertyChanged(); }
         }
 
-        private int _maxThreads;
+        private int _maxThreads = Environment.ProcessorCount;
         public int ThreadsMaxAvailible
         {
             get { return _maxThreads; }
-            set { _maxThreads = value; }
         }
 
         private int _threadsCurrentlyUsed;

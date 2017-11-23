@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
+    <OutputPath>..\MinerUI\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -57,6 +57,7 @@
     <EmbeddedResource Include="Views\StatsBox.xeto">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <Compile Include="ViewModels\MainVM.cs" />
     <Compile Include="ViewModels\SettingsVM.cs" />
     <Compile Include="Views\MinerSettings.xeto.cs">
       <DependentUpon>MinerSettings.xeto</DependentUpon>

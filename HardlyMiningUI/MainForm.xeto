@@ -15,7 +15,7 @@
           <local:StatsBox>        </local:StatsBox>
           <local:StatsBox>        </local:StatsBox> 
         </DynamicLayout>
-        <Button x:Name="StartStopButton" Text="Start"/>
+        <Button x:Name="StartStopButton" Text="{Binding BtnActionText}" Command="{Binding StartStopCMD}"/>
         <ProgressBar Value="{Binding cpuUsageForMining}"/>
         <ProgressBar Value="{Binding cpuUsageOverall}"/>
         <Label Text="{Binding cpuUsageOverall}"/>
@@ -23,12 +23,15 @@
     </TabPage>
     <TabPage Text="Streamers"></TabPage>
     <TabPage Text="About"></TabPage>
+    <TabPage Text="Settings">
+      <local:MinerSettings DataContext="{Binding Settings}"/>
+    </TabPage>
   </TabControl>
 
   <Form.Menu>
 		<MenuBar>
 			<ButtonMenuItem Text="F&amp;ile">
-				<Command x:Name="clickCommand" MenuText="Click Me!" ToolBarText="Click Me!" Executed="HandleClickMe" />
+				<Command x:Name="clickCommand" MenuText="Settings" ToolBarText="Settings" Executed="HandleClickMe" />
 			</ButtonMenuItem>
 			<MenuBar.ApplicationItems>
 				<ButtonMenuItem Text="Preferences.." Shortcut="{On Control+O, Mac=Application+Comma}" />

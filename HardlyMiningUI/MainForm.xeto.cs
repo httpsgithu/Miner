@@ -6,7 +6,8 @@ using Eto.Serialization.Xaml;
 using HD;
 using System.Windows.Threading;
 using System.ComponentModel;
-
+using HardlyMiningUI.ViewModels;
+using HardlyMiningUI.Views;
 namespace HardlyMiningUI
 {
     public class MainForm : Form
@@ -17,25 +18,14 @@ namespace HardlyMiningUI
             XamlReader.Load(this);
 
 
-            DataContext = new MainViewModel();
-            /*
-            timer.Interval = TimeSpan.FromMilliseconds(200);
-            timer.Tick += OnTick;
-            timer.Start();
+            DataContext = new MainVM();
 
-            maxNumberOfThreads.Content = Environment.ProcessorCount;
-            sliderNumberOfThreads.Maximum = Environment.ProcessorCount;
-            if (Miner.isFirstLaunch)
-            {
-                ((MainViewModel)DataContext).shouldStartWithWindows = true;
-            }
-            sliderPercentToHD.Value = 0.2;
-            */
         }
 
         protected void HandleClickMe(object sender, EventArgs e)
         {
-            MessageBox.Show("I was clicked!");
+            //MinerSettings settingsView = new MinerSettings();
+            
         }
 
         protected void HandleQuit(object sender, EventArgs e)
