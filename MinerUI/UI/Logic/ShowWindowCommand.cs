@@ -30,8 +30,8 @@ namespace HD
 
     void ICommand.Execute(object parameter)
     {
-      MainWindow.instance.Visibility = Visibility.Visible;
-      Win32.Unminimize(MainWindow.instance);
+      //MainWindow.instance.Visibility = Visibility.Visible;
+      //Win32.Unminimize(MainWindow.instance);
     }
   }
 

@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{62C72F3E-7C76-4AF0-B1D0-36D5DAB0C04C}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Library</OutputType>
     <RootNamespace>HD</RootNamespace>
     <AssemblyName>MinerUI</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
@@ -76,9 +76,7 @@
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
-  </PropertyGroup>
+  <PropertyGroup />
   <PropertyGroup>
     <TargetZone>Internet</TargetZone>
   </PropertyGroup>
@@ -87,7 +85,8 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>HD.App</StartupObject>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Bot|AnyCPU'">
     <OutputPath>bin\Bot\</OutputPath>
@@ -95,15 +94,6 @@
   <ItemGroup>
     <Reference Include="AutoUpdater.NET, Version=1.4.4.0, Culture=neutral, PublicKeyToken=942f95247e354701, processorArchitecture=MSIL">
       <HintPath>..\packages\Autoupdater.NET.Official.1.4.4\lib\net452\AutoUpdater.NET.dll</HintPath>
-    </Reference>
-    <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.8\lib\net451\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
-    </Reference>
-    <Reference Include="MahApps.Metro, Version=1.5.0.23, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.1.5.0\lib\net45\MahApps.Metro.dll</HintPath>
-    </Reference>
-    <Reference Include="MahApps.Metro.IconPacks, Version=1.9.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.IconPacks.1.9.1\lib\net46\MahApps.Metro.IconPacks.dll</HintPath>
     </Reference>
     <Reference Include="MaterialDesignColors, Version=1.1.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MaterialDesignColors.1.1.3\lib\net45\MaterialDesignColors.dll</HintPath>
@@ -137,10 +127,6 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="UI\Xaml\App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
     <Compile Include="Controllers\MinerController.cs" />
     <Compile Include="Data\Beneficiaries\Beneficiaries.cs" />
     <Compile Include="Data\Beneficiaries\Beneficiary.cs" />
@@ -158,9 +144,6 @@
     <Compile Include="Controllers\MiddlewareServer.cs" />
     <Compile Include="UI\Logic\ShowWindowCommand.cs" />
     <Compile Include="Utils\Log.cs" />
-    <Compile Include="UI\Xaml\StatsBox.xaml.cs">
-      <DependentUpon>StatsBox.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Data\ViewModels\StatsBoxUseCase.cs" />
     <Compile Include="Data\ViewModels\ViewModel.cs" />
     <Page Include="Resources\Icons.xaml">
@@ -170,30 +153,6 @@
     <Page Include="Resources\IconsNonShared.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\Xaml\MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="UI\Xaml\App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="UI\Xaml\MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="UI\Xaml\StatsBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Xaml\Themes\Generic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\Xaml\UIResources.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
