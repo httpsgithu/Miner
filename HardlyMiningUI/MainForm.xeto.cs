@@ -12,13 +12,14 @@ namespace HardlyMiningUI
 {
     public class MainForm : Form
     {
-        readonly DispatcherTimer timer = new DispatcherTimer();
+        
         public MainForm()
         {
             XamlReader.Load(this);
 
 
             DataContext = new MainVM();
+            //MinerController controller = new MinerController(((MainViewModel)mainWindow.DataContext).StatsBoxList[1]);
 
         }
 

@@ -5,11 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using HD;
 using System.Windows.Input;
+using System.Collections.ObjectModel;
+using System.Windows.Threading;
 
 namespace HardlyMiningUI.ViewModels
 {
     class MainVM : MainViewModel
     {
+        readonly DispatcherTimer timer = new DispatcherTimer();
         public SettingsVM Settings { get; } = new SettingsVM();
 
         private string _btnActionText = "Start";
@@ -21,9 +24,16 @@ namespace HardlyMiningUI.ViewModels
 
         public MainVM()
         {
-
+            timer.Interval = TimeSpan.FromMilliseconds(200);
+            timer.Tick += OnTick;
+            timer.Start();
         }
 
+        void OnTick(object sender, EventArgs e)
+        {
+            this.FastRefresh();
+            Miner.instance.OnTick();
+        }
 
         private ICommand _startStopCMD;
         public ICommand StartStopCMD

@@ -16,8 +16,8 @@
           <local:StatsBox>        </local:StatsBox> 
         </DynamicLayout>
         <Button x:Name="StartStopButton" Text="{Binding BtnActionText}" Command="{Binding StartStopCMD}"/>
-        <ProgressBar Value="{Binding cpuUsageForMining}"/>
-        <ProgressBar Value="{Binding cpuUsageOverall}"/>
+        <ProgressBar Value="{Binding cpuUsageForMining}" MaxValue="100"  Height="8" Width="234" />
+        <ProgressBar Value="{Binding cpuUsageOverall}" MaxValue="100"  Height="8" Width="234"/>
         <Label Text="{Binding cpuUsageOverall}"/>
       </StackLayout>
     </TabPage>
