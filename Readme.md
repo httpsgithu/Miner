@@ -32,8 +32,12 @@ https://stackoverflow.com/a/31836086
 
 For each build:
 
- - Increment the build version
- - Using Orca, Microsoft's MSI editing tool. Open the MSI file in Orca, select View-->Summary Information... then check the "UAC Compliant" checkbox.
- - To publish (HD only): Update the AutoUpdate.xml & push the MSI
+ - Increment the versions
+   - Miner -> Properties (right click menu) -> Application -> Assembly Information -> Assembly Version
+   - Miner Installer -> Properties (the panel) ->  Version
+ - Rebuild both Miner and MinerSetup
+ - (HD only) To Publish:
+   - Run Deploy.bat (updates UAC permissions and moves the MSI for publishing and prompts for version)
+   - Push the site
 
 From:  https://stackoverflow.com/questions/4080131/how-to-make-a-setup-work-for-limited-non-admin-users

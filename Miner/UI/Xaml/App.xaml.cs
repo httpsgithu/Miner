@@ -28,7 +28,6 @@ namespace HD
       {
         CheckForUpdates();
       };
-      CheckForUpdates();
       timer.Start();
     }
 
@@ -44,10 +43,7 @@ namespace HD
       {
         try
         {
-          if (AutoUpdater.DownloadUpdate())
-          {
-            Environment.Exit(0); // or app.current.quit?
-          }
+          AutoUpdater.DownloadUpdate(onComplete: () => Environment.Exit(0));
         }
         catch { }
       }

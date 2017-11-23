@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyDescription("Mine cryptocurrency to support your favorite streamer!")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Hardly Difficult")]
-[assembly: AssemblyProduct("Miner")]
+[assembly: AssemblyProduct("Hardly Difficult Miner")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -52,5 +52,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.61.0")]
+[assembly: AssemblyFileVersion("1.0.61.0")]

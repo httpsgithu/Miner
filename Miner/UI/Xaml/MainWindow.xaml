@@ -61,7 +61,7 @@
                         <Label FontSize="14">Threads:</Label>
                         <Slider x:Name="sliderNumberOfThreads" Style="{DynamicResource FlatSlider}" Margin="5" Minimum="1" Maximum="{Binding Environment.ProcessorCount}" SmallChange="1" IsSnapToTickEnabled="True"></Slider>
                         <WrapPanel>
-                            <Label FontSize="14">Max. available: </Label>
+                            <Label FontSize="14">Max. available:</Label>
                             <Label x:Name="maxNumberOfThreads"/>
                         </WrapPanel>
                         <WrapPanel>
@@ -142,7 +142,7 @@
         </tb:TaskbarIcon>-->
 
         <TabControl HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
-            <TabItem Header="Main">
+            <TabItem Header="E">
                 <Grid>
                     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                         <StackPanel>
@@ -190,7 +190,7 @@
             <TabItem Header="Streamers">
                 <Grid>
                     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                        
+
                     </ScrollViewer>
                 </Grid>
             </TabItem>
@@ -220,8 +220,12 @@
             </TabItem>-->
             <TabItem Header="About">
                 <Grid>
-                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                        <Label FontSize="60">103!!!</Label>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="39*"/>
+                        <ColumnDefinition Width="47*"/>
+                    </Grid.ColumnDefinitions>
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.ColumnSpan="2">
+                        <Label FontSize="60">Yay</Label>
                     </ScrollViewer>
                 </Grid>
             </TabItem>
