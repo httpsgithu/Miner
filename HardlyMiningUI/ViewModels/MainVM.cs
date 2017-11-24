@@ -36,6 +36,7 @@ namespace HardlyMiningUI.ViewModels
         {
             this.FastRefresh();
             Miner.instance.OnTick();
+            UpdateRunningState();
         }
 
         private ICommand _startStopCMD;
