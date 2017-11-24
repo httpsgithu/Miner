@@ -13,7 +13,7 @@ namespace HD
   {
     #region Data
     // TODO without path?
-    static readonly string minerConfigFilename = System.Reflection.Assembly.GetEntryAssembly().Location.Substring(0, System.Reflection.Assembly.GetEntryAssembly().Location.LastIndexOf("\\")) + "\\config.json"; 
+    static readonly string minerConfigFilename = "config.json"; 
 
     int _numberOfThreadsWhenActive = 1;
 

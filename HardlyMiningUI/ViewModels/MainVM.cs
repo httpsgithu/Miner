@@ -12,7 +12,8 @@ namespace HardlyMiningUI.ViewModels
 {
     class MainVM : MainViewModel
     {
-        readonly DispatcherTimer timer = new DispatcherTimer();
+        //readonly DispatcherTimer timer = new DispatcherTimer(); DispatcherTimer is WPF Only. 
+        readonly Eto.Forms.UITimer timer = new Eto.Forms.UITimer();
         public SettingsVM Settings { get; } = new SettingsVM();
 
         private string _btnActionText = "Start";
@@ -24,8 +25,10 @@ namespace HardlyMiningUI.ViewModels
 
         public MainVM()
         {
-            timer.Interval = TimeSpan.FromMilliseconds(200);
-            timer.Tick += OnTick;
+            //timer.Interval = TimeSpan.FromMilliseconds(200);
+            timer.Interval = 0.02;
+            //timer.Tick += OnTick;
+            timer.Elapsed += OnTick;
             timer.Start();
         }
 

@@ -12,7 +12,7 @@ namespace HD
     readonly List<Beneficiary> beneficiaryList = new List<Beneficiary>();
 
     // TODO does this work without the path?
-    static readonly string beneficiaryFilename = System.Reflection.Assembly.GetEntryAssembly().Location.Substring(0, System.Reflection.Assembly.GetEntryAssembly().Location.LastIndexOf("\\")) + "\\beneficiaries.json";
+    static readonly string beneficiaryFilename = "beneficiaries.json";
 
     static readonly BeneficiarySorter beneficiarySorter = new BeneficiarySorter();
 

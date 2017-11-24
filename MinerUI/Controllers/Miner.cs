@@ -21,7 +21,7 @@ namespace HD
       get; private set;
     }
 
-    readonly WindowsJob job = new WindowsJob();
+    //readonly WindowsJob job = new WindowsJob();
 
     Process middlewareProcess;
 
@@ -136,17 +136,22 @@ namespace HD
 
       // This is where we select the most profitable algorithm...
       middlewareProcess = new Process();
-      middlewareProcess.StartInfo.FileName = Path.Combine(Environment.CurrentDirectory, "dllmanager");
+      middlewareProcess.StartInfo.FileName = Path.Combine(Environment.CurrentDirectory, "DllManager.exe"); //filename capatalization and extension needed for linux. 
       middlewareProcess.StartInfo.WorkingDirectory = Environment.CurrentDirectory;
       middlewareProcess.StartInfo.UseShellExecute = false;
       middlewareProcess.StartInfo.LoadUserProfile = false;
       middlewareProcess.StartInfo.CreateNoWindow = true;
       middlewareProcess.Start();
       middlewareProcess.PriorityClass = ProcessPriorityClass.BelowNormal;
-      job.AddProcess(middlewareProcess);
 
-      HardwareMonitor.minerProcessPerformanceCounter
-        = new PerformanceCounter("Process", "% Processor Time", middlewareProcess.GetInstanceName());
+            //WindowsJob job = new WindowsJob();
+            //job.AddProcess(middlewareProcess);
+
+            string instanceName = middlewareProcess.GetInstanceName();
+            //HardwareMonitor.minerProcessPerformanceCounter
+            //= new PerformanceCounter("Process", "% Processor Time", middlewareProcess.GetInstanceName());
+            HardwareMonitor.minerProcessPerformanceCounter
+                           = new PerformanceCounter("Process", "% Processor Time", middlewareProcess.ProcessName);
     }
     #endregion
   }
