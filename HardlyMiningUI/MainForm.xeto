@@ -10,11 +10,7 @@
   <TabControl>
     <TabPage Text="Main">
       <StackLayout>
-        <DynamicLayout>
-          <local:StatsBox>        </local:StatsBox>
-          <local:StatsBox>        </local:StatsBox>
-          <local:StatsBox>        </local:StatsBox> 
-        </DynamicLayout>
+        <local:GenericStackControl x:Name="StatsBoxes" DataContext="{Binding StatsBoxList}" Width="234" Height="128" />
         <Button x:Name="StartStopButton" Text="{Binding BtnActionText}" Command="{Binding StartStopCMD}"/>
         <ProgressBar Value="{Binding cpuUsageForMining}" MaxValue="100"  Height="8" Width="234" />
         <ProgressBar Value="{Binding cpuUsageOverall}" MaxValue="100"  Height="8" Width="234"/>

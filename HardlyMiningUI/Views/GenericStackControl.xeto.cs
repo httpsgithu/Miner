@@ -4,6 +4,7 @@ using Eto.Forms;
 using Eto.Drawing;
 using Eto.Serialization.Xaml;
 using System.Collections;
+using System.Collections.Specialized;
 
 namespace HardlyMiningUI.Views
 {
@@ -64,8 +65,8 @@ namespace HardlyMiningUI.Views
 
         private void RemoveControls(ICollection collection)
         {
-            foreach (var item in collection)
-            {
+            foreach (Control item in collection)
+            {               
                 Stack.Items.Remove(item);
             }
         }
