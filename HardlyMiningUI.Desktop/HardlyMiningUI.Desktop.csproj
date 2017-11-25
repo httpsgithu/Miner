@@ -72,7 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HardlyMiningUI\HardlyMiningUI.csproj">
-      <Project>{a3143cbc-28a0-40d9-88e5-8fc1595bae80}</Project>
+      <Project>{AF66D91B-52D9-42AC-A608-509188EF01D7}</Project>
       <Name>HardlyMiningUI</Name>
     </ProjectReference>
   </ItemGroup>
