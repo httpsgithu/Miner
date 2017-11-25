@@ -59,6 +59,9 @@
     </EmbeddedResource>
     <Compile Include="ViewModels\MainVM.cs" />
     <Compile Include="ViewModels\SettingsVM.cs" />
+    <Compile Include="Views\GenericStackControl.xeto.cs">
+      <DependentUpon>GenericStackControl.xeto</DependentUpon>
+    </Compile>
     <Compile Include="Views\MinerSettings.xeto.cs">
       <DependentUpon>MinerSettings.xeto</DependentUpon>
     </Compile>
@@ -69,6 +72,9 @@
   <ItemGroup>
     <None Include="packages.config" />
     <EmbeddedResource Include="Views\MinerSettings.xeto">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\GenericStackControl.xeto">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
