@@ -33,23 +33,26 @@ namespace HD
     {
       get; private set;
     }
+
+    readonly MinerAutoStart minerAutoStart = new MinerAutoStart();
+
+    DateTime lastStoppedTime;
     #endregion
 
     #region Properties
-    public bool isMachineIdle
-    {
-      get
-      {
-        TimeSpan idleTime = IdleTimeFinder.GetIdleTime();
-        return idleTime > settings.minerConfig.timeTillAutoRun;
-      }
-    }
-
     public bool isMinerRunning
     {
       get
       {
         return middlewareProcess?.IsRunning() ?? false;
+      }
+    }
+
+    public  TimeSpan timeSinceLastStopped
+    {
+      get
+      {
+        return DateTime.Now - lastStoppedTime;
       }
     }
     #endregion
@@ -120,6 +123,7 @@ namespace HD
         middlewareProcess?.Kill();
       }
       catch { }
+      lastStoppedTime = DateTime.Now;
       middlewareProcess = null;
       HardwareMonitor.minerProcessPerformanceCounter = null;
     }

@@ -26,8 +26,6 @@ namespace HD
       timer.Tick += OnTick;
       timer.Start();
 
-      maxNumberOfThreads.Content = Environment.ProcessorCount;
-      sliderNumberOfThreads.Maximum = Environment.ProcessorCount;
       if (Miner.isFirstLaunch)
       {
         ((MainViewModel)DataContext).shouldStartWithWindows = true;

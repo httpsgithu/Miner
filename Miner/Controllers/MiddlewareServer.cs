@@ -10,6 +10,7 @@ namespace HD
   public class MiddlewareServer : MinerMiddleware
   {
     readonly MiningStatsBoxViewModel viewModel;
+    readonly MinerResourceMonitor monitor;
 
     protected override bool isServer
     {
@@ -22,25 +23,33 @@ namespace HD
     public MiddlewareServer(
       MiningStatsBoxViewModel viewModel)
     {
+      monitor = new MinerResourceMonitor(this);
       this.viewModel = viewModel;
       onConnection += OnConnection;
+      onDisconnect += OnDisconnect;
       onMessage += OnMessage;
     }
 
     void OnConnection()
     {
+      monitor.Start();
       Send(new StartMiningRequest(
         wallet: Miner.instance.currentWinner.wallet,
-        numberOfThreads: Miner.instance.settings.minerConfig.numberOfThreadsWhenIdle, // TODO # of threads select active or idle
+        numberOfThreads: Miner.instance.settings.minerConfig.numberOfThreads,
         workerName: Miner.instance.settings.minerConfig.workerName));
+    }
+
+    void OnDisconnect()
+    {
+      monitor.Stop();
     }
 
     void OnMessage(
       IMessage message)
     {
       MiningStats stats = (MiningStats)message;
-      viewModel.btcAmount = 
-        stats.hashRate 
+      viewModel.btcAmount =
+        stats.hashRate
         * Miner.instance.settings.miningPriceList.pricePerDayInBtcFor1MH
         * viewModel.daysPerInterval;
     }

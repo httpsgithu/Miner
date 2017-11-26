@@ -53,6 +53,7 @@
     <Compile Include="Data\Globals.cs" />
     <Compile Include="Data\JSON\IMessage.cs" />
     <Compile Include="Data\JSON\MiningStats.cs" />
+    <Compile Include="Data\JSON\SetSleepFor.cs" />
     <Compile Include="Data\JSON\StartMiningRequest.cs" />
     <Compile Include="Network\MinerMiddleware.cs" />
     <Compile Include="Network\TcpSocket.cs" />

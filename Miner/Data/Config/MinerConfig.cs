@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace HD
@@ -12,77 +13,71 @@ namespace HD
   public class MinerConfig
   {
     #region Data
-    // TODO without path?
-    static readonly string minerConfigFilename = System.Reflection.Assembly.GetEntryAssembly().Location.Substring(0, System.Reflection.Assembly.GetEntryAssembly().Location.LastIndexOf("\\")) + "\\config.json"; 
-
-    int _numberOfThreadsWhenActive = 1;
-
-    double _stopIfCPUGreaterThanWhileActive = 50;
-
-    int _numberOfThreadsWhenIdle = 3;
-
-    double _stopIfCPUGreaterThanWhileIdle = 80;
+    static readonly string minerConfigFilename = "config.json";
 
     string _workerName = "anonymous";
 
-    bool _shouldAutoRun = true;
+    TimeSpan _timeTillIdle = TimeSpan.FromMinutes(10);
 
-    TimeSpan _minutesTillAutoRun = TimeSpan.FromMinutes(10);
+    double _maxCpuWhileIdle = .5;
+
+    double _maxCpuWhileActive = .2;
     #endregion
 
     #region Properties
-    public int numberOfThreadsWhenActive
+    public bool isCurrentlyIdle
     {
       get
       {
-        return _numberOfThreadsWhenActive;
+        return IdleTimeFinder.GetIdleTime() >= timeTillIdle;
+      }
+    }
+
+    public double currentTargetCpu
+    {
+      get
+      {
+        if (isCurrentlyIdle)
+        {
+          return maxCpuWhileIdle;
+        }
+        else
+        {
+          return maxCpuWhileActive;
+        }
+      }
+    }
+
+    public double maxCpuWhileIdle
+    {
+      get
+      {
+        return _maxCpuWhileIdle;
       }
       set
       {
-        ValidateThreadCount(ref value);
-        _numberOfThreadsWhenActive = value;
+        _maxCpuWhileIdle = value;
+        if (maxCpuWhileActive > maxCpuWhileIdle)
+        { // while active should always be less than while idle
+          _maxCpuWhileActive = maxCpuWhileIdle;
+        }
         Save();
       }
     }
 
-    public double stopIfCPUGreaterThanWhileActive
+    public double maxCpuWhileActive
     {
       get
       {
-        return _stopIfCPUGreaterThanWhileActive;
+        return _maxCpuWhileActive;
       }
       set
       {
-        ValidateCPUThreshold(ref value, numberOfThreadsWhenActive);
-        _stopIfCPUGreaterThanWhileActive = value;
-        Save();
-      }
-    }
-
-    public int numberOfThreadsWhenIdle
-    {
-      get
-      {
-        return _numberOfThreadsWhenIdle;
-      }
-      set
-      {
-        ValidateThreadCount(ref value);
-        _numberOfThreadsWhenIdle = value;
-        Save();
-      }
-    }
-
-    public double stopIfCPUGreaterThanWhileIdle
-    {
-      get
-      {
-        return _stopIfCPUGreaterThanWhileIdle;
-      }
-      set
-      {
-        ValidateCPUThreshold(ref value, numberOfThreadsWhenIdle);
-        _stopIfCPUGreaterThanWhileIdle = value;
+        _maxCpuWhileActive = value;
+        if (maxCpuWhileActive > maxCpuWhileIdle)
+        { // while active should always be less than while idle
+          _maxCpuWhileIdle = maxCpuWhileActive;
+        }
         Save();
       }
     }
@@ -101,29 +96,34 @@ namespace HD
       }
     }
 
-    public bool shouldAutoRun
+    public TimeSpan timeTillIdle
     {
       get
       {
-        return _shouldAutoRun;
-      }
-      set
-      {
-        _shouldAutoRun = value;
-        Save();
-      }
-    }
-
-    public TimeSpan timeTillAutoRun
-    {
-      get
-      {
-        return _minutesTillAutoRun;
+        return _timeTillIdle;
       }
       set
       {
         ValidateTimeTill(ref value);
-        _minutesTillAutoRun = value;
+        _timeTillIdle = value;
+      }
+    }
+
+    /// <summary>
+    /// Controlled by the maxCPU settings.
+    /// Always targets worst case number of threads.
+    /// Sleep statements ensure hitting the CPU target.
+    /// </summary>
+    public int numberOfThreads
+    {
+      get
+      {
+        double maxResources = Math.Max(maxCpuWhileActive, maxCpuWhileIdle);
+        // TODO
+        //Debug.Assert(maxResources > 0);
+        //Debug.Assert(maxResources <= 1.001);
+
+        return (int)Math.Ceiling(Environment.ProcessorCount * maxResources);
       }
     }
     #endregion
@@ -158,19 +158,6 @@ namespace HD
     #endregion
 
     #region Validators
-    void ValidateThreadCount(
-      ref int value)
-    {
-      if (value < 1)
-      {
-        value = 1;
-      }
-      else if (value > Environment.ProcessorCount)
-      {
-        value = Environment.ProcessorCount;
-      }
-    }
-
     void ValidateCPUThreshold(
       ref double value,
       int numberOfThreads)

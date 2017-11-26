@@ -53,21 +53,17 @@
                         <Slider Style="{DynamicResource FlatSlider}" Margin="5,0,5,5"/>
                     </WrapPanel>-->
                     <StackPanel Margin="5,0,0,0">
-                        <CheckBox x:Name="shouldAutoOnIdle" IsChecked="True">Auto run when idle</CheckBox>
-                        <CheckBox x:Name="shouldStartWithWindows" IsChecked="True">Start with Windows</CheckBox>
+                        <CheckBox x:Name="shouldStartWithWindows" IsChecked="{Binding shouldStartWithWindows}">Start with Windows</CheckBox>
                         <Label FontSize="14">Time to enter idle:</Label>
                         <TextBox x:Name="TimeTillIdle" Text="10"/>
 
-                        <Label FontSize="14">Threads:</Label>
-                        <Slider x:Name="sliderNumberOfThreads" Style="{DynamicResource FlatSlider}" Margin="5" Minimum="1" Maximum="{Binding Environment.ProcessorCount}" SmallChange="1" IsSnapToTickEnabled="True"></Slider>
-                        <WrapPanel>
-                            <Label FontSize="14">Max. available:</Label>
-                            <Label x:Name="maxNumberOfThreads"/>
-                        </WrapPanel>
-                        <WrapPanel>
-                            <Label FontSize="14">Currently using:</Label>
-                            <Label x:Name="labelNumberOfThreads" Content="3"/>
-                        </WrapPanel>
+                        <Label FontSize="18" Margin="5">Max CPU</Label>
+                        <Label FontSize="14">While Active:</Label>
+                        <Slider x:Name="sliderMaxCpuWhileActive" Value="{Binding sliderMaxCpuWhileActive}" Style="{DynamicResource FlatSlider}" Margin="5" Minimum="0" Maximum="1" TickFrequency=".01"></Slider>
+                        <Label FontSize="14">While Idle:</Label>
+                        <Slider x:Name="sliderMaxCpuWhileIdle" Value="{Binding sliderMaxCpuWhileIdle}" Style="{DynamicResource FlatSlider}" Margin="5" Minimum="0" Maximum="1" TickFrequency=".01"></Slider>
+                        
+                        
                         <Label FontSize="14">Your Name (Optional):</Label>
                         <TextBox x:Name="workerNameText" Margin="5" MaxLength="15" MaxLines="1"></TextBox>
                         <Label FontSize="14">Your Wallet:</Label>
@@ -180,8 +176,8 @@
                                 </ListBox.ItemTemplate>
                             </ListBox>-->
                             <Button x:Name="StartStopButton" Padding="10" Margin="40" Click="OnStartStopButtonClick">Start</Button>
-                            <ProgressBar Value="{Binding cpuUsageForMining}" Maximum="100"  Height="8" Width="234"/>
-                            <ProgressBar Value="{Binding cpuUsageOverall}" Maximum="100"  Height="8" Width="234"/>
+                            <ProgressBar Value="{Binding cpuUsageForMining}" Maximum="1"  Height="8" Width="234"/>
+                            <ProgressBar Value="{Binding cpuUsageOverall}" Maximum="1"  Height="8" Width="234"/>
                             <Label Content="{Binding cpuUsageOverall}"></Label>
                         </StackPanel>
                     </ScrollViewer>

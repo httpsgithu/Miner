@@ -18,6 +18,8 @@ namespace HD
 
     readonly Action onConnection;
 
+    readonly Action onDisconnect;
+
     readonly bool isServer;
 
     TcpListener serverListener;
@@ -26,10 +28,12 @@ namespace HD
     public TcpSocket(
       bool isServer,
       Action onConnection,
+      Action onDisconnect,
       Action<string> onMessage)
     {
       this.isServer = isServer;
       this.onConnection = onConnection;
+      this.onDisconnect = onDisconnect;
       this.onMessage = onMessage;
       Init();
     }
@@ -38,7 +42,7 @@ namespace HD
     {
       if (this.isServer)
       {
-        if(serverListener != null)
+        if (serverListener != null)
         {
           serverListener.Stop();
           Thread.Sleep(3000);
@@ -66,6 +70,7 @@ namespace HD
         }
         catch
         { // The server is not up ATM
+          onDisconnect?.Invoke();
           Environment.Exit(123);
         }
       }
@@ -74,8 +79,20 @@ namespace HD
     public void Send(
       string message)
     {
-      writer.WriteLine(message);
-      writer.Flush();
+      try
+      {
+        writer.WriteLine(message);
+        writer.Flush();
+      }
+      catch
+      {
+        try
+        {
+          client.Close();
+        }
+        catch { }
+        onDisconnect?.Invoke();
+      }
     }
 
     async void ReadLoop()
@@ -84,21 +101,25 @@ namespace HD
       {
         while (true)
         {
-          string message = await reader.ReadLineAsync(); 
-          if(message == null)
+          string message = await reader.ReadLineAsync();
+          if (message == null)
           { // Disconnected
             break;
           }
           onMessage(message);
         }
       }
-      catch (IOException) { }
+      catch (IOException e)
+      {
+        Console.WriteLine(e.ToString());
+      }
 
       try
       {
         client.Close();
       }
       catch { }
+      onDisconnect?.Invoke();
     }
   }
 }

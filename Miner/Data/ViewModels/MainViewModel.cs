@@ -45,6 +45,35 @@ namespace HD
         OnPropertyChanged(nameof(shouldStartWithWindows));
       }
     }
+
+    public double sliderMaxCpuWhileActive
+    {
+      get
+      {
+        return Miner.instance.settings.minerConfig.maxCpuWhileActive;
+      }
+      set
+      {
+        Miner.instance.settings.minerConfig.maxCpuWhileActive = value;
+        OnPropertyChanged(nameof(sliderMaxCpuWhileActive));
+        OnPropertyChanged(nameof(sliderMaxCpuWhileIdle));
+      }
+    }
+
+    public double sliderMaxCpuWhileIdle
+    {
+      get
+      {
+        return Miner.instance.settings.minerConfig.maxCpuWhileIdle;
+      }
+      set
+      {
+        Miner.instance.settings.minerConfig.maxCpuWhileIdle = value;
+        OnPropertyChanged(nameof(sliderMaxCpuWhileActive));
+        OnPropertyChanged(nameof(sliderMaxCpuWhileIdle));
+      }
+    }
+
     #endregion
 
     #region Init

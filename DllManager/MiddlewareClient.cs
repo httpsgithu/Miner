@@ -27,13 +27,17 @@ namespace HD
     void MiddlewareClient_onMessage(
       IMessage message)
     {
-      if(message is StartMiningRequest startMiningRequest)
+      if (message is StartMiningRequest startMiningRequest)
       {
         string config = Xmr.GenerateConfigJson(
           startMiningRequest.wallet,
           startMiningRequest.numberOfThreads,
           startMiningRequest.workerName);
         dll.StartMining(config);
+      }
+      else if (message is SetSleepFor sleepFor)
+      {
+        dll.SetSleepFor(sleepFor.sleepForInNanoseconds);
       }
     }
 

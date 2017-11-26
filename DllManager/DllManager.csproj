@@ -79,10 +79,5 @@
       <Name>CommonMiner</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="xmr-stak-cpu.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

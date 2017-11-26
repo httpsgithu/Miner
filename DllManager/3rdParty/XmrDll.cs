@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Threading;
 
 namespace HD
 {
@@ -13,16 +11,15 @@ namespace HD
     static extern bool Start(
       string configurationJson);
 
-    // TODO do we need stop?
-    [DllImport("xmr-stak-cpu.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl,
-               BestFitMapping = false,
-               ThrowOnUnmappableChar = true)]
-    static extern void Stop();
-
     [DllImport("xmr-stak-cpu.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl,
                BestFitMapping = false,
                ThrowOnUnmappableChar = true)]
     static extern double GetTotalHashRate();
+
+    [DllImport("xmr-stak-cpu.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl,
+               BestFitMapping = false,
+               ThrowOnUnmappableChar = true)]
+    static extern void SleepFor(long sleepTimeInNanoseconds);
 
     public double totalHashRate
     {
@@ -39,12 +36,11 @@ namespace HD
       Start(configurationJson);
     }
 
-    public void StopMining()
+    public void SetSleepFor(
+      long sleepTimeInNanoseconds)
     {
-      Stop();
+      SleepFor(sleepTimeInNanoseconds);
     }
-
-    
   }
 }
 

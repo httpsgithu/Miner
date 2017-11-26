@@ -15,6 +15,7 @@ namespace HD
   public abstract class MinerMiddleware
   {
     public event Action onConnection;
+    public event Action onDisconnect;
 
     public event Action<IMessage> onMessage;
 
@@ -30,7 +31,7 @@ namespace HD
     #region Init
     public MinerMiddleware()
     {
-      socket = new TcpSocket(isServer, OnConnection, OnMessage);
+      socket = new TcpSocket(isServer, OnConnection, OnDisconnect, OnMessage);
     }
     #endregion
 
@@ -65,6 +66,11 @@ namespace HD
     void OnConnection()
     {
       onConnection?.Invoke();
+    }
+
+    void OnDisconnect()
+    {
+      onDisconnect?.Invoke();
     }
 
     void OnMessage(
