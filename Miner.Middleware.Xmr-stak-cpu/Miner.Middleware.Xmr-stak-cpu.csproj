@@ -7,7 +7,7 @@
     <ProjectGuid>{510BE424-2E88-4ACA-80B0-B16E0F45655E}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>HD</RootNamespace>
-    <AssemblyName>DllManager</AssemblyName>
+    <AssemblyName>Miner.Middleware.Xmr-stak-cpu</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -36,6 +36,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Bot|AnyCPU'">
     <OutputPath>bin\Bot\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>HD.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AsyncIO, Version=0.1.25.0, Culture=neutral, PublicKeyToken=44a94435bd6f33f8, processorArchitecture=MSIL">
@@ -88,9 +91,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /y "$(TargetDir)*" "$(ProjectDir)..\HardlyMiningUI.Windows\bin\$(ConfigurationName)\"
-xcopy /y "$(TargetDir)*" "$(ProjectDir)..\HardlyMiningUI.Mac\bin\$(ConfigurationName)\"
-xcopy /y "$(TargetDir)*" "$(ProjectDir)..\HardlyMiningUI.Linux\bin\$(ConfigurationName)\"
+    <PostBuildEvent>xcopy /y "$(TargetDir)*" "$(ProjectDir)..\Miner.App.UI.WPF\bin\$(ConfigurationName)\"
+xcopy /y "$(TargetDir)*" "$(ProjectDir)..\Miner.App.UI.ETO.Linux\bin\$(ConfigurationName)\"
+xcopy /y "$(TargetDir)*" "$(ProjectDir)..\Miner.App.UI.ETO.Mac\bin\$(ConfigurationName)\"
+xcopy /y "$(TargetDir)*" "$(ProjectDir)..\Miner.App.UI.ETO.Windows\bin\$(ConfigurationName)\"
 </PostBuildEvent>
   </PropertyGroup>
 </Project>

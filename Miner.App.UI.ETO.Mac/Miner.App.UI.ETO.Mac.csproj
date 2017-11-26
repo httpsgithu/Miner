@@ -6,7 +6,7 @@
     <ProjectGuid>{47C19AE3-ECC4-4C47-9E26-2F5E3D3EB6DD}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>HardlyMiningUI.Desktop</RootNamespace>
-    <AssemblyName>HardlyMiningUI.Desktop</AssemblyName>
+    <AssemblyName>Miner</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <DoNotCopyLocalIfInGac>true</DoNotCopyLocalIfInGac>
     <NuGetPackageImportStamp>

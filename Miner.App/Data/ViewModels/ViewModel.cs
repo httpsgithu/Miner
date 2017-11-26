@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace HD
 {
@@ -8,9 +9,19 @@ namespace HD
   {
     public event PropertyChangedEventHandler PropertyChanged;
 
+    readonly SynchronizationContext context;
+
+    public ViewModel()
+    {
+      context = new SynchronizationContext();
+    }
+
     protected void OnPropertyChanged([CallerMemberName] string propertyName = null) //[CallerMemberName] allows you to call this method without having to send the name. less typing. 
     {
+      context.Post((state) =>
+      {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+      }, null);
     }
   }
 }

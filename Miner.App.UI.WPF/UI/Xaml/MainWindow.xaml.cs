@@ -20,6 +20,7 @@ namespace HD
     {
       instance = this;
       InitializeComponent();
+      MainViewModel test = new MainViewModel();
       mainWindow.DataContext = new MainViewModel();
 
       timer.Interval = TimeSpan.FromMilliseconds(200);

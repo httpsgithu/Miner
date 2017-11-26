@@ -7,7 +7,7 @@
     <ProjectGuid>{7D27F105-591D-4318-B84B-331BBDC3F61E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>HD</RootNamespace>
-    <AssemblyName>DllManager</AssemblyName>
+    <AssemblyName>Miner.Middleware</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -84,9 +84,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /y "$(TargetDir)*" "$(ProjectDir)..\HardlyMiningUI.Windows\bin\$(ConfigurationName)\"
-xcopy /y "$(TargetDir)*" "$(ProjectDir)..\HardlyMiningUI.Mac\bin\$(ConfigurationName)\"
-xcopy /y "$(TargetDir)*" "$(ProjectDir)..\HardlyMiningUI.Linux\bin\$(ConfigurationName)\"
-</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

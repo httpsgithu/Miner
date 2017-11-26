@@ -141,7 +141,8 @@ namespace HD
 
       // This is where we select the most profitable algorithm...
       middlewareProcess = new Process();
-      middlewareProcess.StartInfo.FileName = Path.Combine(Environment.CurrentDirectory, "DllManager.exe"); //filename capatalization and extension needed for linux. 
+      middlewareProcess.StartInfo.FileName = Path.Combine(Environment.CurrentDirectory,
+        "Miner.Middleware.Xmr-stak-cpu.exe"); //filename capatalization and extension needed for linux. 
       middlewareProcess.StartInfo.WorkingDirectory = Environment.CurrentDirectory;
       middlewareProcess.StartInfo.UseShellExecute = false;
       middlewareProcess.StartInfo.LoadUserProfile = false;
