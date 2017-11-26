@@ -4,16 +4,16 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:local="clr-namespace:HardlyMiningUI.Views"
 	Title="HardlyDifficult Miner"
-	ClientSize="400, 350"
+	ClientSize="350, 350"
 	>
   
   <TabControl>
     <TabPage Text="Main">
       <StackLayout>
-        <local:GenericStackControl x:Name="StatsBoxes" DataContext="{Binding StatsBoxList}" Width="234" Height="128" />
+        <local:GenericStackControl x:Name="StatsBoxes" DataContext="{Binding StatsBoxList}" Width="350" Height="128" />
         <Button x:Name="StartStopButton" Text="{Binding BtnActionText}" Command="{Binding StartStopCMD}"/>
-        <ProgressBar Value="{Binding cpuUsageForMining}" MaxValue="100"  Height="8" Width="234" />
-        <ProgressBar Value="{Binding cpuUsageOverall}" MaxValue="100"  Height="8" Width="234"/>
+        <ProgressBar Value="{Binding cpuUsageForMining}" MaxValue="100"  Height="8" Width="350" />
+        <ProgressBar Value="{Binding cpuUsageOverall}" MaxValue="100"  Height="8" Width="350"/>
         <Label Text="{Binding cpuUsageOverall}"/>
       </StackLayout>
     </TabPage>
@@ -24,7 +24,7 @@
     </TabPage>
   </TabControl>
 
-  <Form.Menu>
+  <!--Form.Menu>
 		<MenuBar>
 			<ButtonMenuItem Text="F&amp;ile">
 				<Command x:Name="clickCommand" MenuText="Settings" ToolBarText="Settings" Executed="HandleClickMe" />
@@ -36,10 +36,14 @@
 				<ButtonMenuItem Text="Quit!" Shortcut="CommonModifier+Q" Click="HandleQuit" />
 			</MenuBar.QuitItem>
 		</MenuBar>
-	</Form.Menu>
+	</Form.Menu-->
 	<Form.ToolBar>
 		<ToolBar>
-			<x:Reference Name="clickCommand"/>
+			<!--x:Reference Name="clickCommand"/-->
+			<Command x:Name="mainCmd" MenuText="Main" ToolBarText="Main" Executed="HandleClickMe" />
+			<Command x:Name="streamersCmd" MenuText="Streamers" ToolBarText="Streamers" Executed="HandleClickMe" />
+			<Command x:Name="SettingsCmd" MenuText="Settings" ToolBarText="Settings" Executed="HandleClickMe" />
+			<Command x:Name="AboutCmd" MenuText="About" ToolBarText="About" Executed="HandleClickMe" />
 		</ToolBar>
 	</Form.ToolBar>
 </Form>
