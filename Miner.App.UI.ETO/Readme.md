@@ -1,0 +1,1 @@
+Visual Studio 2017 ETO support: http://www.mediafire.com/file/5b84lz8sz053yut/Eto.Addin.VisualStudio.vsix (from https://github.com/picoe/Eto/issues/772)

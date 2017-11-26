@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{62C72F3E-7C76-4AF0-B1D0-36D5DAB0C04C}</ProjectGuid>
+    <ProjectGuid>{7D27F105-591D-4318-B84B-331BBDC3F61E}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>HD</RootNamespace>
-    <AssemblyName>CommonMiner</AssemblyName>
+    <AssemblyName>DllManager</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -20,18 +21,24 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x64</PlatformTarget>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>x64</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Bot|AnyCPU'">
     <OutputPath>bin\Bot\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AsyncIO, Version=0.1.25.0, Culture=neutral, PublicKeyToken=44a94435bd6f33f8, processorArchitecture=MSIL">
@@ -54,19 +61,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\Globals.cs" />
-    <Compile Include="Data\JSON\IMessage.cs" />
-    <Compile Include="Data\JSON\MiningStats.cs" />
-    <Compile Include="Data\JSON\SetSleepFor.cs" />
-    <Compile Include="Data\JSON\StartMiningRequest.cs" />
-    <Compile Include="Network\MinerMiddleware.cs" />
-    <Compile Include="Network\TcpSocket.cs" />
-    <Compile Include="Network\TcpSocketClient.cs" />
-    <Compile Include="Network\TcpSocketServer.cs" />
+    <Compile Include="MiddlewareClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\HardlyCommonWindows\HardlyCommonWindows.csproj">
+      <Project>{af0b12c0-df72-4e8b-9841-32173cf7f539}</Project>
+      <Name>HardlyCommonWindows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\HardlyCommon\HardlyCommon.csproj">
+      <Project>{00174c6b-a135-42a7-af86-ca81806820a5}</Project>
+      <Name>HardlyCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Miner\Miner.csproj">
+      <Project>{62c72f3e-7c76-4af0-b1d0-36d5dab0c04c}</Project>
+      <Name>Miner</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /y "$(TargetDir)*" "$(ProjectDir)..\HardlyMiningUI.Windows\bin\$(ConfigurationName)\"
+xcopy /y "$(TargetDir)*" "$(ProjectDir)..\HardlyMiningUI.Mac\bin\$(ConfigurationName)\"
+xcopy /y "$(TargetDir)*" "$(ProjectDir)..\HardlyMiningUI.Linux\bin\$(ConfigurationName)\"
+</PostBuildEvent>
+  </PropertyGroup>
 </Project>
