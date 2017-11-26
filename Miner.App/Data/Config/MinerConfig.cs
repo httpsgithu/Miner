@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 
 namespace HD
 {
@@ -14,7 +15,8 @@ namespace HD
   public class MinerConfig
   {
     #region Data
-    static readonly string minerConfigFilename = "config.json";
+    static readonly string minerConfigFilename = Path.Combine(
+      Path.GetDirectoryName(Assembly.GetCallingAssembly().Location), "config.json");
 
     [JsonProperty]
     string _workerName = "anonymous";

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 
 namespace HD
 {
@@ -12,7 +13,8 @@ namespace HD
     readonly List<Beneficiary> beneficiaryList = new List<Beneficiary>();
 
     // TODO does this work without the path?
-    static readonly string beneficiaryFilename = "beneficiaries.json";
+    static readonly string beneficiaryFilename = Path.Combine(
+      Path.GetDirectoryName(Assembly.GetCallingAssembly().Location), "beneficiaries.json");
 
     static readonly BeneficiarySorter beneficiarySorter = new BeneficiarySorter();
 
