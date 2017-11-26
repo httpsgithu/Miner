@@ -47,6 +47,11 @@ namespace HD
     void OnMessage(
       IMessage message)
     {
+      if(viewModel == null)
+      { // TODO
+        return;
+      }
+
       MiningStats stats = (MiningStats)message;
       viewModel.btcAmount =
         stats.hashRate

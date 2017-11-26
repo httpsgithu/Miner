@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Panel
+  xmlns="http://schema.picoe.ca/eto.forms" 
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  >
+  <StackLayout>
+    <CheckBox Text="Auto run when idle" Checked="{Binding AutoMineWhenIdle}" />
+    <CheckBox Text="Start with Windows" Checked="{Binding StartWithWindows}"/>
+    <Label Text="Time to enter idle:" />    
+    <NumericUpDown Value="{Binding TimeToEnterIdle}" DecimalPlaces="2" />
+    <Label Text="Threads:" />
+    <NumericUpDown Value="{Binding ThreadsUsed}" DecimalPlaces="0" MinValue="1" MaxValue="{Binding MaxThreadsAvailible}"/>
+    <StackLayout Orientation="Horizontal">
+      <Label Text="Max. available: " />
+      <Label Text="{Binding ThreadsMaxAvailible}"  />
+    </StackLayout>
+    <StackLayout Orientation="Horizontal">
+      <Label Text="Currently using: " />
+      <Label Text="{Binding ThreadsCurrentlyUsed}" />
+    </StackLayout>
+    <Label Text="Your Name (Optional):" />
+    <TextBox Text= "{Binding UserName}"/>
+    <Label Text="Your Wallet: " />
+    <TextBox Text="{Binding WalletID}" />
+    <Label Text="% of Time that goes to HD:" />
+    <Slider Value="{Binding PercentTimeToHD}" MaxValue="100" TickFrequency="1" />
+    <Label Text="{Binding PercentTimeToHD}" />
+    
+  </StackLayout>
+</Panel>

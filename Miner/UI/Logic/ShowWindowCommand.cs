@@ -30,20 +30,20 @@ namespace HD
 
     void ICommand.Execute(object parameter)
     {
-      MainWindow.instance.Visibility = Visibility.Visible;
-      Win32.Unminimize(MainWindow.instance);
+      //MainWindow.instance.Visibility = Visibility.Visible;
+      //Win32.Unminimize(MainWindow.instance);
     }
   }
 
   // TODO share windows API stuff
   public static class Win32
-  {
+  { /*//not linux freindly
     public static void Unminimize(
       Window window)
     {
       var hwnd = (HwndSource.FromVisual(window) as HwndSource).Handle;
       ShowWindow(hwnd, ShowWindowCommands.Restore);
-    }
+    }*/
 
     [DllImport("user32.dll")]
     private static extern bool ShowWindow(

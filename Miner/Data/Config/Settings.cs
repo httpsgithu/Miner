@@ -32,6 +32,7 @@ namespace HD
     #region Public
     public void RefreshNetworkAPIsIfCooldown()
     {
+      // TODO cooldown
       bitcoinPrice.BeginRead();
       miningPriceList.BeginRead();
     }

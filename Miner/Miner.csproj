@@ -53,7 +53,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>
     </DefineConstants>
@@ -112,7 +112,7 @@
       <HintPath>..\packages\MaterialDesignThemes.2.3.1.953\lib\net45\MaterialDesignThemes.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
@@ -237,10 +237,6 @@
     <ProjectReference Include="..\CommonMiner\CommonMiner.csproj">
       <Project>{9dd43d4d-bb95-4eae-a542-679c205b20c8}</Project>
       <Name>CommonMiner</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DllManager\DllManager.csproj">
-      <Project>{7d27f105-591d-4318-b84b-331bbdc3f61e}</Project>
-      <Name>DllManager</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

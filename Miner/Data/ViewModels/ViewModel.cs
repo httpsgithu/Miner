@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace HD
 {
@@ -7,10 +8,9 @@ namespace HD
   {
     public event PropertyChangedEventHandler PropertyChanged;
 
-    protected void OnPropertyChanged(
-      string propertyName)
+    protected void OnPropertyChanged([CallerMemberName] string propertyName = null) //[CallerMemberName] allows you to call this method without having to send the name. less typing. 
     {
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
   }
 }
