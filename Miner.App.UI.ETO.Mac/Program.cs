@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Eto;
 using Eto.Forms;
 
@@ -10,7 +11,9 @@ namespace HardlyMiningUI.Desktop
     public static void Main(string[] args)
     {
       // https://github.com/picoe/Eto/wiki/Running-your-application
-      new Application(Platform.Detect).Run(new MainForm());
+      var app = new Application(Platform.Detect);
+      SynchronizationContext.SetSynchronizationContext(new UISynchronizationContext(app));
+      app.Run(new MainForm());
     }
   }
 }

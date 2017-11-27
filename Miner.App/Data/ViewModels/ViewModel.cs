@@ -13,7 +13,7 @@ namespace HD
 
     public ViewModel()
     {
-      context = new SynchronizationContext();
+      context = SynchronizationContext.Current;
     }
 
     protected void OnPropertyChanged([CallerMemberName] string propertyName = null) //[CallerMemberName] allows you to call this method without having to send the name. less typing. 
