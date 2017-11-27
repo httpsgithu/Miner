@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AF66D91B-52D9-42AC-A608-509188EF01D7}</ProjectGuid>
+    <ProjectGuid>{9C396E1B-5AFF-4FA4-9878-E8C3E9AEF764}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>HD</RootNamespace>
-    <AssemblyName>Miner.App.UI</AssemblyName>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Miner.OS.Windows</RootNamespace>
+    <AssemblyName>Miner.OS.Windows</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <DoNotCopyLocalIfInGac>true</DoNotCopyLocalIfInGac>
-    <TargetFrameworkProfile />
+    <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -25,7 +25,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -35,32 +35,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Shared\MinerUI.cs" />
-    <Compile Include="ViewModels\Stats\CurrentMiningStatsViewModel.cs" />
-    <Compile Include="ViewModels\MainViewModel.cs" />
-    <Compile Include="Shared\CommandHandler.cs" />
-    <Compile Include="ViewModels\Stats\MiningStatsBoxViewModel.cs" />
-    <Compile Include="ViewModels\Stats\NetworkMiningStatsViewModel.cs" />
-    <Compile Include="ViewModels\SettingsVM.cs" />
-    <Compile Include="Shared\ViewModel.cs" />
+    <Compile Include="WindowsMinerOS.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\HardlyCommon\HardlyCommon.csproj">
-      <Project>{00174c6b-a135-42a7-af86-ca81806820a5}</Project>
-      <Name>HardlyCommon</Name>
+    <ProjectReference Include="..\..\HardlyCommonWindows\HardlyCommonWindows.csproj">
+      <Project>{af0b12c0-df72-4e8b-9841-32173cf7f539}</Project>
+      <Name>HardlyCommonWindows</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Miner.App\Miner.App.csproj">
-      <Project>{0276b284-1301-47dc-b429-92f68ffb4e69}</Project>
-      <Name>Miner.App</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Miner\Miner.csproj">
-      <Project>{62c72f3e-7c76-4af0-b1d0-36d5dab0c04c}</Project>
-      <Name>Miner</Name>
+    <ProjectReference Include="..\Miner.OS\Miner.OS.csproj">
+      <Project>{494e2932-2f7a-4cd1-87f9-69a2d513eec4}</Project>
+      <Name>Miner.OS</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

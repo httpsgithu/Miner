@@ -123,8 +123,6 @@ namespace HD
 
     void mainWindow_Loaded(object sender, RoutedEventArgs e)
     {
-      // TODO should select box by use case
-      MinerController controller = new MinerController(((MainViewModel)mainWindow.DataContext).StatsBoxList[1]);
     }
   }
 }

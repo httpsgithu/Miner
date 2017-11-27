@@ -174,11 +174,13 @@
                                         <local:StatsBox></local:StatsBox>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
-                            </ListBox>-->
-                            <Button x:Name="StartStopButton" Padding="10" Margin="40" Click="OnStartStopButtonClick">Start</Button>
+                            </ListBox>
+                            
+                            was.. Click="OnStartStopButtonClick"
+                            -->
+                            <Button x:Name="StartStopButton" Padding="10" Margin="40" Command="{Binding startStopCMD}"  Content="{Binding startOrStopText}" ></Button>
                             <ProgressBar Value="{Binding cpuUsageForMining}" Maximum="1"  Height="8" Width="234"/>
-                            <ProgressBar Value="{Binding cpuUsageOverall}" Maximum="1"  Height="8" Width="234"/>
-                            <Label Content="{Binding cpuUsageOverall}"></Label>
+                            <Label Content="{Binding cpuUsageForMining}" ContentStringFormat="{}{0:p4}" HorizontalAlignment="Center"></Label>
                         </StackPanel>
                     </ScrollViewer>
                 </Grid>

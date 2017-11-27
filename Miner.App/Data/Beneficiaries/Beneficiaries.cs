@@ -46,26 +46,12 @@ namespace HD
           Beneficiary beneficiary = beneficiaryList[i];
           if (beneficiary.percentTime > 0)
           {
-            totalHashRate += beneficiaryList[i].apiWorkerList?.totalWorkerHashRateMHpS ?? 0;
+            totalHashRate += beneficiaryList[i].totalWorkerHashRateMHpS;
           }
         }
         return totalHashRate;
       }
     }
-    public double totalContributionInBitcoin
-    {
-      get
-      {
-        double totalContribution = 0;
-        for (int i = 0; i < beneficiaryList.Count; i++)
-        {
-          Beneficiary beneficiary = beneficiaryList[i];
-          totalContribution += beneficiaryList[i].totalMinedInBitcoin;
-        }
-        return totalContribution;
-      }
-    }
-
     #endregion
 
     #region Init
@@ -93,17 +79,6 @@ namespace HD
       catch (Exception e)
       {
         Log.ParsingError(nameof(Beneficiaries), nameof(Beneficiaries), e);
-      }
-    }
-    #endregion
-
-    #region Event
-    public void Refresh()
-    {
-      for (int i = 0; i < beneficiaryList.Count; i++)
-      {
-        Beneficiary beneficiary = beneficiaryList[i];
-        beneficiary.apiWorkerList?.BeginRead();
       }
     }
     #endregion

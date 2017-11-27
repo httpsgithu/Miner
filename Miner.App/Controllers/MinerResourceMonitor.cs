@@ -33,7 +33,7 @@ namespace HD
     {
       while (true)
       {
-        if (HardwareMonitor.percentTotalCPU - HardwareMonitor.percentMinerCPU > Miner.instance.settings.minerConfig.currentTargetCpu)
+        if (HardwareMonitor.percentTotalCPU - HardwareMonitor.percentMinerCPU > Miner.instance.currentTargetCpu)
         { // Something else is using the entire budget
           Miner.instance.Stop();
           return;
@@ -47,7 +47,7 @@ namespace HD
     void UpdateSleepFor()
     {
       // Possible range is (-1, 1)
-      double deltaTargetCpu = HardwareMonitor.percentTotalCPU - Miner.instance.settings.minerConfig.currentTargetCpu;
+      double deltaTargetCpu = HardwareMonitor.percentTotalCPU - Miner.instance.currentTargetCpu;
 
       if(Math.Abs(deltaTargetCpu) < .025)
       { // Close enough

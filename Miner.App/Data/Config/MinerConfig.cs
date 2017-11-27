@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Miner.OS;
+using Newtonsoft.Json;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
@@ -32,28 +32,18 @@ namespace HD
     #endregion
 
     #region Properties
-    public bool isCurrentlyIdle
+    public bool shouldStartWithWindows
     {
       get
       {
-        return IdleTimeFinder.GetIdleTime() >= timeTillIdle;
+        return MinerOS.instance.shouldAutoStart;
+      }
+      set
+      {
+        MinerOS.instance.shouldAutoStart = value;
       }
     }
 
-    public double currentTargetCpu
-    {
-      get
-      {
-        if (isCurrentlyIdle)
-        {
-          return maxCpuWhileIdle;
-        }
-        else
-        {
-          return maxCpuWhileActive;
-        }
-      }
-    }
 
     public double maxCpuWhileIdle
     {

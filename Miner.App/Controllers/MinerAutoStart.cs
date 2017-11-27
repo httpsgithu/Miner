@@ -3,6 +3,9 @@ using System.Threading;
 
 namespace HD
 {
+  /// <summary>
+  ///  TODO this is the next feature
+  /// </summary>
   public class MinerAutoStart
   {
     readonly Thread thread;

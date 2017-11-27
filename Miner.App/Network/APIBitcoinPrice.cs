@@ -64,10 +64,10 @@ namespace HD
       }
     }
 
-    public override void BeginRead(
+    public override void ReadWhenReady(
       bool skipCooldownCheck = false)
     {
-      base.BeginRead(skipCooldownCheck || dollarPerBitcoin <= 0);
+      base.ReadWhenReady(skipCooldownCheck || dollarPerBitcoin <= 0);
     }
   }
 }

@@ -6,7 +6,7 @@ using Eto.Serialization.Xaml;
 using System.Collections;
 using System.Collections.Specialized;
 
-namespace HardlyMiningUI.Views
+namespace HD
 {
     public class GenericStackControl : Scrollable
     {
