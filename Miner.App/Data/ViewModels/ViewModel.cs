@@ -18,7 +18,7 @@ namespace HD
 
     protected void OnPropertyChanged([CallerMemberName] string propertyName = null) //[CallerMemberName] allows you to call this method without having to send the name. less typing. 
     {
-      context.Post((state) =>
+      context.Send((state) =>
       {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
       }, null);
