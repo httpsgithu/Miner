@@ -16,7 +16,7 @@ namespace HD
   {
     #region Data
     static readonly string minerConfigFilename = Path.Combine(
-      Path.GetDirectoryName(Assembly.GetCallingAssembly().Location), "config.json");
+      Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "config.json");
 
     [JsonProperty]
     string _workerName = "anonymous";

@@ -50,10 +50,10 @@ namespace HD
 ""verbose_level"" : 4,
 ""h_print_time"" : 3,
 ""daemon_mode"" : false,
-""output_file"" : ""output.log"",
+""output_file"" : ""output.log"", 
 ""httpd_port"" : 0,
 ""prefer_ipv4"" : true
-");
+"); 
       return builder.ToString();
     }
   }

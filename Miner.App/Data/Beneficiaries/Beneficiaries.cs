@@ -12,9 +12,8 @@ namespace HD
     #region Data
     readonly List<Beneficiary> beneficiaryList = new List<Beneficiary>();
 
-    // TODO does this work without the path?
     static readonly string beneficiaryFilename = Path.Combine(
-      Path.GetDirectoryName(Assembly.GetCallingAssembly().Location), "beneficiaries.json");
+      Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "beneficiaries.json");
 
     static readonly BeneficiarySorter beneficiarySorter = new BeneficiarySorter();
 

@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 
 namespace HD
 {
@@ -141,9 +142,11 @@ namespace HD
 
       // This is where we select the most profitable algorithm...
       middlewareProcess = new Process();
-      middlewareProcess.StartInfo.FileName = Path.Combine(Environment.CurrentDirectory,
-        "Miner.Middleware.Xmr-stak-cpu.exe"); //filename capatalization and extension needed for linux. 
-      middlewareProcess.StartInfo.WorkingDirectory = Environment.CurrentDirectory;
+      string directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+      middlewareProcess.StartInfo.FileName = Path.Combine(
+        directory, "Miner.Middleware.Xmr-stak-cpu.exe");
+
+      middlewareProcess.StartInfo.WorkingDirectory = directory;
       middlewareProcess.StartInfo.UseShellExecute = false;
       middlewareProcess.StartInfo.LoadUserProfile = false;
       middlewareProcess.StartInfo.CreateNoWindow = true;

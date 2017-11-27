@@ -37,9 +37,9 @@ var record
 
 try
 {
-	var fileId = FindFileIdentifier(database, filename);
-	if (!fileId)
-		throw "Unable to find '" + filename + "' in File table";
+	// var fileId = FindFileIdentifier(database, filename);
+	// if (!fileId)
+	// 	throw "Unable to find '" + filename + "' in File table";
 
 
 	WScript.Echo("Updating the Control table...");
@@ -97,7 +97,7 @@ try
 
 	WScript.Echo("Updating the CustomAction table...");
 	// Insert the custom action to launch the application when finished
-	sql = "INSERT INTO `CustomAction` (`Action`, `Type`, `Source`, `Target`) VALUES ('VSDCA_Launch', '210', '" + fileId + "', '')";
+	sql = "INSERT INTO `CustomAction` (`Action`, `Type`, `Source`, `Target`) VALUES ('VSDCA_Launch', '226', 'TARGETDIR', '[TARGETDIR]\\" + filename + "')" //'210', '" + fileId + "', '')";
 	view = database.OpenView(sql);
 	view.Execute();
 	view.Close();

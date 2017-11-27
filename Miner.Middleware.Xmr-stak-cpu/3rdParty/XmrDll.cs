@@ -5,7 +5,8 @@ namespace HD
 {
   public class XmrDll
   {
-    [DllImport("xmr-stak-cpu.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl,
+    [DllImport("xmr-stak-cpu.dll", CharSet = CharSet.Ansi, 
+      CallingConvention = CallingConvention.Cdecl,
                BestFitMapping = false,
                ThrowOnUnmappableChar = true)]
     static extern bool Start(
