@@ -99,16 +99,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\MinerAutoStart.cs" />
-    <Compile Include="Controllers\MinerController.cs" />
     <Compile Include="Controllers\MinerResourceMonitor.cs" />
     <Compile Include="Data\Beneficiaries\Beneficiaries.cs" />
     <Compile Include="Data\Beneficiaries\Beneficiary.cs" />
     <Compile Include="Data\Beneficiaries\BeneficiarySorter.cs" />
-    <Compile Include="Data\ViewModels\MainViewModel.cs" />
     <Compile Include="Data\Config\MinerConfig.cs" />
-    <Compile Include="Data\ViewModels\MiningStatsBoxViewModel.cs" />
     <Compile Include="Data\Config\Settings.cs" />
-    <Compile Include="Data\ViewModels\StatsBoxViewModel.cs" />
     <Compile Include="Controllers\Miner.cs" />
     <Compile Include="Network\APIBitcoinPrice.cs" />
     <Compile Include="Network\APINiceHashMiningPriceList.cs" />
@@ -116,8 +112,6 @@
     <Compile Include="Network\NetworkAPI.cs" />
     <Compile Include="Controllers\MiddlewareServer.cs" />
     <Compile Include="Utils\Log.cs" />
-    <Compile Include="Data\ViewModels\StatsBoxUseCase.cs" />
-    <Compile Include="Data\ViewModels\ViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -152,13 +146,13 @@
       <Project>{fb9e7e6b-b19f-4f37-a708-2996190cef13}</Project>
       <Name>AutoUpdater.NET</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\HardlyCommonWindows\HardlyCommonWindows.csproj">
-      <Project>{af0b12c0-df72-4e8b-9841-32173cf7f539}</Project>
-      <Name>HardlyCommonWindows</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\HardlyCommon\HardlyCommon.csproj">
       <Project>{00174c6b-a135-42a7-af86-ca81806820a5}</Project>
       <Name>HardlyCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Miner.OS\Miner.OS.csproj">
+      <Project>{494e2932-2f7a-4cd1-87f9-69a2d513eec4}</Project>
+      <Name>Miner.OS</Name>
     </ProjectReference>
     <ProjectReference Include="..\Miner\Miner.csproj">
       <Project>{62c72f3e-7c76-4af0-b1d0-36d5dab0c04c}</Project>

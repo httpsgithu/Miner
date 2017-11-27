@@ -4,7 +4,7 @@ using Eto.Forms;
 using Eto.Drawing;
 using Eto.Serialization.Xaml;
 
-namespace HardlyMiningUI.Views
+namespace HD
 {
     public class MinerSettings : Panel
     {

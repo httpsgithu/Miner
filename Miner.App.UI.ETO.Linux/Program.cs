@@ -3,7 +3,7 @@ using System.Threading;
 using Eto;
 using Eto.Forms;
 
-namespace HardlyMiningUI.Desktop
+namespace HD
 {
   public class Program
   {

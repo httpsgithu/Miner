@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System;
 
 namespace HD
 {
@@ -9,7 +7,7 @@ namespace HD
   /// </summary>
   public class MiddlewareServer : MinerMiddleware
   {
-    readonly MiningStatsBoxViewModel viewModel;
+    public event Action<MiningStats> onMiningStatsUpdate;
     readonly MinerResourceMonitor monitor;
 
     protected override bool isServer
@@ -20,11 +18,9 @@ namespace HD
       }
     }
 
-    public MiddlewareServer(
-      MiningStatsBoxViewModel viewModel)
+    public MiddlewareServer()
     {
       monitor = new MinerResourceMonitor(this);
-      this.viewModel = viewModel;
       onConnection += OnConnection;
       onDisconnect += OnDisconnect;
       onMessage += OnMessage;
@@ -47,16 +43,12 @@ namespace HD
     void OnMessage(
       IMessage message)
     {
-      if(viewModel == null)
-      { // TODO
-        return;
-      }
-
-      MiningStats stats = (MiningStats)message;
-      viewModel.btcAmount =
-        stats.hashRate
-        * Miner.instance.settings.miningPriceList.pricePerDayInBtcFor1MH
-        * viewModel.daysPerInterval;
+      onMiningStatsUpdate?.Invoke((MiningStats)message);
+      // TODO
+      //viewModel.btcAmount =
+      //  stats.hashRate
+      //  * Miner.instance.settings.miningPriceList.pricePerDayInBtcFor1MH
+      //  * viewModel.daysPerInterval;
     }
   }
 }

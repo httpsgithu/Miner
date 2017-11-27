@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{23F5E817-361F-44D7-A66F-67BF9E753A5C}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>HardlyMiningUI</RootNamespace>
+    <RootNamespace>HD</RootNamespace>
     <AssemblyName>Miner.App.UI.ETO</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <DoNotCopyLocalIfInGac>true</DoNotCopyLocalIfInGac>

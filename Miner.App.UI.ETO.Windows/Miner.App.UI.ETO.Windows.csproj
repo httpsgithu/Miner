@@ -68,6 +68,10 @@
       <Project>{23f5e817-361f-44d7-a66f-67bf9e753a5c}</Project>
       <Name>Miner.App.UI.ETO</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Miner.OS.Windows\Miner.OS.Windows.csproj">
+      <Project>{9c396e1b-5aff-4fa4-9878-e8c3e9aef764}</Project>
+      <Name>Miner.OS.Windows</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

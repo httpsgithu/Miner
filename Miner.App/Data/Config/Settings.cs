@@ -33,8 +33,8 @@ namespace HD
     public void RefreshNetworkAPIsIfCooldown()
     {
       // TODO cooldown
-      bitcoinPrice.BeginRead();
-      miningPriceList.BeginRead();
+      bitcoinPrice.ReadWhenReady();
+      miningPriceList.ReadWhenReady();
     }
 
     public void SaveOnExit()

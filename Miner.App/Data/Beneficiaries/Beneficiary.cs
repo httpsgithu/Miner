@@ -1,30 +1,30 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Runtime.Serialization;
+using System.Timers;
 
 namespace HD
 {
   [Serializable]
+  [JsonObject(MemberSerialization.OptIn)]
   public class Beneficiary
   {
     #region Data
-    [JsonIgnore]
-    public APINiceHashWorkerList apiWorkerList
-    {
-      get; private set;
-    }
+    APINiceHashWorkerList apiWorkerList;
 
+    [JsonProperty]
     public string name;
-
-    public double totalMinedInBitcoin;
 
     /// <summary>
     /// To change the wallet, remove and then add a new beneficiary.
     /// </summary>
+    [JsonProperty]
     public readonly string wallet;
 
     [JsonProperty]
     double _percentTime;
+
+    Timer timer;
     #endregion
 
     #region Properties
@@ -33,7 +33,6 @@ namespace HD
     /// 
     /// Refresh the total cached if this changes
     /// </summary>
-    [JsonIgnore]
     public double percentTime
     {
       get
@@ -54,13 +53,20 @@ namespace HD
       }
     }
 
-    [JsonIgnore]
     public bool isValidAndActive
     {
       get
       {
         return IsWalletValid()
           && percentTime > 0;
+      }
+    }
+
+    public double totalWorkerHashRateMHpS
+    {
+      get
+      {
+        return apiWorkerList?.totalWorkerHashRateMHpS ?? 0;
       }
     }
     #endregion
@@ -77,19 +83,37 @@ namespace HD
 
       if (IsWalletValid())
       {
-        apiWorkerList = new APINiceHashWorkerList(wallet);
+        InitAPI();
       }
     }
 
     [OnDeserialized]
-    void OnDeserialized(StreamingContext context)
+    void OnDeserialized(
+      StreamingContext context)
     {
       if (IsWalletValid())
       {
-        apiWorkerList = new APINiceHashWorkerList(wallet);
+        InitAPI();
       }
     }
     #endregion
+
+    void InitAPI()
+    {
+      apiWorkerList = new APINiceHashWorkerList(wallet);
+      timer = new Timer(20000);
+      timer.AutoReset = false;
+      timer.Elapsed += Timer_Elapsed;
+      timer.Start();
+    }
+
+    void Timer_Elapsed(
+      object sender, 
+      ElapsedEventArgs e)
+    {
+      apiWorkerList.ReadWhenReady();
+      timer.Start();
+    }
 
     // TODO total mined
     //double secondsSinceLastUpdate = (DateTime.Now - hashRateLastUpdated).TotalSeconds;

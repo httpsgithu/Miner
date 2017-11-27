@@ -65,10 +65,10 @@ namespace HD
       }
     }
 
-    public override void BeginRead(
+    public override void ReadWhenReady(
       bool skipCooldownCheck = false)
     {
-      base.BeginRead(skipCooldownCheck || pricePerDayInBtcFor1MH <= 0);
+      base.ReadWhenReady(skipCooldownCheck || pricePerDayInBtcFor1MH <= 0);
     }
   }
 }

@@ -1,4 +1,4 @@
-﻿using JobManagement;
+﻿using Miner.OS;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -11,6 +11,8 @@ namespace HD
     #region Data
     public static readonly Miner instance = new Miner();
 
+    readonly MiddlewareServer middlewareServer = new MiddlewareServer();
+
     public readonly Settings settings = new Settings();
 
     public static bool isFirstLaunch;
@@ -21,8 +23,6 @@ namespace HD
     {
       get; private set;
     }
-
-    //readonly WindowsJob job = new WindowsJob();
 
     Process middlewareProcess;
 
@@ -49,6 +49,29 @@ namespace HD
       }
     }
 
+    public bool isCurrentlyIdle
+    {
+      get
+      {
+        return MinerOS.instance.idleTime >= settings.minerConfig.timeTillIdle;
+      }
+    }
+
+    public double currentTargetCpu
+    {
+      get
+      {
+        if (isCurrentlyIdle)
+        {
+          return settings.minerConfig.maxCpuWhileIdle;
+        }
+        else
+        {
+          return settings.minerConfig.maxCpuWhileActive;
+        }
+      }
+    }
+
     public TimeSpan timeSinceLastStopped
     {
       get
@@ -58,6 +81,7 @@ namespace HD
     }
     #endregion
 
+
     #region Events
     internal static void OnFirstLaunch()
     {
@@ -66,9 +90,8 @@ namespace HD
 
     public void OnTick()
     {
-      settings.RefreshNetworkAPIsIfCooldown();
       // TODO shouldn't be driven by ui
-      settings.beneficiaries.Refresh();
+      //settings.RefreshNetworkAPIsIfCooldown();
     }
 
     internal void OnHashRateUpdate()
@@ -153,10 +176,7 @@ namespace HD
       middlewareProcess.Start();
       middlewareProcess.PriorityClass = ProcessPriorityClass.BelowNormal;
 
-#if !LINUX
-      WindowsJob job = new WindowsJob();
-      job.AddProcess(middlewareProcess);
-#endif
+      MinerOS.instance.RegisterMiddleProcess(middlewareProcess);
 
       string instanceName = middlewareProcess.GetInstanceName();
       HardwareMonitor.minerProcessPerformanceCounter

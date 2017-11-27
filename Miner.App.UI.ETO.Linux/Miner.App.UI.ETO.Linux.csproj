@@ -64,9 +64,13 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Miner.App.UI\Miner.App.UI.csproj">
-      <Project>{AF66D91B-52D9-42AC-A608-509188EF01D7}</Project>
-      <Name>Miner.App.UI</Name>
+    <ProjectReference Include="..\Miner.App.UI.ETO\Miner.App.UI.ETO.csproj">
+      <Project>{23f5e817-361f-44d7-a66f-67bf9e753a5c}</Project>
+      <Name>Miner.App.UI.ETO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Miner.OS.Linux\Miner.OS.Linux.csproj">
+      <Project>{d0cbb2a6-e4db-4a6c-851b-d837f1fb5475}</Project>
+      <Name>Miner.OS.Linux</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

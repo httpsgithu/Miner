@@ -1,19 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 
 namespace HD
 {
+  /// <summary>
+  /// TODO need a static throttle.  No more than 1 request every 3 seconds.
+  /// </summary>
   public abstract class NetworkAPI
   {
     #region Data
     readonly WebClient webClient = new WebClient();
 
-    readonly TimeSpan minTimeBetweenRequests;
-
     readonly Uri uri;
 
-    DateTime timeOfLastRequest;
+    readonly Throttle throttle;
     #endregion
 
     #region Init
@@ -22,7 +22,7 @@ namespace HD
       TimeSpan minTimeBetweenRequests)
     {
       this.uri = uri;
-      this.minTimeBetweenRequests = minTimeBetweenRequests;
+      throttle = new Throttle(minTimeBetweenRequests);
       webClient.DownloadStringCompleted += OnDownloadComplete;
     }
 
@@ -36,7 +36,7 @@ namespace HD
       object sender,
       DownloadStringCompletedEventArgs e)
     {
-      timeOfLastRequest = DateTime.Now;
+      throttle.SetLastUpdateTime();
       if (e.Cancelled)
       {
         Log.NetworkError(nameof(NetworkAPI), nameof(OnDownloadComplete), e.Error);
@@ -50,17 +50,17 @@ namespace HD
     protected abstract void OnDownloadComplete(
       string content);
 
-    public virtual void BeginRead(
+    public virtual void ReadWhenReady(
       bool skipCooldownCheck = false)
     {
-      if (skipCooldownCheck == false 
-        && (DateTime.Now - timeOfLastRequest) < minTimeBetweenRequests
-        || webClient.IsBusy)
-      { // Too soon
-        return;
+      if (skipCooldownCheck)
+      {
+        throttle.SetLastUpdateTime();
       }
-      timeOfLastRequest = DateTime.Now;
-
+      else
+      {
+        throttle.SleepIfNeeded();
+      }
       webClient.DownloadStringAsync(uri);
     }
   }
