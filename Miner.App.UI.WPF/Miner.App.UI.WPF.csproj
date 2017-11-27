@@ -129,7 +129,6 @@
     <Compile Include="UI\Xaml\StatsBox.xaml.cs">
       <DependentUpon>StatsBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WpfMinerUI.cs" />
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

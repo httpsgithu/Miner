@@ -35,7 +35,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Shared\MinerUI.cs" />
     <Compile Include="ViewModels\Stats\CurrentMiningStatsViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Shared\CommandHandler.cs" />
