@@ -3,41 +3,54 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Timers;
 
 namespace HD
 {
+  /// <summary>
+  /// The main class for Mining - settings, start/stop, etc travel through here.
+  /// </summary>
   public class Miner
   {
+    #region Constants
+    static readonly TimeSpan minTimeBetweenStarts = TimeSpan.FromMinutes(5);
+    #endregion
+
     #region Data
     public static readonly Miner instance = new Miner();
 
-    readonly MiddlewareServer middlewareServer = new MiddlewareServer();
-
     public readonly Settings settings = new Settings();
 
-    public static bool isFirstLaunch;
+    public event Action onStatsChange;
 
-    public event Action onHashRateUpdate;
-
+    /// <summary>
+    /// The current (or most recent) wallet this machine is mining for.
+    /// </summary>
     public Beneficiary currentWinner
+    {
+      get; private set;
+    }
+
+    /// <summary>
+    /// Do not stop or throttle until the user requests it.
+    /// TODO disable throttle
+    /// </summary>
+    public bool isForceOn
     {
       get; private set;
     }
 
     Process middlewareProcess;
 
-    static readonly TimeSpan minTimeBetweenStarts = TimeSpan.FromMinutes(5);
-
     DateTime lastConnectionTime;
 
-    public bool wasManuallyStarted
-    {
-      get; private set;
-    }
+    DateTime lastStoppedTime;
+
+    readonly MiddlewareServer middlewareServer = new MiddlewareServer();
 
     readonly MinerAutoStart minerAutoStart = new MinerAutoStart();
 
-    DateTime lastStoppedTime;
+    readonly Timer changeWalletTimer = new Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
     #endregion
 
     #region Properties
@@ -61,7 +74,11 @@ namespace HD
     {
       get
       {
-        if (isCurrentlyIdle)
+        if (isForceOn)
+        {
+          return 1;
+        }
+        else if (isCurrentlyIdle)
         {
           return settings.minerConfig.maxCpuWhileIdle;
         }
@@ -81,42 +98,46 @@ namespace HD
     }
     #endregion
 
+    #region Init
+    Miner()
+    {
+      changeWalletTimer.Elapsed += ChangeWalletTimer_OnTick;
+    }
+    #endregion
 
     #region Events
-    internal static void OnFirstLaunch()
+    /// <summary>
+    /// Called anytime any stats change, to fire the event for others.
+    /// </summary>
+    internal void OnStatsChange()
     {
-      isFirstLaunch = true;
+      onStatsChange?.Invoke();
     }
 
-    public void OnTick()
+    /// <summary>
+    /// Consider changing wallets every few minutes.
+    /// </summary>
+    public void ChangeWalletTimer_OnTick(
+      object sender,
+      ElapsedEventArgs e)
     {
-      // TODO shouldn't be driven by ui
-      //settings.RefreshNetworkAPIsIfCooldown();
-    }
-
-    internal void OnHashRateUpdate()
-    {
-      onHashRateUpdate?.Invoke();
-    }
-
-    public void OnMinerResultsAccepted()
-    {
-      if (DateTime.Now - lastConnectionTime < TimeSpan.FromMinutes(5))
-      { // Don't switch wallets unless it's been at least 5 minutes.
+      if (isMinerRunning == false)
+      {
+        Stop();
         return;
       }
 
       // Starting again will pick a new winner 
       // If no change, this is a noop
-      Start(wasManuallyStarted);
+      Start(isForceOn);
     }
     #endregion
 
     #region Public
     public void Start(
-      bool wasManuallyStarted)
+      bool isForceOn)
     {
-      if (wasManuallyStarted == false)
+      if (isForceOn == false)
       {
         if (DateTime.Now - lastConnectionTime < minTimeBetweenStarts)
         { // Too soon to auto connect (blocks changing wallets/algorithms)
@@ -132,37 +153,45 @@ namespace HD
       }
 
       Beneficiary newWinner = settings.beneficiaries.PickAWinner();
+      Debug.Assert(newWinner != null);
       if (currentWinner == newWinner && isMinerRunning)
       { // No change
         return;
       }
 
       currentWinner = newWinner;
-      StartHelper(wasManuallyStarted);
+      StartHelper(isForceOn);
     }
 
     public void Stop()
     {
-      try
+      changeWalletTimer.Stop();
+      if (middlewareProcess != null)
       {
-        middlewareProcess?.Kill();
+        Log.Event("Stop Miner Process");
+        try
+        {
+          middlewareProcess.Kill();
+        }
+        catch { }
       }
-      catch { }
+
       lastStoppedTime = DateTime.Now;
       middlewareProcess = null;
+      isForceOn = false;
       HardwareMonitor.minerProcessPerformanceCounter = null;
     }
     #endregion
 
     #region Helpers
     void StartHelper(
-      bool wasManuallyStarted)
+      bool isForceOn)
     {
-      lastConnectionTime = DateTime.Now;
-      this.wasManuallyStarted = wasManuallyStarted;
-
       Stop();
 
+      lastConnectionTime = DateTime.Now;
+
+      this.isForceOn = isForceOn;
       // This is where we select the most profitable algorithm...
       middlewareProcess = new Process();
       string directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -173,6 +202,9 @@ namespace HD
       middlewareProcess.StartInfo.UseShellExecute = false;
       middlewareProcess.StartInfo.LoadUserProfile = false;
       middlewareProcess.StartInfo.CreateNoWindow = true;
+
+      Log.Event("Start Miner Process");
+
       middlewareProcess.Start();
       middlewareProcess.PriorityClass = ProcessPriorityClass.BelowNormal;
 
@@ -180,8 +212,9 @@ namespace HD
 
       string instanceName = middlewareProcess.GetInstanceName();
       HardwareMonitor.minerProcessPerformanceCounter
-        = new PerformanceCounter("Process", "% Processor Time",
-        instanceName);
+        = new PerformanceCounter("Process", "% Processor Time", instanceName);
+
+      changeWalletTimer.Start();
     }
     #endregion
   }

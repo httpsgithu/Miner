@@ -7,7 +7,7 @@ namespace HD
   /// </summary>
   public abstract class MiddlewareClient : MinerMiddleware
   {
-    #region Properties
+    #region Constants
     protected override bool isServer
     {
       get
@@ -15,7 +15,10 @@ namespace HD
         return false;
       }
     }
+    #endregion
 
+    #region Properties
+    // TODO units are not clear and may not be consistent across algorithms.
     public abstract double hashRate
     {
       get;
@@ -30,11 +33,11 @@ namespace HD
     #region Init
     public MiddlewareClient()
     {
-      onMessage += MiddlewareClient_onMessage;
+      onMessage += OnMessage;
     }
 
     /// <summary>
-    /// Sends stats every 3 seconds.
+    /// Sends stats every so often.
     /// This is a blocking call.
     /// </summary>
     public void Run()
@@ -42,23 +45,26 @@ namespace HD
       while (true)
       {
         Send(new MiningStats(algorithmName, hashRate));
-        Thread.Sleep(3000);
+        Thread.Sleep(1000);
       }
     }
     #endregion
 
     #region Events
-    void MiddlewareClient_onMessage(
-      IMessage message)
+    void OnMessage(
+      object message)
     {
       if (message is StartMiningRequest startMiningRequest)
       {
         OnMessage(startMiningRequest);
-        
       }
       else if (message is SetSleepFor sleepFor)
       {
         OnMessage(sleepFor);
+      }
+      else
+      {
+        Debug.Fail($"Missing message handler {message}");
       }
     }
 

@@ -3,8 +3,11 @@ using System;
 
 namespace HD
 {
-  [Serializable]
-  public class MiningStats : IMessage
+  /// <summary>
+  /// Communicates mining performance middleware -> frontend.
+  /// </summary>
+  [JsonObject(MemberSerialization.OptIn)]
+  public class MiningStats
   {
     [JsonProperty]
     public readonly string algorithm;
@@ -16,6 +19,9 @@ namespace HD
       string algorithm,
       double hashRate)
     {
+      Debug.Assert(string.IsNullOrWhiteSpace(algorithm) == false);
+      Debug.Assert(hashRate >= 0, $"Negative {nameof(hashRate)}.. got {hashRate}");
+
       this.algorithm = algorithm;
       this.hashRate = hashRate;
     }

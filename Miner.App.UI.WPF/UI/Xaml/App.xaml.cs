@@ -16,12 +16,6 @@ namespace HD
       object sender,
       StartupEventArgs e)
     {
-      if (e.Args.Length > 0 && e.Args[0] == Globals.launchedByInstallerArg)
-      {
-        Process.Start(Assembly.GetExecutingAssembly().Location);
-        Application.Current.Shutdown();
-        return;
-      } 
       AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
       DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(1) };
       timer.Tick += delegate

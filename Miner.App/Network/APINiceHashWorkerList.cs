@@ -67,7 +67,7 @@ namespace HD
 
       totalWorkerHashRateMHpS = totalSpeed / 1000;
 
-      Miner.instance.OnHashRateUpdate();
+      Miner.instance.OnStatsChange();
 
     }
   }

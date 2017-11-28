@@ -2,14 +2,9 @@
 
 namespace HD
 {
-  /// <summary>
-  /// Adds the JSON layer
-  /// </summary>
   public class MiddlewareServer : MinerMiddleware
   {
-    public event Action<MiningStats> onMiningStatsUpdate;
-    readonly MinerResourceMonitor monitor;
-
+    #region Constants
     protected override bool isServer
     {
       get
@@ -17,7 +12,15 @@ namespace HD
         return true;
       }
     }
+    #endregion
 
+    #region Data
+    public event Action<MiningStats> onMiningStatsUpdate;
+
+    readonly MinerResourceMonitor monitor;
+    #endregion
+
+    #region Init
     public MiddlewareServer()
     {
       monitor = new MinerResourceMonitor(this);
@@ -25,7 +28,9 @@ namespace HD
       onDisconnect += OnDisconnect;
       onMessage += OnMessage;
     }
+    #endregion
 
+    #region Events
     void OnConnection()
     {
       monitor.Start();
@@ -35,20 +40,33 @@ namespace HD
         workerName: Miner.instance.settings.minerConfig.workerName));
     }
 
-    void OnDisconnect()
+    void OnDisconnect(
+      Exception e)
     {
+      Log.Event($"{nameof(MiddlewareServer)} disconnected with {e}");
+
       monitor.Stop();
     }
 
     void OnMessage(
-      IMessage message)
+      object message)
     {
-      onMiningStatsUpdate?.Invoke((MiningStats)message);
-      // TODO
-      //viewModel.btcAmount =
-      //  stats.hashRate
-      //  * Miner.instance.settings.miningPriceList.pricePerDayInBtcFor1MH
-      //  * viewModel.daysPerInterval;
+      Debug.Assert(message != null);
+
+      if (message is MiningStats stats)
+      {
+        onMiningStatsUpdate?.Invoke(stats);
+        // TODO UI
+        //viewModel.btcAmount =
+        //  stats.hashRate
+        //  * Miner.instance.settings.miningPriceList.pricePerDayInBtcFor1MH
+        //  * viewModel.daysPerInterval;
+      }
+      else
+      {
+        Debug.Fail("Missing message type");
+      }
     }
+    #endregion
   }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using Eto.Forms;
 
-namespace HardlyMiningUI
+namespace HD
 {
   public class UISynchronizationContext : SynchronizationContext
   {

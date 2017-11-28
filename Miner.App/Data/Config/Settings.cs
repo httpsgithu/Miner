@@ -30,6 +30,7 @@ namespace HD
     #endregion
 
     #region Public
+    // TODO we need a timer to call this (was from WPF)
     public void RefreshNetworkAPIsIfCooldown()
     {
       // TODO cooldown
