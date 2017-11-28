@@ -9,8 +9,15 @@ namespace HD
     {
       Log.Event("Xmr middleware client starting");
 
-      MiddlewareClient client = new XmrMiddlewareClient();
-      client.Run();
+      try
+      {
+        MiddlewareClient client = new XmrMiddlewareClient();
+        client.Run();
+      }
+      catch (Exception e)
+      {
+        Log.Exception(e);
+      }
 
       Log.Event("Xmr middleware client ending glacefully");
     }

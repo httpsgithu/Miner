@@ -5,16 +5,10 @@ using System.Timers;
 
 namespace HD
 {
-  [Serializable]
   [JsonObject(MemberSerialization.OptIn)]
   public class Beneficiary
   {
     #region Data
-    APINiceHashWorkerList apiWorkerList;
-
-    [JsonProperty]
-    public string name;
-
     /// <summary>
     /// To change the wallet, remove and then add a new beneficiary.
     /// </summary>
@@ -22,9 +16,14 @@ namespace HD
     public readonly string wallet;
 
     [JsonProperty]
+    public string name;
+
+    [JsonProperty]
     double _percentTime;
 
-    Timer timer;
+    APINiceHashWorkerList apiWorkerList;
+
+    readonly Timer updateNetworkPerformanceTimer = new Timer(20000);
     #endregion
 
     #region Properties
@@ -49,6 +48,12 @@ namespace HD
         {
           value = 1;
         }
+
+        if(percentTime == value)
+        {
+          return;
+        }
+
         _percentTime = value;
       }
     }
@@ -81,6 +86,9 @@ namespace HD
       this.wallet = wallet;
       this.percentTime = percentTime;
 
+      updateNetworkPerformanceTimer.AutoReset = false;
+      updateNetworkPerformanceTimer.Elapsed += Timer_Elapsed;
+
       if (IsWalletValid())
       {
         InitAPI();
@@ -96,24 +104,23 @@ namespace HD
         InitAPI();
       }
     }
-    #endregion
 
     void InitAPI()
     {
       apiWorkerList = new APINiceHashWorkerList(wallet);
-      timer = new Timer(20000);
-      timer.AutoReset = false;
-      timer.Elapsed += Timer_Elapsed;
-      timer.Start();
+      updateNetworkPerformanceTimer.Start();
     }
+    #endregion
 
+    #region Events
     void Timer_Elapsed(
       object sender, 
       ElapsedEventArgs e)
     {
       apiWorkerList.ReadWhenReady();
-      timer.Start();
+      updateNetworkPerformanceTimer.Start();
     }
+    #endregion
 
     // TODO total mined
     //double secondsSinceLastUpdate = (DateTime.Now - hashRateLastUpdated).TotalSeconds;

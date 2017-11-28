@@ -40,35 +40,51 @@ namespace HD
     }
     #endregion
 
-    #region Data
-    public double dollarPerBitcoin;
-
+    #region Constants
     static readonly Uri currentPriceUri = new Uri("https://api.coindesk.com/v1/bpi/currentprice.json");
     #endregion
 
-    public APIBitcoinPrice()
-      : base(currentPriceUri, TimeSpan.FromMinutes(30))
-    { }
+    #region Data
+    public double dollarPerBitcoin;
+    #endregion
 
+    #region Init
+    public APIBitcoinPrice()
+      : base(currentPriceUri)
+    { }
+    #endregion
+
+    #region Events
     protected override void OnDownloadComplete(
       string content)
     {
+      Debug.Assert(string.IsNullOrWhiteSpace(content) == false);
+
       try
       {
         BitcoinPrice price = JsonConvert.DeserializeObject<BitcoinPrice>(content);
+        Debug.Assert(price != null);
+
         dollarPerBitcoin = double.Parse(price.Bpi.USD.Rate, NumberStyles.Any, CultureInfo.InvariantCulture);
+        Miner.instance.OnStatsChange();
       }
       catch (Exception e)
       {
         Log.ParsingError(nameof(APIBitcoinPrice), nameof(OnDownloadComplete), e);
       }
     }
+    #endregion
 
+    #region API
+    /// <summary>
+    /// Skips the cooldown if we have not gotten any data yet.
+    /// </summary>
     public override void ReadWhenReady(
       bool skipCooldownCheck = false)
     {
       base.ReadWhenReady(skipCooldownCheck || dollarPerBitcoin <= 0);
     }
+    #endregion
   }
 }
 

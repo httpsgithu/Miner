@@ -51,6 +51,13 @@ namespace HD
     readonly MinerAutoStart minerAutoStart = new MinerAutoStart();
 
     readonly Timer changeWalletTimer = new Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
+
+    // Network APIs
+    readonly APIBitcoinPrice bitcoinPrice = new APIBitcoinPrice();
+
+    readonly APINiceHashMiningPriceList miningPriceList = new APINiceHashMiningPriceList();
+
+    readonly Timer refreshNetworkAPI = new Timer(TimeSpan.FromSeconds(30).TotalMilliseconds);
     #endregion
 
     #region Properties
@@ -102,6 +109,11 @@ namespace HD
     Miner()
     {
       changeWalletTimer.Elapsed += ChangeWalletTimer_OnTick;
+
+      refreshNetworkAPI.Elapsed += RefreshNetworkAPIsIfCooldown;
+      RefreshNetworkAPIsIfCooldown(null, null);
+      refreshNetworkAPI.AutoReset = false;
+      refreshNetworkAPI.Start();
     }
     #endregion
 
@@ -184,6 +196,16 @@ namespace HD
     #endregion
 
     #region Helpers
+    // TODO we need a timer to call this (was from WPF)
+    public void RefreshNetworkAPIsIfCooldown(
+      object sender, 
+      ElapsedEventArgs e)
+    {
+      bitcoinPrice.ReadWhenReady();
+      miningPriceList.ReadWhenReady();
+      refreshNetworkAPI.Start();
+    }
+
     void StartHelper(
       bool isForceOn)
     {

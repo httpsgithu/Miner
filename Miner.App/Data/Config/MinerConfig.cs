@@ -14,10 +14,14 @@ namespace HD
   [JsonObject(MemberSerialization.OptIn)]
   public class MinerConfig
   {
-    #region Data
+    #region Constants
     static readonly string minerConfigFilename = Path.Combine(
       Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "config.json");
 
+    static readonly TimeSpan minIdleTime = TimeSpan.FromMinutes(1);
+    #endregion
+
+    #region Data
     [JsonProperty]
     string _workerName = "anonymous";
 
@@ -43,7 +47,6 @@ namespace HD
         MinerOS.instance.shouldAutoStart = value;
       }
     }
-
 
     public double maxCpuWhileIdle
     {
@@ -79,6 +82,9 @@ namespace HD
       }
     }
 
+    /// <summary>
+    /// Up to 15 characters.
+    /// </summary>
     public string workerName
     {
       get
@@ -116,11 +122,9 @@ namespace HD
       get
       {
         double maxResources = Math.Max(maxCpuWhileActive, maxCpuWhileIdle);
-        // TODO
-        //Debug.Assert(maxResources > 0);
-        //Debug.Assert(maxResources <= 1.001);
+        Debug.Assert(maxResources <= 1.001);
 
-        return (int)Math.Ceiling(Environment.ProcessorCount * maxResources);
+        return (int)Math.Max(1, Math.Ceiling(Environment.ProcessorCount * maxResources));
       }
     }
     #endregion
@@ -131,6 +135,8 @@ namespace HD
     /// </summary>
     MinerConfig()
     {
+      Log.Event("Creating a new default miner config");
+
       shouldStartWithWindows = true;
     }
 
@@ -145,8 +151,10 @@ namespace HD
         }
       }
       catch { }
+
       MinerConfig config = new MinerConfig();
       config.Save();
+
       return config;
     }
     #endregion
@@ -160,23 +168,6 @@ namespace HD
     #endregion
 
     #region Validators
-    void ValidateCPUThreshold(
-      ref double value,
-      int numberOfThreads)
-    {
-      double expectedLoad = (double)numberOfThreads / Environment.ProcessorCount;
-      expectedLoad *= 1.2; // CPU usage may be greater than one core b/c of hyperthreading
-      expectedLoad += 10; // Assume the computer does other things
-      if (value < expectedLoad)
-      {
-        value = expectedLoad;
-      }
-      if (value > 100)
-      {
-        value = 100;
-      }
-    }
-
     void ValidateWorkerName(
       ref string value)
     {
@@ -195,9 +186,9 @@ namespace HD
     void ValidateTimeTill(
       ref TimeSpan value)
     {
-      if (value <= TimeSpan.Zero)
+      if (value < minIdleTime)
       {
-        value = TimeSpan.FromMinutes(1);
+        value = minIdleTime;
       }
     }
     #endregion

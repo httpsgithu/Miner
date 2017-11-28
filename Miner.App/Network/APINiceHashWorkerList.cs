@@ -24,19 +24,30 @@ namespace HD
     }
     #endregion
 
+    #region Constants
     const string urlParam0Wallet = "https://api.nicehash.com/api?method=stats.provider.workers&addr={0}&algo=22";
+    #endregion
 
+    #region Data
     public double totalWorkerHashRateMHpS;
+    #endregion
 
+    #region Init
     public APINiceHashWorkerList(
       string wallet)
-      : base(new Uri(string.Format(urlParam0Wallet, wallet)), TimeSpan.FromMinutes(5))
+      : base(new Uri(string.Format(urlParam0Wallet, wallet)))
     { }
+    #endregion
 
+    #region Events
     protected override void OnDownloadComplete(
       string content)
     {
+      Debug.Assert(string.IsNullOrWhiteSpace(content) == false);
+
       WorkerList data = JsonConvert.DeserializeObject<WorkerList>(content);
+      Debug.Assert(data != null);
+
       double totalSpeed = 0;
       int dataCount = 0;
       try
@@ -68,7 +79,7 @@ namespace HD
       totalWorkerHashRateMHpS = totalSpeed / 1000;
 
       Miner.instance.OnStatsChange();
-
     }
+    #endregion
   }
 }

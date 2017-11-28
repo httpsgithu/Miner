@@ -6,38 +6,18 @@ using System.Net;
 
 namespace HD
 {
-  // TODO rename
   /// <summary>
   /// Holds a collection of the saved and cached settings.
   /// </summary>
   public class Settings
   {
     #region Data
-    // Network APIs
-    public readonly APIBitcoinPrice bitcoinPrice = new APIBitcoinPrice();
-    public readonly APINiceHashMiningPriceList miningPriceList = new APINiceHashMiningPriceList();
-
     // Saved Info
     public readonly MinerConfig minerConfig = MinerConfig.LoadOrCreate();
     public readonly Beneficiaries beneficiaries = new Beneficiaries();
     #endregion
 
-    #region Init
-    public Settings()
-    {
-      RefreshNetworkAPIsIfCooldown();
-    }
-    #endregion
-
     #region Public
-    // TODO we need a timer to call this (was from WPF)
-    public void RefreshNetworkAPIsIfCooldown()
-    {
-      // TODO cooldown
-      bitcoinPrice.ReadWhenReady();
-      miningPriceList.ReadWhenReady();
-    }
-
     public void SaveOnExit()
     {
       // Saves latest worker stats

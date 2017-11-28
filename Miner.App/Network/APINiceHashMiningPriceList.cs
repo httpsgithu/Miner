@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 
 namespace HD
@@ -33,14 +32,21 @@ namespace HD
     }
     #endregion
 
-    public double pricePerDayInBtcFor1MH;
-
+    #region Constants
     static readonly Uri niceHashGlobalStatsUri = new Uri("https://api.nicehash.com/api?method=stats.global.current");
+    #endregion
 
+    #region Data
+    public double pricePerDayInBtcFor1MH;
+    #endregion
+
+    #region Init
     public APINiceHashMiningPriceList()
-      : base(niceHashGlobalStatsUri, TimeSpan.FromMinutes(10))
+      : base(niceHashGlobalStatsUri)
     { }
+    #endregion
 
+    #region Events
     protected override void OnDownloadComplete(
       string content)
     {
@@ -55,7 +61,9 @@ namespace HD
           if (stat.Algo == 22)
           {
             pricePerDayInBtcFor1MH = double.Parse(stat.Price, NumberStyles.Any, CultureInfo.InvariantCulture);
-            break;
+
+            Miner.instance.OnStatsChange();
+            return;
           }
         }
       }
@@ -63,12 +71,20 @@ namespace HD
       {
         Log.NetworkError(nameof(APINiceHashMiningPriceList), nameof(OnDownloadComplete), e);
       }
-    }
 
+      Log.Error("Missing algorithm in the coindesk API call");
+    }
+    #endregion
+
+    #region Public API
+    /// <summary>
+    /// Skip the cooldown if we have not read any data yet.
+    /// </summary>
     public override void ReadWhenReady(
       bool skipCooldownCheck = false)
     {
       base.ReadWhenReady(skipCooldownCheck || pricePerDayInBtcFor1MH <= 0);
     }
+    #endregion
   }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace HD
 {
@@ -11,7 +12,7 @@ namespace HD
   /// </summary>
   public static class Log
   {
-    const string 
+    const string
       filename = "log.log",
       eventFile = "event.log";
 
@@ -21,9 +22,29 @@ namespace HD
       LogMessage(message);
     }
 
+
+    public static void Exception(
+      Exception e,
+      string message = null,
+      [CallerMemberName] string memberName = null,
+      [CallerFilePath] string sourceFilePath = null,
+      [CallerLineNumber] int sourceLineNumber = 0)
+    {
+      ToFile(filename, $"{nameof(Exception)} {e} {message} {memberName} @ {sourceFilePath}: {sourceLineNumber}");
+    }
+
+    public static void Error(
+      string message = null,
+      [CallerMemberName] string memberName = null,
+      [CallerFilePath] string sourceFilePath = null,
+      [CallerLineNumber] int sourceLineNumber = 0)
+    {
+      ToFile(filename, $"{nameof(Error)} {message} {memberName} @ {sourceFilePath}: {sourceLineNumber}");
+    }
+
     public static void NetworkError(
       string className,
-      string method, 
+      string method,
       Exception error)
     {
       Error(nameof(NetworkError), className, method, error);
@@ -52,11 +73,11 @@ namespace HD
       ToFile(filename, message);
     }
 
-    internal static void ToFile(
-      string logFile, 
+    public static void ToFile(
+      string logFile,
       string message)
     {
-      lock(logFile)
+      lock (logFile)
       {
         File.AppendAllText(logFile, $"{DateTime.Now}: {message}{Environment.NewLine}");
       }

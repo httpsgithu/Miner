@@ -13,6 +13,7 @@
  - If references are broken:
     - Open menu Tools -> NuGet Package Manager
     - Run ```Update-Package -reinstall```
+ - [Setup Project support](https://marketplace.visualstudio.com/items?itemName=VisualStudioProductTeam.MicrosoftVisualStudio2017InstallerProjects)
 
 ### Sync your forked repository
 
