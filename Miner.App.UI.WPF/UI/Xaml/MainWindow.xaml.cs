@@ -26,10 +26,6 @@ namespace HD
       timer.Tick += OnTick;
       timer.Start();
 
-      if (Miner.isFirstLaunch)
-      {
-        ((MainViewModel)DataContext).shouldStartWithWindows = true;
-      }
       sliderPercentToHD.Value = 0.2;
     }
 
@@ -50,7 +46,6 @@ namespace HD
       EventArgs e)
     {
       ((MainViewModel)DataContext).FastRefresh();
-      Miner.instance.OnTick();
     }
 
     void OnStartStopButtonClick(

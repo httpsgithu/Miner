@@ -28,6 +28,14 @@ namespace HD
     #endregion
 
     #region Properties
+    public int cpuUsageForMining0To100000
+    {
+      get
+      {
+        return (int)(cpuUsageForMining * 10000000);
+      }
+    }
+
     public double cpuUsageForMining
     {
       get
@@ -142,7 +150,6 @@ namespace HD
     void OnTick(object sender, EventArgs e)
     {
       this.FastRefresh();
-      Miner.instance.OnTick();
       UpdateRunningState();
     }
     void UpdateRunningState()

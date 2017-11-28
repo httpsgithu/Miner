@@ -11,7 +11,9 @@ namespace HD
   public class CommandHandler : ICommand
   {
     #region Dat
+#pragma warning disable 
     public event EventHandler CanExecuteChanged;
+#pragma warning restore
 
     readonly Action action;
 

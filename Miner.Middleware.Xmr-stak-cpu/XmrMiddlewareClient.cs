@@ -4,13 +4,19 @@ namespace HD
 {
   public class XmrMiddlewareClient : MiddlewareClient
   {
-    readonly XmrDll dll = new XmrDll();
+    #region Data
+    readonly Xmr dll = new Xmr();
+    #endregion
 
+    #region Properties
     public override double hashRate
     {
       get
       {
-        return dll.totalHashRate;
+        double rate = dll.totalHashRate;
+        Debug.Assert(rate >= 0);
+
+        return rate;
       }
     }
 
@@ -21,20 +27,27 @@ namespace HD
         return "CryptoNight";
       }
     }
+    #endregion
 
+    #region Events
     public override void OnMessage(
       StartMiningRequest startMiningRequest)
     {
-      string config = Xmr.GenerateConfigJson(
-          startMiningRequest.wallet,
+      Debug.Assert(startMiningRequest != null);
+      Debug.Assert(startMiningRequest.numberOfThreads > 0);
+
+      dll.StartMining(startMiningRequest.wallet,
           startMiningRequest.numberOfThreads,
           startMiningRequest.workerName);
-      dll.StartMining(config);
     }
 
-    public override void OnMessage(SetSleepFor sleepFor)
+    public override void OnMessage(
+      SetSleepFor sleepFor)
     {
+      Debug.Assert(sleepFor != null);
+
       dll.SetSleepFor(sleepFor.sleepForInNanoseconds);
     }
+    #endregion
   }
 }

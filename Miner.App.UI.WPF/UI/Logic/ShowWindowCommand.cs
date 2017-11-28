@@ -11,7 +11,9 @@ namespace HD
   {
     static ShowSampleWindowCommand instance;
 
+#pragma warning disable
     public event EventHandler CanExecuteChanged;
+#pragma warning restore
 
     public ShowSampleWindowCommand()
     {

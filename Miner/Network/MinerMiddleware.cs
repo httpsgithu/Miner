@@ -1,9 +1,7 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Net.Sockets;
+﻿using System;
 using System.Threading;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
+using System.IO;
 
 namespace HD
 {
@@ -14,81 +12,106 @@ namespace HD
   /// </summary>
   public abstract class MinerMiddleware
   {
-    public event Action onConnection;
-    public event Action onDisconnect;
+    #region Constants
+    const string
+      serverLogFile = "Server.log",
+      clientLogFile = "Client.log";
+    #endregion
 
-    public event Action<IMessage> onMessage;
+    #region Data
+    public event Action<object> onMessage;
 
     readonly TcpSocket socket;
+    #endregion
 
-    const string ping = "Ping";
-    const string pong = "Pong";
+    #region Properties
+    public event Action onConnection
+    {
+      add
+      {
+        socket.onConnection += value;
+      }
+      remove
+      {
+        socket.onConnection -= value;
+      }
+    }
 
-    readonly AutoResetEvent pingEvent = new AutoResetEvent(false);
+    public event Action<Exception> onDisconnect
+    {
+      add
+      {
+        socket.onDisconnect += value;
+      }
+      remove
+      {
+        socket.onDisconnect -= value;
+      }
+    }
 
     protected abstract bool isServer { get; }
+
+    string logFile
+    {
+      get
+      {
+        return isServer ? serverLogFile : clientLogFile;
+      }
+    }
+    #endregion
 
     #region Init
     public MinerMiddleware()
     {
-      socket = new TcpSocket(isServer, OnConnection, OnDisconnect, OnMessage);
+      if (isServer)
+      {
+        socket = new TcpSocketServer(MinerGlobalVariables.internalServerPort);
+      }
+      else
+      {
+        socket = new TcpSocketClient(MinerGlobalVariables.internalServerPort);
+      }
+      socket.onMessage += OnMessage;
     }
     #endregion
 
-    public bool Ping()
-    {
-      socket.Send(ping);
-      if (pingEvent.WaitOne(50))
-      {
-        return true;
-      }
-
-      return false;
-    }
-
-    public void Send<T>(
-      T message)
-      where T : IMessage
-    {
-      string json = JsonConvert.SerializeObject(message, Globals.jsonSettings);
-      Send(json);
-    }
-
-    /// <summary>
-    /// Not for use publicly.. to simplify
-    /// </summary>
-    void Send(
-      string message)
-    {
-      socket.Send(message);
-    }
-
-    void OnConnection()
-    {
-      onConnection?.Invoke();
-    }
-
-    void OnDisconnect()
-    {
-      onDisconnect?.Invoke();
-    }
-
+    #region Events
     void OnMessage(
       string message)
     {
-      if (message == ping)
-      {
-        Send(pong);
-        return;
-      }
-      else if (message == pong)
-      {
-        pingEvent.Set();
-        return;
-      }
-      
-      IMessage abstractMessage = JsonConvert.DeserializeObject<IMessage>(message, Globals.jsonSettings);
+      Debug.Assert(string.IsNullOrWhiteSpace(message) == false);
+
+      object abstractMessage = JsonConvert.DeserializeObject<object>(message, MinerGlobalVariables.jsonSettings);
+      Debug.Assert(abstractMessage != null);
+      Debug.Assert(abstractMessage.GetType() != typeof(object));
+
       onMessage?.Invoke(abstractMessage);
     }
+    #endregion
+
+    #region Write
+    public void Send(
+      object message)
+    {
+      Debug.Assert(message != null);
+
+      string json = JsonConvert.SerializeObject(message, MinerGlobalVariables.jsonSettings);
+      // Perf: this is a lot of logging
+      Log.ToFile(logFile, json);
+      Debug.Assert(string.IsNullOrWhiteSpace(json) == false);
+
+      SendString(json);
+    }
+    #endregion
+
+    #region Private Write
+    void SendString(
+      string message)
+    {
+      Debug.Assert(string.IsNullOrWhiteSpace(message) == false);
+
+      socket.Send(message);
+    }
+    #endregion
   }
 }

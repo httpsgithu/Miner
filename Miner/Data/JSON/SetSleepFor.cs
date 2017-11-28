@@ -1,15 +1,23 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace HD
 {
-  public class SetSleepFor : IMessage
+  /// <summary>
+  /// Communicates how long to sleep frontend -> middleware.
+  /// </summary>
+  [JsonObject(MemberSerialization.OptIn)]
+  public class SetSleepFor
   {
+    [JsonProperty]
     public long sleepForInNanoseconds;
 
     public SetSleepFor(
-      long sleepForInNanoseconds)
+      long sleepFor)
     {
-      this.sleepForInNanoseconds = sleepForInNanoseconds;
+      Debug.Assert(sleepFor >= 0);
+
+      this.sleepForInNanoseconds = sleepFor;
     }
   }
 }

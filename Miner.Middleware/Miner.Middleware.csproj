@@ -41,26 +41,6 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AsyncIO, Version=0.1.25.0, Culture=neutral, PublicKeyToken=44a94435bd6f33f8, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\AsyncIO.0.1.26.0\lib\net40\AsyncIO.dll</HintPath>
-    </Reference>
-    <Reference Include="NetMQ, Version=4.0.0.1, Culture=neutral, PublicKeyToken=a6decef4ddc58b3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NetMQ.4.0.0.1\lib\net40\NetMQ.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="MiddlewareClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -69,14 +49,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\HardlyCommonWindows\HardlyCommonWindows.csproj">
-      <Project>{af0b12c0-df72-4e8b-9841-32173cf7f539}</Project>
-      <Name>HardlyCommonWindows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\HardlyCommon\HardlyCommon.csproj">
-      <Project>{00174c6b-a135-42a7-af86-ca81806820a5}</Project>
-      <Name>HardlyCommon</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Miner\Miner.csproj">
       <Project>{62c72f3e-7c76-4af0-b1d0-36d5dab0c04c}</Project>
       <Name>Miner</Name>

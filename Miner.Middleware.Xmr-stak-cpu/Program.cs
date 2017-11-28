@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Threading;
+﻿using System;
 
 namespace HD
 {
@@ -9,8 +7,12 @@ namespace HD
     static void Main(
       string[] args)
     {
+      Log.Event("Xmr middleware client starting");
+
       MiddlewareClient client = new XmrMiddlewareClient();
       client.Run();
+
+      Log.Event("Xmr middleware client ending glacefully");
     }
   }
 }

@@ -35,24 +35,28 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\Globals.cs" />
-    <Compile Include="Data\JSON\IMessage.cs" />
+    <Compile Include="Data\MinerGlobalVariables.cs" />
     <Compile Include="Data\JSON\MiningStats.cs" />
     <Compile Include="Data\JSON\SetSleepFor.cs" />
     <Compile Include="Data\JSON\StartMiningRequest.cs" />
+    <Compile Include="Debugging\Debug.cs" />
+    <Compile Include="Debugging\Log.cs" />
     <Compile Include="Network\MinerMiddleware.cs" />
-    <Compile Include="Network\TcpSocket.cs" />
-    <Compile Include="Network\TcpSocketClient.cs" />
-    <Compile Include="Network\TcpSocketServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\HardlyCommon\HardlyCommon.csproj">
+      <Project>{00174c6b-a135-42a7-af86-ca81806820a5}</Project>
+      <Name>HardlyCommon</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
