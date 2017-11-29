@@ -77,9 +77,18 @@ namespace HD
         Log.NetworkError(nameof(APINiceHashWorkerList), nameof(OnDownloadComplete), e);
       }
 
-      double averageSpeed = totalSpeed / dataCount;
+      double averageSpeed;
+      if(dataCount == 0)
+      {
+        averageSpeed = 0;
+      } else
+      {
+        averageSpeed = totalSpeed / dataCount;
+      }
+
       totalSpeed += averageSpeed * (data.Result.Workers.Length - dataCount);
 
+      Debug.Assert(double.IsNaN(totalSpeed) == false);
       totalWorkerHashRateMHpS = totalSpeed / 1000;
 
       Miner.instance.OnStatsChange();

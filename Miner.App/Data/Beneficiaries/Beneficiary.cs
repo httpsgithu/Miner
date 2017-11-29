@@ -157,7 +157,8 @@ namespace HD
 
     void Save()
     {
-      Miner.instance.settings.beneficiaries.Save();
+      // Here Miner.instance is null during initial construction.
+      Miner.instance?.settings.beneficiaries.Save();
     }
     #endregion
   }

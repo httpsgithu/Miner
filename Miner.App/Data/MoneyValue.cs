@@ -10,6 +10,10 @@ namespace HD
     {
       get
       {
+        // TODO remove
+        Debug.Assert(Math.Abs(btc) < 1);
+        Debug.Assert(Miner.instance.dollarPerBitcoin < 12000);
+
         return btc * Miner.instance.dollarPerBitcoin;
       }
     }

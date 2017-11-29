@@ -147,7 +147,7 @@
             
         </tb:TaskbarIcon>-->
         <TabControl HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
-            <TabItem Header="E">
+            <TabItem Header="Main">
                 <Grid>
                     <StackPanel >
                         <StackPanel Visibility="{Binding isCurrentlyMining, Converter={StaticResource BoolToVis}}">
@@ -210,8 +210,11 @@
                                 <Button x:Name="StartStopButton" Padding="10" Margin="40" 
                                     Command="{Binding startStopCMD}" 
                                     Content="{Binding startOrStopText}"></Button>
-                                <ProgressBar Value="{Binding cpuUsageForMining}" Maximum="1"  Height="8" Width="234"/>
-                                <Label Content="{Binding cpuUsageForMining}" ContentStringFormat="{}{0:p4}" HorizontalAlignment="Center"></Label>
+                                
+                                <StackPanel Visibility="{Binding isCurrentlyMining, Converter={StaticResource BoolToVis}}">
+                                    <ProgressBar Value="{Binding cpuUsageForMining}" Maximum="1"  Height="8" Width="234"/>
+                                    <Label Content="{Binding cpuUsageForMining}" ContentStringFormat="{}{0:p4}" HorizontalAlignment="Center"></Label>
+                                </StackPanel>
                             </StackPanel>
                         </ScrollViewer>
                     </StackPanel>
