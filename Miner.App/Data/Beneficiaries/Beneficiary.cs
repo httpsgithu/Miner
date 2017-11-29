@@ -58,6 +58,7 @@ namespace HD
         }
 
         _percentTime = value;
+        Save();
       }
     }
 
@@ -152,6 +153,11 @@ namespace HD
       }
 
       return true;
+    }
+
+    void Save()
+    {
+      Miner.instance.settings.beneficiaries.Save();
     }
     #endregion
   }

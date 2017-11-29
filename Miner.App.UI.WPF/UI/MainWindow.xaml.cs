@@ -63,7 +63,7 @@ namespace HD
       }
       else
       {
-        StartStopButton.Content = "Start";
+        StartStopButton.Content = "Force Start";
       }
     }
 

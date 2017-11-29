@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading;
+using System.Timers;
 
 namespace HD
 {
@@ -8,23 +8,31 @@ namespace HD
   /// </summary>
   public class MinerAutoStart
   {
-    readonly Thread thread;
+
 
     public MinerAutoStart()
     {
-      thread = new Thread(Run);
-     // thread.Start();
+      Timer timer = new Timer(TimeSpan.FromMinutes(1).TotalMilliseconds);
+      timer.Elapsed += Timer_Elapsed;
+      timer.Start();
     }
 
-    void Run()
+    void Timer_Elapsed(
+      object sender, 
+      ElapsedEventArgs e)
     {
-      //while(true)
-      //{
-      //  Thread.Sleep(1000);
-      //  if(Miner.instance.isMinerRunning == false
-      //    && Miner.instance.settings.minerConfig.isCurrentlyIdle
-      //    && )
-      //}
+      if (
+        // Not already running
+        Miner.instance.isMinerRunning == false 
+        // User has not touched keyboard or mouse in awhile
+        && Miner.instance.isCurrentlyIdle
+        // The miner did not recently shut down (prevents frequent on/off issues)
+        && Miner.instance.timeSinceLastStopped > TimeSpan.FromMinutes(1)
+        // The cpu is not already over our max
+        && Miner.instance.settings.minerConfig.maxCpuWhileIdle > HardwareMonitor.percentTotalCPU)
+      {
+        Miner.instance.Start(false);
+      }
     }
   }
 }

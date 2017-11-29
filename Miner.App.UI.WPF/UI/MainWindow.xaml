@@ -59,7 +59,7 @@
                     <StackPanel Margin="5,0,0,0" DataContext="{Binding settings}">
                         <CheckBox x:Name="shouldStartWithWindows"  IsChecked="{Binding shouldStartWithWindows}">Start with Windows</CheckBox>
                         <Label FontSize="14">Time to enter idle:</Label>
-                        <Slider x:Name="TimeTillIdle" Value="{Binding timeTillIdleInMinutes}" Minimum="5" Maximum="120" TickFrequency="5" IsSnapToTickEnabled="True" LargeChange="15" Style="{DynamicResource FlatSlider}"/>
+                        <Slider x:Name="TimeTillIdle" Value="{Binding timeTillIdleInMinutes}" Minimum="1" Maximum="120" TickFrequency="1" IsSnapToTickEnabled="True" SmallChange="5" LargeChange="15" Style="{DynamicResource FlatSlider}"/>
                         <Label Content="{Binding timeTillIdleInMinutesString}"></Label>
                         <Label FontSize="18" Margin="5">Max CPU</Label>
                         <Label FontSize="14">While Active:</Label>
@@ -74,7 +74,10 @@
                         <TextBox x:Name="workerNameText" Margin="5" MaxLength="15" MaxLines="1" Text="{Binding workerName}"></TextBox>
                         <Label FontSize="8">This will be visible on the NiceHash dashboard.</Label>
                         <Label FontSize="14">Your Wallet:</Label>
-                        <TextBox x:Name="yourWalletText" Margin="5" Text="{Binding myWallet}"></TextBox>
+                        <TextBox x:Name="yourWalletText" Margin="5">
+                            <Binding Path="myWallet" ValidatesOnExceptions="True">
+                                
+                                </Binding></TextBox>
                         <!--<Label FontSize="14">TODO % of Time that goes to HD:</Label>
                         <Slider x:Name="sliderPercentToHD" Style="{DynamicResource FlatSlider}" Margin="5" LargeChange="0.1" SmallChange="0.01" TickFrequency="0.1" Maximum="1" ValueChanged="sliderPercentToHD_ValueChanged"></Slider>
                         <Label x:Name="labelPercentToHD" Content="66%" />-->

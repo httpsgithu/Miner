@@ -129,6 +129,16 @@ namespace HD
           beneficiary = new Beneficiary("My Wallet", value, 1, true);
         }
         Miner.instance.settings.beneficiaries.AddBeneficiary(beneficiary);
+
+        if(beneficiary.percentTime <= 0)
+        {
+          beneficiary.percentTime = .01;
+        }
+
+        if(beneficiary.isValidAndActive == false)
+        {
+          throw new Exception("Not a valid BitCoin wallet ID");
+        }
       }
     }
   }

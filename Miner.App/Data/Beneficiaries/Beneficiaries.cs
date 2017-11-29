@@ -183,9 +183,15 @@ namespace HD
       Beneficiary winner = beneficiaryList[0];
       for (int i = 0; i < beneficiaryList.Count; i++)
       {
+        if(beneficiaryList[i].isValidAndActive == false)
+        {
+          continue;
+        }
+
         if (rngValue <= beneficiaryList[i].percentTime)
         {
           winner = beneficiaryList[i];
+          break;
         }
         else
         {

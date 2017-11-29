@@ -90,6 +90,9 @@ namespace HD
       }
     }
 
+    /// <summary>
+    /// True if the user has been away for at least timeTillIdle.
+    /// </summary>
     public bool isCurrentlyIdle
     {
       get
