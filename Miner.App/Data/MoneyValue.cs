@@ -18,6 +18,11 @@ namespace HD
     {
       get
       {
+        if(btc < 0)
+        {
+          return "loading...";
+        }
+
         return $"{btc:N8} BTC";
       }
     }
@@ -26,6 +31,11 @@ namespace HD
     {
       get
       {
+        if(usd < 0)
+        {
+          return "loading...";
+        }
+
         return $"{usd:C2}";
       }
     }

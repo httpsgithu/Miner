@@ -45,7 +45,7 @@ namespace HD
     #endregion
 
     #region Data
-    public double dollarPerBitcoin;
+    public double dollarPerBitcoin = -1;
     #endregion
 
     #region Init

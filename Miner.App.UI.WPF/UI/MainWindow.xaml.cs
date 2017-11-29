@@ -19,8 +19,6 @@ namespace HD
       instance = this;
       InitializeComponent();
       mainWindow.DataContext = new MainViewModel();
-
-      sliderPercentToHD.Value = 0.2;
     }
 
     void OnWindowClosing(
@@ -98,7 +96,6 @@ namespace HD
 
     void sliderPercentToHD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
-      labelPercentToHD.Content = ((int)(sliderPercentToHD.Value * 100)) + "%";
     }
 
     void mainWindow_Loaded(object sender, RoutedEventArgs e)

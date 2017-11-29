@@ -2,8 +2,6 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace HD
 {
@@ -29,7 +27,7 @@ namespace HD
     #endregion
 
     #region Data
-    public double totalWorkerHashRateMHpS;
+    public double totalWorkerHashRateMHpS = -1;
     #endregion
 
     #region Init
@@ -48,7 +46,7 @@ namespace HD
       WorkerList data = JsonConvert.DeserializeObject<WorkerList>(content);
       Debug.Assert(data != null);
 
-      if(data.Result.Workers == null)
+      if(data.Result.Workers == null || data.Result.Workers.Length == 0)
       { // No data ATM
         totalWorkerHashRateMHpS = 0;
         return;

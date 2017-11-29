@@ -21,8 +21,8 @@
         RightWindowCommandsOverlayBehavior="Never"
         StateChanged="mainWindow_StateChanged" Loaded="mainWindow_Loaded">
 
-    
-    
+
+
     <Controls:MetroWindow.Resources>
         <ResourceDictionary>
             <BooleanToVisibilityConverter x:Key="BoolToVis"  />
@@ -56,25 +56,28 @@
                         <Label Margin="5,0,5,5" FontSize="14" ToolTip="Percentage that goes to the developer.">Percentage:</Label>
                         <Slider Style="{DynamicResource FlatSlider}" Margin="5,0,5,5"/>
                     </WrapPanel>-->
-                    <StackPanel Margin="5,0,0,0">
-                        <CheckBox x:Name="shouldStartWithWindows" IsChecked="{Binding shouldStartWithWindows}">Start with Windows</CheckBox>
+                    <StackPanel Margin="5,0,0,0" DataContext="{Binding settings}">
+                        <CheckBox x:Name="shouldStartWithWindows"  IsChecked="{Binding shouldStartWithWindows}">Start with Windows</CheckBox>
                         <Label FontSize="14">Time to enter idle:</Label>
-                        <TextBox x:Name="TimeTillIdle" Text="10"/>
-
+                        <Slider x:Name="TimeTillIdle" Value="{Binding timeTillIdleInMinutes}" Minimum="5" Maximum="120" TickFrequency="5" IsSnapToTickEnabled="True" LargeChange="15" Style="{DynamicResource FlatSlider}"/>
+                        <Label Content="{Binding timeTillIdleInMinutesString}"></Label>
                         <Label FontSize="18" Margin="5">Max CPU</Label>
                         <Label FontSize="14">While Active:</Label>
-                        <Slider x:Name="sliderMaxCpuWhileActive" Value="{Binding sliderMaxCpuWhileActive}" Style="{DynamicResource FlatSlider}" Margin="5" Minimum="0" Maximum="1" TickFrequency=".01"></Slider>
+                        <Slider x:Name="sliderMaxCpuWhileActive" Value="{Binding maxCpuWhileActive}" Style="{DynamicResource FlatSlider}" Margin="5" Minimum="0" Maximum="1" TickFrequency=".01" IsSnapToTickEnabled="True" LargeChange=".10"></Slider>
+                        <TextBlock Text="{Binding maxCpuWhileActive, StringFormat={}{0:p0}}"></TextBlock>
                         <Label FontSize="14">While Idle:</Label>
-                        <Slider x:Name="sliderMaxCpuWhileIdle" Value="{Binding sliderMaxCpuWhileIdle}" Style="{DynamicResource FlatSlider}" Margin="5" Minimum="0" Maximum="1" TickFrequency=".01"></Slider>
-                        
-                        
+                        <Slider x:Name="sliderMaxCpuWhileIdle" Value="{Binding maxCpuWhileIdle}" Style="{DynamicResource FlatSlider}" Margin="5" Minimum="0" Maximum="1" TickFrequency=".01" IsSnapToTickEnabled="True"  LargeChange=".10"></Slider>
+                        <TextBlock Text="{Binding maxCpuWhileIdle, StringFormat={}{0:p0}}"></TextBlock>
+
+
                         <Label FontSize="14">Your Name (Optional):</Label>
-                        <TextBox x:Name="workerNameText" Margin="5" MaxLength="15" MaxLines="1"></TextBox>
+                        <TextBox x:Name="workerNameText" Margin="5" MaxLength="15" MaxLines="1" Text="{Binding workerName}"></TextBox>
+                        <Label FontSize="8">This will be visible on the NiceHash dashboard.</Label>
                         <Label FontSize="14">Your Wallet:</Label>
-                        <TextBox x:Name="yourWalletText" Margin="5"></TextBox>
-                        <Label FontSize="14">% of Time that goes to HD:</Label>
+                        <TextBox x:Name="yourWalletText" Margin="5" Text="{Binding myWallet}"></TextBox>
+                        <!--<Label FontSize="14">TODO % of Time that goes to HD:</Label>
                         <Slider x:Name="sliderPercentToHD" Style="{DynamicResource FlatSlider}" Margin="5" LargeChange="0.1" SmallChange="0.01" TickFrequency="0.1" Maximum="1" ValueChanged="sliderPercentToHD_ValueChanged"></Slider>
-                        <Label x:Name="labelPercentToHD" Content="66%" />
+                        <Label x:Name="labelPercentToHD" Content="66%" />-->
 
 
                     </StackPanel>
@@ -152,9 +155,9 @@
                             <Label Content="Idle"></Label>
                         </StackPanel>
                         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                        <StackPanel>
+                            <StackPanel>
                                 <Label Content="Total support for:"></Label>
-                            <WrapPanel>
+                                <WrapPanel>
                                     <ItemsControl ItemsSource="{Binding additionalWalletStats}" >
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
@@ -164,7 +167,7 @@
                                         </ItemsControl.ItemsPanel>
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                    <local:StatsBox Content="{Binding}"></local:StatsBox>
+                                                <local:StatsBox Content="{Binding}"></local:StatsBox>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
@@ -190,8 +193,8 @@
                                 <Controls:Tile Title="Threads in use" Style="{StaticResource SmallTileStyle}">
                                     <Label>0</Label>
                                 </Controls:Tile>-->
-                            </WrapPanel>
-                            <!--<ListBox DockPanel.Dock="Top" ItemsSource="{Binding StatsBoxList}" >
+                                </WrapPanel>
+                                <!--<ListBox DockPanel.Dock="Top" ItemsSource="{Binding StatsBoxList}" >
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <local:StatsBox></local:StatsBox>
@@ -201,13 +204,13 @@
                             
                             was.. Click="OnStartStopButtonClick"
                             -->
-                            <Button x:Name="StartStopButton" Padding="10" Margin="40" 
+                                <Button x:Name="StartStopButton" Padding="10" Margin="40" 
                                     Command="{Binding startStopCMD}" 
                                     Content="{Binding startOrStopText}"></Button>
-                            <ProgressBar Value="{Binding cpuUsageForMining}" Maximum="1"  Height="8" Width="234"/>
-                            <Label Content="{Binding cpuUsageForMining}" ContentStringFormat="{}{0:p4}" HorizontalAlignment="Center"></Label>
-                        </StackPanel>
-                    </ScrollViewer>
+                                <ProgressBar Value="{Binding cpuUsageForMining}" Maximum="1"  Height="8" Width="234"/>
+                                <Label Content="{Binding cpuUsageForMining}" ContentStringFormat="{}{0:p4}" HorizontalAlignment="Center"></Label>
+                            </StackPanel>
+                        </ScrollViewer>
                     </StackPanel>
 
                 </Grid>

@@ -28,6 +28,7 @@ namespace HD
       {
         Miner.instance.settings.minerConfig.maxCpuWhileIdle = value;
         OnPropertyChanged();
+        OnPropertyChanged(nameof(maxCpuWhileActive));
       }
     }
 
@@ -41,6 +42,7 @@ namespace HD
       {
         Miner.instance.settings.minerConfig.maxCpuWhileActive = value;
         OnPropertyChanged();
+        OnPropertyChanged(nameof(maxCpuWhileIdle));
       }
     }
 
@@ -60,6 +62,33 @@ namespace HD
       }
     }
 
+    public int timeTillIdleInMinutes
+    {
+      get
+      {
+        return (int)Math.Round(timeTillIdle.TotalMinutes);
+      }
+      set
+      {
+        timeTillIdle = TimeSpan.FromMinutes(value);
+      }
+    }
+
+    public string timeTillIdleInMinutesString
+    {
+      get
+      {
+        if (timeTillIdleInMinutes == 1)
+        {
+          return "1 min";
+        }
+        else
+        {
+          return $"{timeTillIdleInMinutes} mins";
+        }
+      }
+    }
+
     public TimeSpan timeTillIdle
     {
       get
@@ -70,6 +99,36 @@ namespace HD
       {
         Miner.instance.settings.minerConfig.timeTillIdle = value;
         OnPropertyChanged();
+        OnPropertyChanged(nameof(timeTillIdleInMinutes));
+        OnPropertyChanged(nameof(timeTillIdleInMinutesString));
+      }
+    }
+
+    public string myWallet
+    {
+      get
+      {
+        Beneficiary beneficiary = Miner.instance.settings.beneficiaries.myWallet;
+        return beneficiary?.wallet;
+      }
+      set
+      {
+        Beneficiary beneficiary = Miner.instance.settings.beneficiaries.myWallet;
+        if (beneficiary != null)
+        {
+          if (beneficiary.wallet == value)
+          { // No change
+            return;
+          }
+          // Remove old, create a new 
+          Miner.instance.settings.beneficiaries.RemoveBeneficiary(beneficiary);
+          beneficiary = new Beneficiary(beneficiary.name, value, beneficiary.percentTime, true);
+        }
+        else
+        {
+          beneficiary = new Beneficiary("My Wallet", value, 1, true);
+        }
+        Miner.instance.settings.beneficiaries.AddBeneficiary(beneficiary);
       }
     }
   }

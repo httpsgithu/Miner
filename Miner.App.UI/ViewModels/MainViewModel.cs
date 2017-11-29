@@ -11,10 +11,13 @@ namespace HD
     #region Data
     public ObservableCollection<MiningStatsBoxViewModel> statsBoxList
     {
-      get; set;
+      get; 
     }
 
-    public readonly SettingsViewModel settings = new SettingsViewModel();
+    public SettingsViewModel settings
+    {
+      get;
+    } = new SettingsViewModel();
 
     public ICommand startStopCMD
     {

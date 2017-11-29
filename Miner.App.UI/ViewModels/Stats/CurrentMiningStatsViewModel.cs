@@ -4,7 +4,7 @@ namespace HD
 {
   public class CurrentMiningStatsViewModel : MiningStatsBoxViewModel
   {
-    double hashRate;
+    double hashRate = -1;
 
     public override MoneyValue currentMiningPerformance
     {

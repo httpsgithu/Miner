@@ -19,6 +19,9 @@ namespace HD
     public string name;
 
     [JsonProperty]
+    public bool isUsersWallet;
+
+    [JsonProperty]
     double _percentTime;
 
     APINiceHashWorkerList apiWorkerList;
@@ -80,11 +83,13 @@ namespace HD
     public Beneficiary(
       string name,
       string wallet,
-      double percentTime)
+      double percentTime,
+      bool isUsersWallet)
     {
       this.name = name;
       this.wallet = wallet;
       this.percentTime = percentTime;
+      this.isUsersWallet = isUsersWallet;
 
       updateNetworkPerformanceTimer.AutoReset = false;
       updateNetworkPerformanceTimer.Elapsed += Timer_Elapsed;

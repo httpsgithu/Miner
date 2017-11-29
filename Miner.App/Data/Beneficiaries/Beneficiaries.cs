@@ -39,6 +39,24 @@ namespace HD
     double totalPercentContribution;
     #endregion
 
+    #region Properties
+    public Beneficiary myWallet
+    {
+      get
+      {
+        for (int i = 0; i < beneficiaryList.Count; i++)
+        {
+          if(beneficiaryList[i].isUsersWallet)
+          {
+            return beneficiaryList[i];
+          }
+        }
+
+        return null;
+      }
+    }
+    #endregion
+
     #region Init
     public Beneficiaries()
     {
@@ -126,7 +144,20 @@ namespace HD
       }
       if (foundDevWallet == false)
       {
-        AddBeneficiary(new Beneficiary(devName, devWallet, devMinPercent), true);
+        AddBeneficiary(new Beneficiary(devName, devWallet, devMinPercent, false), true);
+      }
+
+      bool foundUsersWallet = false;
+      for (int i = 0; i < beneficiaryList.Count; i++)
+      {
+        if (beneficiaryList[i].isUsersWallet)
+        {
+          if (foundUsersWallet)
+          { // Only accept one wallet as the users
+            beneficiaryList[i].isUsersWallet = false;
+          }
+          foundUsersWallet = true;
+        }
       }
 
       if (totalPercentContribution > 0 && Math.Abs(1 - totalPercentContribution) > .01)

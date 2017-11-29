@@ -194,6 +194,8 @@ namespace HD
         return;
       }
 
+      Debug.Assert(newWinner.isValidAndActive);
+
       currentWinner = newWinner;
       StartHelper(isForceOn);
     }
