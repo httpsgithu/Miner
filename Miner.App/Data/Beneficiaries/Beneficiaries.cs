@@ -69,7 +69,7 @@ namespace HD
     }
     #endregion
 
-    #region Public
+    #region Public Write
     public void AddBeneficiary(
       Beneficiary beneficiaryToAdd,
       bool shouldSkipSave = false)
@@ -163,6 +163,13 @@ namespace HD
       }
 
       return winner;
+    }
+    #endregion
+
+    #region Public Read
+    public IEnumerator<Beneficiary> GetEnumerator()
+    {
+      return beneficiaryList.GetEnumerator();
     }
     #endregion
 

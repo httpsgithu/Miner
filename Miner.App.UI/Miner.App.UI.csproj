@@ -40,7 +40,7 @@
     <Compile Include="Shared\CommandHandler.cs" />
     <Compile Include="ViewModels\Stats\MiningStatsBoxViewModel.cs" />
     <Compile Include="ViewModels\Stats\NetworkMiningStatsViewModel.cs" />
-    <Compile Include="ViewModels\SettingsVM.cs" />
+    <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="Shared\ViewModel.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -3,48 +3,67 @@ using System.Diagnostics;
 
 namespace HD
 {
+  /// <summary>
+  /// Base view model for a wallet's current performance.
+  /// </summary>
   public abstract class MiningStatsBoxViewModel : ViewModel
   {
     #region Data
+    readonly MainViewModel mainViewModel;
     #endregion
 
     #region Properties
-    protected abstract Beneficiary beneficiary { get; }
-
     /// <summary>
-    /// True if miners are currently generating > $0 ATM.
+    /// True if I might mine for this wallet
     /// </summary>
     public bool isActive
     {
       get
       {
-        // TODO beneficiary.
-        return true;
+        return beneficiary.isValidAndActive;
+      }
+    }
+
+    public abstract MoneyValue currentMiningPerformance
+    {
+      get;
+    }
+
+    public MoneyValue poolsMiningPerformance
+    {
+      get
+      {
+        return new MoneyValue(new decimal(beneficiary.totalWorkerHashRateMHpS)
+          * Miner.instance.pricePerDayInBtcFor1MHOfCryptonight);
       }
     }
 
     /// <summary>
+    /// Represents either my work or the total pools.
+    /// 
     /// $3.12 or .0001 BTC.
     /// Considers currency and interval settings.
     /// </summary>
-    public string currentEstValue
+    public string currentMiningPerformanceString
     {
       get
       {
-        //if (value > 0)
-        //{
-        //  LeftValue = $"{value:N9} BTC";
-        //  double dollarAmount = value * Miner.instance.settings.bitcoinPrice.dollarPerBitcoin;
-        //  RightValue = $"${dollarAmount:N4}";
-        //  //RightValueVisibility = Visibility.Visible;
-        //}
-        //else
-        //{
-        //  LeftValue = "No data";
-        //  //RightValueVisibility = Visibility.Collapsed;
-        //}
+        if (mainViewModel.shouldShowBtcVsD)
+        {
+          return currentMiningPerformance.btcString;
+        }
+        else
+        {
+          return currentMiningPerformance.usdString;
+        }
+      }
+    }
 
-        return "TODO";
+    public string wallet
+    {
+      get
+      {
+        return beneficiary.wallet;
       }
     }
 
@@ -54,6 +73,26 @@ namespace HD
       {
         return beneficiary.name;
       }
+    }
+
+    public double percentSupport
+    {
+      get
+      {
+        return beneficiary.percentTime;
+      }
+    }
+
+    protected abstract Beneficiary beneficiary { get; }
+    #endregion
+
+    #region Init
+    public MiningStatsBoxViewModel(
+      MainViewModel mainViewModel)
+    {
+      Debug.Assert(mainViewModel != null);
+
+      this.mainViewModel = mainViewModel;
     }
     #endregion
   }

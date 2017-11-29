@@ -37,7 +37,7 @@ namespace HD
     #endregion
 
     #region Data
-    public double pricePerDayInBtcFor1MH;
+    public double pricePerDayInBtcFor1MHOfCryptonight;
     #endregion
 
     #region Init
@@ -53,14 +53,14 @@ namespace HD
       try
       {
         MiningPriceList priceList = JsonConvert.DeserializeObject<MiningPriceList>(content);
-        pricePerDayInBtcFor1MH = 0;
+        pricePerDayInBtcFor1MHOfCryptonight = 0;
 
         for (int i = 0; i < priceList.Result.Stats.Length; i++)
         {
           Stat stat = priceList.Result.Stats[i];
           if (stat.Algo == 22)
           {
-            pricePerDayInBtcFor1MH = double.Parse(stat.Price, NumberStyles.Any, CultureInfo.InvariantCulture);
+            pricePerDayInBtcFor1MHOfCryptonight = double.Parse(stat.Price, NumberStyles.Any, CultureInfo.InvariantCulture);
 
             Miner.instance.OnStatsChange();
             return;
@@ -83,7 +83,7 @@ namespace HD
     public override void ReadWhenReady(
       bool skipCooldownCheck = false)
     {
-      base.ReadWhenReady(skipCooldownCheck || pricePerDayInBtcFor1MH <= 0);
+      base.ReadWhenReady(skipCooldownCheck || pricePerDayInBtcFor1MHOfCryptonight <= 0);
     }
     #endregion
   }

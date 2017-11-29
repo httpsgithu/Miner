@@ -5,6 +5,9 @@ using System.Threading;
 
 namespace HD
 {
+  /// <summary>
+  /// Base class for every view model.  This will deal with threading issues.
+  /// </summary>
   public abstract class ViewModel : INotifyPropertyChanged
   {
     public event PropertyChangedEventHandler PropertyChanged;
@@ -16,6 +19,13 @@ namespace HD
       context = SynchronizationContext.Current;
     }
 
+    /// <summary>
+    /// This may be called by any thread.
+    /// 
+    /// Usage:
+    /// OnPropertyChanged() when I changed
+    /// OnPropertyChanged("fieldName") others changed
+    /// </summary>
     protected void OnPropertyChanged(
       [CallerMemberName] string propertyName = null)
     {

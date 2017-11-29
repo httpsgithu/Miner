@@ -6,6 +6,8 @@ namespace HD
   public class MinerResourceMonitor
   {
     #region Data
+    public event Action onValueUpdated;
+
     readonly MiddlewareServer server;
 
     Thread thread;
@@ -31,32 +33,59 @@ namespace HD
       Debug.Assert(thread == null);
 
       UpdateSleepFor();
-      thread = new Thread(Run);
-      thread.Start();
+      lock (this)
+      {
+        thread = new Thread(Run);
+        thread.Start();
+      }
     }
 
     public void Stop()
     {
-      thread?.Abort();
-      thread = null;
+      lock (this)
+      {
+        try
+        {
+          thread?.Abort();
+        }
+        catch { }
+        thread = null;
+      }
     }
     #endregion
 
     #region Private
     void Run()
     {
-      while (true)
+      try
       {
-        if (HardwareMonitor.percentTotalCPU - HardwareMonitor.percentMinerCPU > Miner.instance.currentTargetCpu)
-        { // Something else is using the entire budget
-          Log.Event($"Miner killed by competing app: target: {Miner.instance.currentTargetCpu} with {HardwareMonitor.percentTotalCPU - HardwareMonitor.percentMinerCPU:p4} consumed by other apps.  Miner was at {HardwareMonitor.percentMinerCPU:p4}");
 
-          Miner.instance.Stop();
-          return;
+        while (true)
+        {
+          if (HardwareMonitor.RefreshValues() == false)
+          { // Miner crashed
+            Log.Event("Miner crashed");
+
+            Miner.instance.Stop();
+            return;
+          }
+          onValueUpdated?.Invoke();
+
+          if (HardwareMonitor.percentTotalCPU - HardwareMonitor.percentMinerCPU > Miner.instance.currentTargetCpu)
+          { // Something else is using the entire budget
+            Log.Event($"Miner killed by competing app: target: {Miner.instance.currentTargetCpu} with {HardwareMonitor.percentTotalCPU - HardwareMonitor.percentMinerCPU:p4} consumed by other apps.  Miner was at {HardwareMonitor.percentMinerCPU:p4}");
+
+            Miner.instance.Stop();
+            return;
+          }
+          UpdateSleepFor();
+
+          Thread.Sleep(100);
         }
-        UpdateSleepFor();
-
-        Thread.Sleep(100);
+      }
+      catch (Exception e)
+      {
+        Log.Exception(e);
       }
     }
 

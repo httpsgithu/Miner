@@ -130,16 +130,6 @@ namespace HD
     #endregion
 
     #region Init
-    /// <summary>
-    /// The constructor is only called when there is not a file to deserialize.
-    /// </summary>
-    MinerConfig()
-    {
-      Log.Event("Creating a new default miner config");
-
-      shouldStartWithWindows = true;
-    }
-
     public static MinerConfig LoadOrCreate()
     {
       try
@@ -153,6 +143,8 @@ namespace HD
       catch { }
 
       MinerConfig config = new MinerConfig();
+      Log.Event("Creating a new default miner config");
+      config.shouldStartWithWindows = true;
       config.Save();
 
       return config;

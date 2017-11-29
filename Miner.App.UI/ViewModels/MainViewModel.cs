@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Timers;
 using System.Windows.Input;
 
@@ -8,16 +9,12 @@ namespace HD
   public class MainViewModel : ViewModel
   {
     #region Data
-    public ObservableCollection<MiningStatsBoxViewModel> statsBoxList { get; set; }
+    public ObservableCollection<MiningStatsBoxViewModel> statsBoxList
+    {
+      get; set;
+    }
 
-    public readonly SettingsVM settings = new SettingsVM();
-
-    readonly Timer timer = new Timer();
-
-    const string windowTitleBase = "HardlyDifficult Miner",
-       windowTitleIdle = windowTitleBase + " (idle)",
-       windowTitleForStream = windowTitleBase + " (mining for the stream)", // TODO names
-       windowTitleForYou = windowTitleBase + " (mining for yourself)";
+    public readonly SettingsViewModel settings = new SettingsViewModel();
 
     public ICommand startStopCMD
     {
@@ -25,9 +22,35 @@ namespace HD
     }
 
     string _startOrStopText;
+
+    bool _shouldShowBtcVsD;
     #endregion
 
     #region Properties
+    public IEnumerable<MiningStatsBoxViewModel> additionalWalletStats
+    {
+      get
+      {
+        for (int i = 1; i < statsBoxList.Count; i++)
+        {
+          yield return statsBoxList[i];
+        }
+      }
+    }
+
+    public MiningStatsBoxViewModel currentlyMiningFor
+    {
+      get
+      {
+        if(isCurrentlyMining)
+        {
+          return statsBoxList[0];
+        }
+
+        return null;
+      }
+    }
+
     public int cpuUsageForMining0To100000
     {
       get
@@ -103,25 +126,62 @@ namespace HD
         OnPropertyChanged();
       }
     }
+
+    public bool shouldShowBtcVsD
+    {
+      get
+      {
+        return _shouldShowBtcVsD;
+      }
+      set
+      {
+        _shouldShowBtcVsD = value;
+        OnPropertyChanged();
+      }
+    }
+
+    public bool isCurrentlyMining
+    {
+      get
+      {
+        return Miner.instance.isMinerRunning;
+      }
+    }
     #endregion
 
     #region Init
     public MainViewModel()
     {
       startStopCMD = new CommandHandler(OnStartStopBtnClick, true);
-      // TODO
-      //StatsBoxList = new ObservableCollection<MiningStatsBoxViewModel>
-      //{
-      //  new MiningStatsBoxViewModel(true, StatsBoxUseCase.IntervalEstimatedEarningsFromAllCurrentMiners),
-      //  new MiningStatsBoxViewModel(false, StatsBoxUseCase.IntervalEstimatedEarningsFromMe)
-      //};
+      statsBoxList = new ObservableCollection<MiningStatsBoxViewModel>
+      {
+        new CurrentMiningStatsViewModel(this),
+      };
 
-      timer.Interval = 200;
-      timer.Elapsed += OnTick;
-      timer.Start();
+      // TODO support add/remove from this list
+      foreach (Beneficiary beneficiary in Miner.instance.settings.beneficiaries)
+      {
+        if(beneficiary.isValidAndActive)
+        {
+          statsBoxList.Add(new NetworkMiningStatsViewModel(this, beneficiary));
+        }
+      }
+
+      Miner.instance.monitor.onValueUpdated += OnMonitorValueUpdated;
+
+      Miner.instance.onStartOrStop += OnMinerStartOrStop;
+      Miner.instance.onStatsChange += OnMinerStatsChange;
+
       UpdateRunningState();
     }
     #endregion
+
+    #region Events
+    void OnMinerStartOrStop()
+    {
+      UpdateRunningState();
+    }
+
     void OnStartStopBtnClick()
     {
       if (Miner.instance.isMinerRunning)
@@ -134,24 +194,30 @@ namespace HD
       }
     }
 
+    void OnMonitorValueUpdated()
+    {
+      OnPropertyChanged(nameof(cpuUsageForMining));
+    }
+
+    void OnMinerStatsChange()
+    {
+      UpdateRunningState();
+    }
+    #endregion
+
+    #region Write
     void Start(
-    bool wasManuallyStarted)
+      bool wasManuallyStarted)
     {
       Miner.instance.Start(wasManuallyStarted);
-      UpdateRunningState();
     }
 
     void Stop()
     {
       Miner.instance.Stop();
-      UpdateRunningState();
     }
-
-    void OnTick(object sender, EventArgs e)
-    {
-      this.FastRefresh();
-      UpdateRunningState();
-    }
+    
+    // TODO Switch to event instead of poll
     void UpdateRunningState()
     {
       if (Miner.instance.isMinerRunning)
@@ -162,17 +228,13 @@ namespace HD
       {
         startOrStopText = "Start";
       }
-    }
-
-    #region Public
-    public void FastRefresh()
-    {
-      if(HardwareMonitor.RefreshValues() == false)
-      { // Miner crashed
-        Stop();
-      }
+      OnPropertyChanged(nameof(statsBoxList));
+      OnPropertyChanged(nameof(additionalWalletStats));
+      OnPropertyChanged(nameof(isCurrentlyMining));
+      OnPropertyChanged(nameof(currentlyMiningFor));
       OnPropertyChanged(nameof(cpuUsageForMining));
+      OnPropertyChanged(nameof(cpuUsageForMining0To100000));
     }
-    #endregion    
+    #endregion
   }
 }

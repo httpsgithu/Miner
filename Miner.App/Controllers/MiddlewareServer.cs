@@ -17,13 +17,11 @@ namespace HD
     #region Data
     public event Action<MiningStats> onMiningStatsUpdate;
 
-    readonly MinerResourceMonitor monitor;
     #endregion
 
     #region Init
     public MiddlewareServer()
     {
-      monitor = new MinerResourceMonitor(this);
       onConnection += OnConnection;
       onDisconnect += OnDisconnect;
       onMessage += OnMessage;
@@ -33,7 +31,7 @@ namespace HD
     #region Events
     void OnConnection()
     {
-      monitor.Start();
+      Miner.instance.monitor.Start();
       Send(new StartMiningRequest(
         wallet: Miner.instance.currentWinner.wallet,
         numberOfThreads: Miner.instance.settings.minerConfig.numberOfThreads,
@@ -45,7 +43,7 @@ namespace HD
     {
       Log.Event($"{nameof(MiddlewareServer)} disconnected with {e}");
 
-      monitor.Stop();
+      Miner.instance.monitor.Stop();
     }
 
     void OnMessage(

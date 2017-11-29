@@ -11,8 +11,6 @@ namespace HD
   {
     #region Data
     public static MainWindow instance;
-
-    readonly DispatcherTimer timer = new DispatcherTimer();
     #endregion
 
     #region Init
@@ -22,10 +20,6 @@ namespace HD
       InitializeComponent();
       mainWindow.DataContext = new MainViewModel();
 
-      timer.Interval = TimeSpan.FromMilliseconds(200);
-      timer.Tick += OnTick;
-      timer.Start();
-
       sliderPercentToHD.Value = 0.2;
     }
 
@@ -34,20 +28,11 @@ namespace HD
       CancelEventArgs e)
     {
       Miner.instance.settings.SaveOnExit();
-      timer.Tick -= OnTick;
-      timer.Stop();
       Stop();
     }
     #endregion
 
     #region Events
-    void OnTick(
-      object sender,
-      EventArgs e)
-    {
-      ((MainViewModel)DataContext).FastRefresh();
-    }
-
     void OnStartStopButtonClick(
       object sender,
       RoutedEventArgs e)

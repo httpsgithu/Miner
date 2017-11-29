@@ -48,6 +48,12 @@ namespace HD
       WorkerList data = JsonConvert.DeserializeObject<WorkerList>(content);
       Debug.Assert(data != null);
 
+      if(data.Result.Workers == null)
+      { // No data ATM
+        totalWorkerHashRateMHpS = 0;
+        return;
+      } 
+
       double totalSpeed = 0;
       int dataCount = 0;
       try

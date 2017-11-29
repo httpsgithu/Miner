@@ -8,19 +8,12 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-
         <StackPanel>
-            <Controls:Tile Title="{Binding Title}" Style="{StaticResource SmallTileStyle}" Click="Tile_Click">
-                <!--  Click="miningforTile_Click"-->
+            <Controls:Tile Title="{Binding walletOwner}" Style="{StaticResource SmallTileStyle}" Click="Tile_Click">
                 <StackPanel>
-                    <Label x:Name="label" Content="{Binding LeftValue}"></Label>
-                    <Label x:Name="label_buffer" Content="{Binding RightValue}" Visibility="Collapsed" />
+                    <Label x:Name="label" Content="{Binding currentMiningPerformanceString}"></Label>
                 </StackPanel>
             </Controls:Tile>
-            <!--<Label Content="{Binding BackgroundColor}" />
-            <Label Content="{Binding Title}" />
-            <Label Content="{Binding LeftValue}" />
-            <Label Content="{Binding RightValue}" Visibility="{Binding RightValueVisibility}" />-->
         </StackPanel>
     </Grid>
 </UserControl>

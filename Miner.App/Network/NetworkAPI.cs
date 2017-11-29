@@ -70,7 +70,7 @@ namespace HD
       DownloadStringCompletedEventArgs e)
     {
       throttle.SetLastUpdateTime();
-      if (e.Cancelled)
+      if (e.Cancelled || e.Error != null)
       {
         Log.NetworkError(nameof(NetworkAPI), nameof(OnDownloadComplete), e.Error);
         return;

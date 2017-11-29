@@ -80,7 +80,6 @@ namespace HD
     #endregion
 
     #region Private
-
     static string GenerateConfigJson(
       string wallet,
       int numberOfThreads,

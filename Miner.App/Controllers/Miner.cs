@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Timers;
 
 namespace HD
@@ -22,6 +23,10 @@ namespace HD
     public readonly Settings settings = new Settings();
 
     public event Action onStatsChange;
+
+    public event Action onStartOrStop;
+
+    public readonly MinerResourceMonitor monitor;
 
     /// <summary>
     /// The current (or most recent) wallet this machine is mining for.
@@ -46,21 +51,37 @@ namespace HD
 
     DateTime lastStoppedTime;
 
-    readonly MiddlewareServer middlewareServer = new MiddlewareServer();
+    public readonly MiddlewareServer middlewareServer = new MiddlewareServer();
 
     readonly MinerAutoStart minerAutoStart = new MinerAutoStart();
 
-    readonly Timer changeWalletTimer = new Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
+    readonly System.Timers.Timer changeWalletTimer = new System.Timers.Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
 
     // Network APIs
     readonly APIBitcoinPrice bitcoinPrice = new APIBitcoinPrice();
 
     readonly APINiceHashMiningPriceList miningPriceList = new APINiceHashMiningPriceList();
 
-    readonly Timer refreshNetworkAPI = new Timer(TimeSpan.FromSeconds(30).TotalMilliseconds);
+    readonly System.Timers.Timer refreshNetworkAPI = new System.Timers.Timer(TimeSpan.FromSeconds(30).TotalMilliseconds);
     #endregion
 
     #region Properties
+    public decimal dollarPerBitcoin
+    {
+      get
+      {
+        return new decimal(bitcoinPrice.dollarPerBitcoin);
+      }
+    }
+
+    public decimal pricePerDayInBtcFor1MHOfCryptonight
+    {
+      get
+      {
+        return new decimal(miningPriceList.pricePerDayInBtcFor1MHOfCryptonight);
+      }
+    }
+
     public bool isMinerRunning
     {
       get
@@ -114,6 +135,8 @@ namespace HD
       RefreshNetworkAPIsIfCooldown(null, null);
       refreshNetworkAPI.AutoReset = false;
       refreshNetworkAPI.Start();
+
+      monitor = new MinerResourceMonitor(middlewareServer);
     }
     #endregion
 
@@ -177,6 +200,7 @@ namespace HD
 
     public void Stop()
     {
+      HardwareMonitor.minerProcessPerformanceCounter = null;
       changeWalletTimer.Stop();
       if (middlewareProcess != null)
       {
@@ -191,7 +215,7 @@ namespace HD
       lastStoppedTime = DateTime.Now;
       middlewareProcess = null;
       isForceOn = false;
-      HardwareMonitor.minerProcessPerformanceCounter = null;
+      onStartOrStop?.Invoke();
     }
     #endregion
 
@@ -230,13 +254,15 @@ namespace HD
       middlewareProcess.Start();
       middlewareProcess.PriorityClass = ProcessPriorityClass.BelowNormal;
 
+      string instanceName = middlewareProcess.GetInstanceName();
+
       MinerOS.instance.RegisterMiddleProcess(middlewareProcess);
 
-      string instanceName = middlewareProcess.GetInstanceName();
+      changeWalletTimer.Start();
+      onStartOrStop?.Invoke();
+
       HardwareMonitor.minerProcessPerformanceCounter
         = new PerformanceCounter("Process", "% Processor Time", instanceName);
-
-      changeWalletTimer.Start();
     }
     #endregion
   }

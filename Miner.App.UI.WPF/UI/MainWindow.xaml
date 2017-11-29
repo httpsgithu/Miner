@@ -5,13 +5,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HD"
-        xmlns:minerui="clr-namespace:HD"
         xmlns:tb="http://www.hardcodet.net/taskbar"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
         Title="HardlyDifficult Miner" 
-        Height="350" 
+        Height="600" 
         Width="526" 
         ResizeMode="CanMinimize" 
         Closing="OnWindowClosing" 
@@ -22,8 +21,13 @@
         RightWindowCommandsOverlayBehavior="Never"
         StateChanged="mainWindow_StateChanged" Loaded="mainWindow_Loaded">
 
+    
+    
     <Controls:MetroWindow.Resources>
         <ResourceDictionary>
+            <BooleanToVisibilityConverter x:Key="BoolToVis"  />
+            <local:BooleanToNotVisibilityConverter x:Key="BoolToNotVis"  />
+
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/Icons.xaml" />
             </ResourceDictionary.MergedDictionaries>
@@ -136,17 +140,36 @@
                     DoubleClickCommand="{Commands:ShowSampleWindowCommand}">
             
         </tb:TaskbarIcon>-->
-
         <TabControl HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
             <TabItem Header="E">
                 <Grid>
-                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                    <StackPanel >
+                        <StackPanel Visibility="{Binding isCurrentlyMining, Converter={StaticResource BoolToVis}}">
+                            <Label Content="Currently mining for:"></Label>
+                            <local:StatsBox DataContext="{Binding currentlyMiningFor}"></local:StatsBox>
+                        </StackPanel>
+                        <StackPanel Visibility="{Binding isCurrentlyMining, Converter={StaticResource BoolToNotVis}}">
+                            <Label Content="Idle"></Label>
+                        </StackPanel>
+                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                         <StackPanel>
+                                <Label Content="Total support for:"></Label>
                             <WrapPanel>
-                                <local:StatsBox DataContext="{Binding StatsBoxList[0]}"></local:StatsBox>
-                                <local:StatsBox DataContext="{Binding StatsBoxList[1]}"></local:StatsBox>
-                                <local:StatsBox DataContext="{Binding StatsBoxList[2]}"></local:StatsBox>
-                                <!--<Controls:Tile Title="Currently mining for" Style="{StaticResource SmallTileStyle}" Click="miningforTile_Click">
+                                    <ItemsControl ItemsSource="{Binding additionalWalletStats}" >
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel>
+                                                </WrapPanel>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                    <local:StatsBox Content="{Binding}"></local:StatsBox>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+
+                                    <!--<Controls:Tile Title="Currently mining for" Style="{StaticResource SmallTileStyle}" Click="miningforTile_Click">
                                     <Label x:Name="miningfor">NOT ACTIVE</Label>
                                 </Controls:Tile>
                                 <Controls:Tile Title="Streamers estimated monthly earnings " Style="{StaticResource LargeTileStyle}" Click="Tile_Click">
@@ -178,11 +201,15 @@
                             
                             was.. Click="OnStartStopButtonClick"
                             -->
-                            <Button x:Name="StartStopButton" Padding="10" Margin="40" Command="{Binding startStopCMD}" Content="{Binding startOrStopText}"></Button>
+                            <Button x:Name="StartStopButton" Padding="10" Margin="40" 
+                                    Command="{Binding startStopCMD}" 
+                                    Content="{Binding startOrStopText}"></Button>
                             <ProgressBar Value="{Binding cpuUsageForMining}" Maximum="1"  Height="8" Width="234"/>
                             <Label Content="{Binding cpuUsageForMining}" ContentStringFormat="{}{0:p4}" HorizontalAlignment="Center"></Label>
                         </StackPanel>
                     </ScrollViewer>
+                    </StackPanel>
+
                 </Grid>
             </TabItem>
             <TabItem Header="Streamers">
