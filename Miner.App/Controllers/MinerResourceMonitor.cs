@@ -12,11 +12,10 @@ namespace HD
 
     readonly Timer refreshResourcesTimer = new Timer(TimeSpan.FromSeconds(1).TotalMilliseconds);
 
-    long sleepForInNanoseconds;
-
-    long deltaSleepForLastFrame;
-
-    int countSameDirection;
+    /// <summary>
+    /// 0 to 1.  1 means sleep always.
+    /// </summary>
+    double sleepRate;
 
     DateTime last = DateTime.Now;
     #endregion
@@ -34,7 +33,6 @@ namespace HD
 
     public void Start()
     {
-      sleepForInNanoseconds = 206892080;
       UpdateSleepFor();
     }
     #endregion
@@ -89,7 +87,8 @@ namespace HD
     {
       if (HardwareMonitor.isMinerDataReady == false)
       {
-        server.Send(new SetSleepFor(sleepForInNanoseconds));
+        sleepRate = .9; // Always start with too much sleep
+        server.Send(new SetSleepFor(sleepRate));
         return;
       }
 
@@ -98,33 +97,21 @@ namespace HD
 
       if (Math.Abs(deltaTargetCpu) < .025)
       { // Close enough
-        countSameDirection = 0;
-        deltaSleepForLastFrame = 0;
         return;
       }
 
-      countSameDirection++;
-      long delta = (long)(100000 * deltaTargetCpu * countSameDirection);
-
-      if (Math.Sign(deltaTargetCpu) != Math.Sign(deltaSleepForLastFrame) && Math.Sign(deltaSleepForLastFrame) != 0)
-      { // Over-corrected, slow down
-        deltaSleepForLastFrame = 0;
-        countSameDirection = 0;
-      }
-      else
+      double targetSleepRate = sleepRate + deltaTargetCpu * .5;
+      if (targetSleepRate < 0)
       {
-        deltaSleepForLastFrame = delta;
+        targetSleepRate = 0;
+      }
+      else if (targetSleepRate > .9)
+      {
+        targetSleepRate = .9;
       }
 
-      if (delta != 0)
-      {
-        sleepForInNanoseconds += delta;
-        if (sleepForInNanoseconds < 0)
-        {
-          sleepForInNanoseconds = 0;
-        }
-        server.Send(new SetSleepFor(sleepForInNanoseconds));
-      }
+      sleepRate = (sleepRate * 2 + targetSleepRate) / 3;
+      server.Send(new SetSleepFor(sleepRate));
     }
     #endregion
   }

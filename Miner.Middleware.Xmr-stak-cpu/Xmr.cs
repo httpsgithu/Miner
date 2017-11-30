@@ -35,7 +35,7 @@ namespace HD
       BestFitMapping = false,
       ThrowOnUnmappableChar = true)]
     static extern void SleepFor(
-      long sleepTimeInNanoseconds);
+      double sleepRate);
     #endregion
 
     #region Properties
@@ -73,9 +73,9 @@ namespace HD
     }
 
     public void SetSleepFor(
-      long sleepTimeInNanoseconds)
+      double sleepRate)
     {
-      SleepFor(sleepTimeInNanoseconds);
+      SleepFor(sleepRate);
     }
     #endregion
 

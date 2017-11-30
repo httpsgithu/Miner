@@ -46,7 +46,7 @@ namespace HD
     {
       Debug.Assert(sleepFor != null);
 
-      dll.SetSleepFor(sleepFor.sleepForInNanoseconds);
+      dll.SetSleepFor(sleepFor.sleepRate);
     }
     #endregion
   }

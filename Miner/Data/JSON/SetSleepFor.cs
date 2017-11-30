@@ -10,14 +10,14 @@ namespace HD
   public class SetSleepFor
   {
     [JsonProperty]
-    public long sleepForInNanoseconds;
+    public double sleepRate;
 
     public SetSleepFor(
-      long sleepFor)
+      double sleepFor)
     {
       Debug.Assert(sleepFor >= 0);
 
-      this.sleepForInNanoseconds = sleepFor;
+      this.sleepRate = sleepFor;
     }
   }
 }
