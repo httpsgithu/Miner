@@ -46,7 +46,7 @@ namespace HD
         double result = GetTotalHashRate() / 1000000;
         if (double.IsNaN(result) || result < 0)
         {
-          Log.Assert($"Negative {nameof(totalHashRate)} after calc.. got {result} from {GetTotalHashRate()}");
+          Log.Warning($"Negative {nameof(totalHashRate)} after calc.. got {result} from {GetTotalHashRate()}");
           result = 0;
         }
 
@@ -67,7 +67,7 @@ namespace HD
       string configurationJson = GenerateConfigJson(wallet, numberOfThreads, workerName);
 
       Debug.Assert(string.IsNullOrWhiteSpace(configurationJson) == false);
-      Log.Event("Xmr start mining.");
+      Log.Info("Xmr start mining.");
 
       Start(configurationJson);
     }

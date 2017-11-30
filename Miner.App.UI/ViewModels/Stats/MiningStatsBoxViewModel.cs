@@ -24,16 +24,16 @@ namespace HD
       }
     }
 
-    public abstract MoneyValue currentMiningPerformance
+    public abstract MinerPeformance currentMiningPerformance
     {
       get;
     }
 
-    public MoneyValue poolsMiningPerformance
+    public MinerPeformance poolsMiningPerformance
     {
       get
       {
-        return new MoneyValue(new decimal(beneficiary.totalWorkerHashRateMHpS)
+        return new MinerPeformance(new decimal(beneficiary.totalWorkerHashRateMHpS)
           * Miner.instance.pricePerDayInBtcFor1MHOfCryptonight);
       }
     }

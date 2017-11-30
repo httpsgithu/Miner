@@ -10,8 +10,6 @@ namespace HD
   public abstract class NetworkAPI
   {
     #region Constants
-    const string networkLog = "NiceHashNetwork.log";
-
     // Ideally we could configure this for each domain somehow
     static readonly TimeSpan defaultTimeout = TimeSpan.FromSeconds(3);
     #endregion
@@ -72,14 +70,14 @@ namespace HD
       throttle.SetLastUpdateTime();
       if (e.Cancelled || e.Error != null)
       {
-        Log.NetworkError(nameof(NetworkAPI), nameof(OnDownloadComplete), e.Error);
+        Log.Error(e.Error);
         return;
       }
 
       string content = e.Result;
       Debug.Assert(string.IsNullOrWhiteSpace(content) == false);
 
-      Log.Network(content);
+      Log.Info(content);
 
       OnDownloadComplete(content);
     }
@@ -99,7 +97,7 @@ namespace HD
 
       throttle.SetLastUpdateTime();
 
-      Log.ToFile(networkLog, uri.ToString());
+      Log.Info(uri.ToString());
 
       webClient.DownloadStringAsync(uri);
     }

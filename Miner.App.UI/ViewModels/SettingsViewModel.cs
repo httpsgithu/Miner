@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace HD
 {
@@ -138,6 +140,40 @@ namespace HD
         if(beneficiary.isValidAndActive == false)
         {
           throw new Exception("Not a valid BitCoin wallet ID");
+        }
+      }
+    }
+
+    public string version
+    {
+      get
+      {
+        Assembly assembly = Assembly.GetEntryAssembly();
+        return assembly.GetName().Version.ToString();
+      }
+    }
+
+    public Period period
+    {
+      get
+      {
+        return Miner.instance.settings.minerConfig.period;
+      }
+      set
+      {
+        Miner.instance.settings.minerConfig.period = value;
+        OnPropertyChanged();
+      }
+    }
+
+    public IEnumerable<Period> periodTypeList
+    {
+      get
+      {
+        Array list = Enum.GetValues(typeof(Period));
+        for (int i = 0; i < list.Length; i++)
+        {
+          yield return (Period)list.GetValue(i);
         }
       }
     }

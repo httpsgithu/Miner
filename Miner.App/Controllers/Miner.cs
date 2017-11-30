@@ -216,7 +216,7 @@ namespace HD
       changeWalletTimer.Stop();
       if (middlewareProcess != null)
       {
-        Log.Event("Stop Miner Process");
+        Log.Info("Stop Miner Process");
         try
         {
           middlewareProcess.Kill();
@@ -260,14 +260,14 @@ namespace HD
       middlewareProcess.StartInfo.LoadUserProfile = false;
       middlewareProcess.StartInfo.CreateNoWindow = true;
 
-      Log.Event("Start Miner Process");
-
       middlewareProcess.Start();
       middlewareProcess.PriorityClass = ProcessPriorityClass.BelowNormal;
 
       string instanceName = middlewareProcess.GetInstanceName();
 
       MinerOS.instance.RegisterMiddleProcess(middlewareProcess);
+
+      Log.Info("Start Miner Process");
 
       changeWalletTimer.Start();
       onStartOrStop?.Invoke();

@@ -107,7 +107,8 @@
     <Compile Include="Data\Config\Settings.cs" />
     <Compile Include="Controllers\Miner.cs" />
     <Compile Include="Data\HardwareMonitor.cs" />
-    <Compile Include="Data\MoneyValue.cs" />
+    <Compile Include="Data\MinerPeformance.cs" />
+    <Compile Include="Data\Config\Period.cs" />
     <Compile Include="Network\APIBitcoinPrice.cs" />
     <Compile Include="Network\APINiceHashMiningPriceList.cs" />
     <Compile Include="Network\APINiceHashWorkerList.cs" />

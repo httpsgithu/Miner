@@ -69,7 +69,7 @@ namespace HD
       }
       catch (Exception e)
       {
-        Log.NetworkError(nameof(APINiceHashMiningPriceList), nameof(OnDownloadComplete), e);
+        Log.Error(e);
       }
 
       Log.Error("Missing algorithm in the coindesk API call");

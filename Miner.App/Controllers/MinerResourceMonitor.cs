@@ -47,7 +47,7 @@ namespace HD
         if (HardwareMonitor.RefreshValues() == false
           && Miner.instance.isMinerRunning)
         { // Miner crashed
-          Log.Event("Miner crashed");
+          Log.Info("Miner crashed");
 
           Miner.instance.Stop();
           return;
@@ -60,7 +60,7 @@ namespace HD
           { // Something else is using the entire budget consistently for at least 2 seconds (sleep by 1)
             if (DateTime.Now - last > TimeSpan.FromSeconds(1.5))
             {
-              Log.Event($"Miner killed by competing app: target: {Miner.instance.currentTargetCpu} with {HardwareMonitor.percentTotalCPU - HardwareMonitor.percentMinerCPU:p4} consumed by other apps.  Miner was at {HardwareMonitor.percentMinerCPU:p4}");
+              Log.Info($"Miner killed by competing app: target: {Miner.instance.currentTargetCpu} with {HardwareMonitor.percentTotalCPU - HardwareMonitor.percentMinerCPU:p4} consumed by other apps.  Miner was at {HardwareMonitor.percentMinerCPU:p4}");
 
               Miner.instance.Stop();
               return;
@@ -79,7 +79,7 @@ namespace HD
       }
       catch (Exception e)
       {
-        Log.Exception(e);
+        Log.Error(e);
       }
     }
 

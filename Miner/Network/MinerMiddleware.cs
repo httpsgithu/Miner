@@ -96,8 +96,6 @@ namespace HD
       Debug.Assert(message != null);
 
       string json = JsonConvert.SerializeObject(message, MinerGlobalVariables.jsonSettings);
-      // Perf: this is a lot of logging
-      Log.ToFile(logFile, json);
       Debug.Assert(string.IsNullOrWhiteSpace(json) == false);
 
       SendString(json);

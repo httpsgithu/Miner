@@ -69,10 +69,13 @@
                 </Binding>
             </TextBox>
             <Label Content="Any BTC wallet is okay. No registration required." FontSize="8"></Label>
+
+            <ComboBox SelectedItem="{Binding period}" ItemsSource="{Binding periodTypeList}"></ComboBox>
+
             <!--<Label FontSize="14">TODO % of Time that goes to HD:</Label>
                         <Slider x:Name="sliderPercentToHD" Style="{DynamicResource FlatSlider}" Margin="5" LargeChange="0.1" SmallChange="0.01" TickFrequency="0.1" Maximum="1" ValueChanged="sliderPercentToHD_ValueChanged"></Slider>
                         <Label x:Name="labelPercentToHD" Content="66%" />-->
-
+            <Label Content="{Binding version}" FontSize="8"></Label>
 
         </StackPanel>
     </ScrollViewer>

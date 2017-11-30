@@ -71,7 +71,7 @@ namespace HD
       }
       catch (Exception e)
       {
-        Log.ParsingError(nameof(APIBitcoinPrice), nameof(OnDownloadComplete), e);
+        Log.Error(e);
       }
     }
     #endregion

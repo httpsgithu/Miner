@@ -7,7 +7,7 @@ namespace HD
     static void Main(
       string[] args)
     {
-      Log.Event("Xmr middleware client starting");
+      Log.Info("Xmr middleware client starting");
 
       try
       {
@@ -16,10 +16,10 @@ namespace HD
       }
       catch (Exception e)
       {
-        Log.Exception(e);
+        Log.Error(e);
       }
 
-      Log.Event("Xmr middleware client ending glacefully");
+      Log.Info("Xmr middleware client ending glacefully");
     }
   }
 }

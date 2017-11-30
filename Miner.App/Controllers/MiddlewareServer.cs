@@ -41,7 +41,7 @@ namespace HD
     void OnDisconnect(
       Exception e)
     {
-      Log.Event($"{nameof(MiddlewareServer)} disconnected with {e}");
+      Log.Info($"{nameof(MiddlewareServer)} disconnected with {e}");
     }
 
     void OnMessage(

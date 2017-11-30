@@ -6,12 +6,12 @@ namespace HD
   {
     double hashRate = -1;
 
-    public override MoneyValue currentMiningPerformance
+    public override MinerPeformance currentMiningPerformance
     {
       get
       {
         decimal value = new decimal(hashRate);
-        return new MoneyValue(value * Miner.instance.pricePerDayInBtcFor1MHOfCryptonight);
+        return new MinerPeformance(value * Miner.instance.pricePerDayInBtcFor1MHOfCryptonight);
       }
     }
 

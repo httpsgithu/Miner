@@ -14,7 +14,7 @@ namespace HD
       }
     }
 
-    public override MoneyValue currentMiningPerformance
+    public override MinerPeformance currentMiningPerformance
     {
       get
       {

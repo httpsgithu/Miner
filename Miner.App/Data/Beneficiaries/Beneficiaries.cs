@@ -80,7 +80,7 @@ namespace HD
       }
       catch (Exception e)
       {
-        Log.ParsingError(nameof(Beneficiaries), nameof(Beneficiaries), e);
+        Log.Error(e);
       }
 
       Save();

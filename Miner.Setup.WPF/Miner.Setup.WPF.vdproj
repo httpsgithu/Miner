@@ -2640,7 +2640,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Miner.App.UI, Version=1.0.6543.20444, Culture=neutral, processorArchitecture=AMD64"
+            "AssemblyAsmDisplayName" = "8:Miner.App.UI, Version=1.0.6543.24092, Culture=neutral, processorArchitecture=AMD64"
                 "ScatterAssemblies"
                 {
                     "_95F3FB96D8F65607361D734792E8AB6D"
@@ -3777,15 +3777,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Hardly Difficult Miner"
-        "ProductCode" = "8:{AD18807C-BC1E-4670-B468-265B92E7644C}"
-        "PackageCode" = "8:{8EF257B7-1028-4FBF-8965-5406AA11A47B}"
+        "ProductCode" = "8:{4C39D2F7-8DD4-4BB6-B3EC-251DF2E3DBA6}"
+        "PackageCode" = "8:{CFD4C262-7582-48DB-867B-087FC7B5D713}"
         "UpgradeCode" = "8:{1B3CB304-B4C8-4631-A06A-8459ADE26E7E}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.0.77"
+        "ProductVersion" = "8:1.0.81"
         "Manufacturer" = "8:Hardly Difficult LLC"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:https://twitch.tv/HardlyDifficult"

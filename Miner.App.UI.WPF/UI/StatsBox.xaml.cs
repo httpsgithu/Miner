@@ -16,8 +16,8 @@ namespace HD
 {
   public partial class StatsBox : UserControl
   {
-        string content1, content2;
-        bool firstclick = true;
+        //string content1, content2;
+        //bool firstclick = true;
 
         public StatsBox()
         {

@@ -74,7 +74,7 @@ namespace HD
       }
       catch (Exception e)
       {
-        Log.NetworkError(nameof(APINiceHashWorkerList), nameof(OnDownloadComplete), e);
+        Log.Error(e);
       }
 
       double averageSpeed;

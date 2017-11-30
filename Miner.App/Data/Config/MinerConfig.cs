@@ -33,6 +33,9 @@ namespace HD
 
     [JsonProperty]
     double _maxCpuWhileActive = .2;
+
+    [JsonProperty]
+    Period _period;
     #endregion
 
     #region Properties
@@ -131,6 +134,19 @@ namespace HD
         //return (int)Math.Max(1, Math.Ceiling(Environment.ProcessorCount * maxResources));
       }
     }
+
+    public Period period
+    {
+      get
+      {
+        return _period;
+      }
+      set
+      {
+        _period = value;
+        Save();
+      }
+    }
     #endregion
 
     #region Init
@@ -147,8 +163,9 @@ namespace HD
       catch { }
 
       MinerConfig config = new MinerConfig();
-      Log.Event("Creating a new default miner config");
+      Log.Info("Creating a new default miner config");
       config.shouldStartWithWindows = true;
+      config.period = Period.Monthly;
       config.Save();
 
       return config;

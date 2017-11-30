@@ -160,15 +160,6 @@ namespace HD
         return Miner.instance.isMinerRunning;
       }
     }
-
-    public string version
-    {
-      get
-      {
-        Assembly assembly = Assembly.GetEntryAssembly();
-        return assembly.GetName().Version.ToString();
-      }
-    }
     #endregion
 
     #region Init

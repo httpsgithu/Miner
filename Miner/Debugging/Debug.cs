@@ -16,7 +16,10 @@ namespace HD
     {
       if (isTrue == false)
       {
-        Log.Assert($"{nameof(Assert)} failed {message} {memberName} @ {sourceFilePath}: {sourceLineNumber}");
+        Log.Error(message,
+          memberName,
+          sourceFilePath,
+          sourceLineNumber);
       }
     }
 
@@ -26,7 +29,10 @@ namespace HD
       [CallerFilePath] string sourceFilePath = null,
       [CallerLineNumber] int sourceLineNumber = 0)
     {
-      Log.Assert($"{nameof(Fail)} {message} {memberName} @ {sourceFilePath}: {sourceLineNumber}");
+      Log.Error(message,
+        memberName,
+        sourceFilePath,
+        sourceLineNumber);
     }
   }
 }

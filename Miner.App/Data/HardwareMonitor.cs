@@ -94,14 +94,14 @@ namespace HD
         {
           // The middleware app has crashed
           minerProcessPerformanceCounter = null;
-          Log.Event("Clearing the history #1");
+          Log.Info("Clearing the history #1");
           miningCpuRollingHistory.Clear();
           return false;
         }
       }
       else
       {
-        Log.Event("Clearing the history #2");
+        Log.Info("Clearing the history #2");
         miningCpuRollingHistory.Clear();
       }
 
