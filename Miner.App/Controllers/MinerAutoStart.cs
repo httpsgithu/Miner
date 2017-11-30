@@ -27,8 +27,6 @@ namespace HD
         // The miner did not recently shut down (prevents frequent on/off issues)
         && Miner.instance.timeSinceLastStopped > TimeSpan.FromMinutes(1))
       {
-        HardwareMonitor.RefreshValues();
-
         if (
           // User has not touched keyboard or mouse in awhile
           Miner.instance.isCurrentlyIdle

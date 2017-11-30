@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 
 namespace HD
 {
-  // TODO this is not ready to be in HardlyCommon..
   public static class HardwareMonitor
   {
-    const int numberOfSamples = 20;
+    #region Data
+    const int numberOfSamples = 3;
 
     readonly static RollingHistory totalCpuRollingHistory = new RollingHistory(numberOfSamples);
 
@@ -15,18 +16,38 @@ namespace HD
     /// <summary>
     /// This appears to return results 10% different than the Windows Task Manager.... ?
     /// </summary>
-    static readonly PerformanceCounter total_cpu
+    static readonly PerformanceCounter totalProcessorTime
       = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+    #endregion
+
+    static PerformanceCounter _minerProcessPerformanceCounter;
 
     public static PerformanceCounter minerProcessPerformanceCounter
     {
-      private get; set;
+      private get
+      {
+        return _minerProcessPerformanceCounter;
+      }
+      set
+      {
+        _minerProcessPerformanceCounter = value;
+
+        if(value == null)
+        {
+          miningCpuRollingHistory.Clear();
+        }
+      }
     }
 
     public static double percentTotalCPU
     {
       get
       {
+        if(totalCpuRollingHistory.hasFilledOnce == false)
+        {
+          return 0;
+        }
+
         return totalCpuRollingHistory.value / 100;
       }
     }
@@ -35,6 +56,11 @@ namespace HD
     {
       get
       {
+        if(miningCpuRollingHistory.hasFilledOnce == false)
+        {
+          return 0;
+        }
+
         return miningCpuRollingHistory.value / 100;
       }
     }
@@ -44,7 +70,7 @@ namespace HD
     /// </summary>
     public static bool RefreshValues()
     {
-      totalCpuRollingHistory.Add(total_cpu.NextValue());
+      totalCpuRollingHistory.Add(totalProcessorTime.NextValue());
       if (minerProcessPerformanceCounter != null)
       {
         try

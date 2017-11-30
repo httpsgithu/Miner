@@ -42,8 +42,6 @@ namespace HD
       Exception e)
     {
       Log.Event($"{nameof(MiddlewareServer)} disconnected with {e}");
-
-      Miner.instance.monitor.Stop();
     }
 
     void OnMessage(

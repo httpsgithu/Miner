@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Timers;
 using System.Windows.Input;
+using System.Reflection;
 
 namespace HD
 {
@@ -69,6 +70,15 @@ namespace HD
         return HardwareMonitor.percentMinerCPU;
       }
       set { } // TODO read only
+    }
+
+    public double cpuUsageOverall
+    {
+      get
+      {
+        return HardwareMonitor.percentTotalCPU;
+      }
+      set { }
     }
 
     public bool shouldStartWithWindows
@@ -150,6 +160,15 @@ namespace HD
         return Miner.instance.isMinerRunning;
       }
     }
+
+    public string version
+    {
+      get
+      {
+        Assembly assembly = Assembly.GetEntryAssembly();
+        return assembly.GetName().Version.ToString();
+      }
+    }
     #endregion
 
     #region Init
@@ -200,6 +219,7 @@ namespace HD
     void OnMonitorValueUpdated()
     {
       OnPropertyChanged(nameof(cpuUsageForMining));
+      OnPropertyChanged(nameof(cpuUsageOverall));
     }
 
     void OnMinerStatsChange()

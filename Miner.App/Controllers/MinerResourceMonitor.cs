@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading;
+using System.Timers;
 
 namespace HD
 {
@@ -10,13 +10,15 @@ namespace HD
 
     readonly MiddlewareServer server;
 
-    Thread thread;
+    readonly Timer refreshResourcesTimer = new Timer(TimeSpan.FromSeconds(1).TotalMilliseconds);
 
     long sleepForInNanoseconds;
 
     long deltaSleepForLastFrame;
 
     int countSameDirection;
+
+    DateTime last = DateTime.Now;
     #endregion
 
     #region Init
@@ -26,44 +28,26 @@ namespace HD
       Debug.Assert(server != null);
 
       this.server = server;
+      refreshResourcesTimer.Elapsed += Refresh;
+      refreshResourcesTimer.Start();
     }
-
+    
     public void Start()
     {
-      Debug.Assert(thread == null);
-
       sleepForInNanoseconds = 206892080;
       UpdateSleepFor();
-      lock (this)
-      {
-        thread = new Thread(Run);
-        thread.Start();
-      }
-    }
-
-    public void Stop()
-    {
-      lock (this)
-      {
-        try
-        {
-          thread?.Abort();
-        }
-        catch { }
-        thread = null;
-      }
     }
     #endregion
 
     #region Private
-    void Run()
+    void Refresh(
+      object sender, 
+      ElapsedEventArgs eargs)
     {
-      try
-      {
-        DateTime last = DateTime.Now;
-        while (true)
+        try
         {
-          if (HardwareMonitor.RefreshValues() == false)
+          if (HardwareMonitor.RefreshValues() == false
+            && Miner.instance.isMinerRunning)
           { // Miner crashed
             Log.Event("Miner crashed");
 
@@ -72,29 +56,30 @@ namespace HD
           }
           onValueUpdated?.Invoke();
 
-          if (HardwareMonitor.percentTotalCPU - HardwareMonitor.percentMinerCPU > Miner.instance.currentTargetCpu)
-          { // Something else is using the entire budget
-            if (DateTime.Now - last > TimeSpan.FromSeconds(5))
-            {
-              Log.Event($"Miner killed by competing app: target: {Miner.instance.currentTargetCpu} with {HardwareMonitor.percentTotalCPU - HardwareMonitor.percentMinerCPU:p4} consumed by other apps.  Miner was at {HardwareMonitor.percentMinerCPU:p4}");
-
-              Miner.instance.Stop();
-              return;
-            }
-          }
-          else
+          if (Miner.instance.isMinerRunning)
           {
-            last = DateTime.Now;
-          }
-          UpdateSleepFor();
+            if (HardwareMonitor.percentTotalCPU - HardwareMonitor.percentMinerCPU > Miner.instance.currentTargetCpu)
+            { // Something else is using the entire budget
+              if (DateTime.Now - last > TimeSpan.FromSeconds(5))
+              {
+                Log.Event($"Miner killed by competing app: target: {Miner.instance.currentTargetCpu} with {HardwareMonitor.percentTotalCPU - HardwareMonitor.percentMinerCPU:p4} consumed by other apps.  Miner was at {HardwareMonitor.percentMinerCPU:p4}");
 
-          Thread.Sleep(100);
+                Miner.instance.Stop();
+                return;
+              }
+            }
+            else
+            {
+              last = DateTime.Now;
+            }
+            UpdateSleepFor();
+          }
+
         }
-      }
-      catch (Exception e)
-      {
-        Log.Exception(e);
-      }
+        catch (Exception e)
+        {
+          Log.Exception(e);
+        }
     }
 
     void UpdateSleepFor()
