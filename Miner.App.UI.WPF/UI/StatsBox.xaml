@@ -8,8 +8,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <StackPanel>
-            <Controls:Tile Title="{Binding walletOwner}" Style="{StaticResource SmallTileStyle}" Click="Tile_Click">
+        <StackPanel >
+            <Controls:Tile Title="{Binding walletOwner}" Style="{StaticResource SmallTileStyle}" Click="Tile_Click"  HorizontalTitleAlignment="Center">
                 <StackPanel>
                     <Label x:Name="label" Content="{Binding currentMiningPerformanceString}"></Label>
                 </StackPanel>

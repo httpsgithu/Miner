@@ -42,10 +42,16 @@ namespace HD
     /// </summary>
     public void Run()
     {
+      bool found = false;
       while (true)
       {
-        Send(new MiningStats(algorithmName, hashRate));
         Thread.Sleep(1000);
+        if(found == false && hashRate <= 0)
+        {
+          continue;
+        }
+        found = true;
+        Send(new MiningStats(algorithmName, hashRate));
       }
     }
     #endregion

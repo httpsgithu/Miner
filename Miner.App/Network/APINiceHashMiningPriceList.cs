@@ -53,7 +53,6 @@ namespace HD
       try
       {
         MiningPriceList priceList = JsonConvert.DeserializeObject<MiningPriceList>(content);
-        pricePerDayInBtcFor1MHOfCryptonight = 0;
 
         for (int i = 0; i < priceList.Result.Stats.Length; i++)
         {
@@ -61,6 +60,7 @@ namespace HD
           if (stat.Algo == 22)
           {
             pricePerDayInBtcFor1MHOfCryptonight = double.Parse(stat.Price, NumberStyles.Any, CultureInfo.InvariantCulture);
+            Debug.Assert(pricePerDayInBtcFor1MHOfCryptonight > 0);
 
             Miner.instance.OnStatsChange();
             return;

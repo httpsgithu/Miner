@@ -47,7 +47,7 @@ namespace HD
 
     Process middlewareProcess;
 
-    DateTime lastConnectionTime;
+    DateTime lastStartedTime;
 
     DateTime lastStoppedTime;
 
@@ -107,7 +107,7 @@ namespace HD
       {
         if (isForceOn)
         {
-          return 1;
+          return settings.minerConfig.maxCpuWhileIdle;
         }
         else if (isCurrentlyIdle)
         {
@@ -127,6 +127,14 @@ namespace HD
         return DateTime.Now - lastStoppedTime;
       }
     }
+
+    public TimeSpan timeSinceLastStarted
+    {
+      get
+      {
+        return DateTime.Now - lastStartedTime;
+      }
+    }
     #endregion
 
     #region Init
@@ -135,9 +143,8 @@ namespace HD
       changeWalletTimer.Elapsed += ChangeWalletTimer_OnTick;
 
       refreshNetworkAPI.Elapsed += RefreshNetworkAPIsIfCooldown;
-      RefreshNetworkAPIsIfCooldown(null, null);
       refreshNetworkAPI.AutoReset = false;
-      refreshNetworkAPI.Start();
+      RefreshNetworkAPIsIfCooldown(null, null);
 
       monitor = new MinerResourceMonitor(middlewareServer);
     }
@@ -177,14 +184,14 @@ namespace HD
     {
       if (isForceOn == false)
       {
-        if (DateTime.Now - lastConnectionTime < minTimeBetweenStarts)
+        if (DateTime.Now - lastStartedTime < minTimeBetweenStarts)
         { // Too soon to auto connect (blocks changing wallets/algorithms)
           return;
         }
       }
       else
       {
-        if (isMinerRunning && DateTime.Now - lastConnectionTime < minTimeBetweenStarts)
+        if (isMinerRunning && DateTime.Now - lastStartedTime < minTimeBetweenStarts)
         { // If running, this is a change wallet request.  Ignore b/c too soon
           return;
         }
@@ -225,7 +232,6 @@ namespace HD
     #endregion
 
     #region Helpers
-    // TODO we need a timer to call this (was from WPF)
     public void RefreshNetworkAPIsIfCooldown(
       object sender, 
       ElapsedEventArgs e)
@@ -240,7 +246,7 @@ namespace HD
     {
       Stop();
 
-      lastConnectionTime = DateTime.Now;
+      lastStartedTime = DateTime.Now;
 
       this.isForceOn = isForceOn;
       // This is where we select the most profitable algorithm...
@@ -265,7 +271,6 @@ namespace HD
 
       changeWalletTimer.Start();
       onStartOrStop?.Invoke();
-
       HardwareMonitor.minerProcessPerformanceCounter
         = new PerformanceCounter("Process", "% Processor Time", instanceName);
     }

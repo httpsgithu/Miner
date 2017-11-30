@@ -51,26 +51,11 @@ namespace HD
       bool wasManuallyStarted)
     {
       Miner.instance.Start(wasManuallyStarted);
-      UpdateRunningState();
-    }
-
-    void UpdateRunningState()
-    {
-      
-      if (Miner.instance.isMinerRunning)
-      {
-        StartStopButton.Content = "Stop";
-      }
-      else
-      {
-        StartStopButton.Content = "Force Start";
-      }
     }
 
     void Stop()
     {
       Miner.instance.Stop();
-      UpdateRunningState();
     }
 
     void mainWindow_StateChanged(
@@ -92,7 +77,6 @@ namespace HD
 
     void miningforTile_Click(object sender, RoutedEventArgs e)
     {
-      MiningForFlyout.IsOpen = true;
     }
 
     void sliderPercentToHD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -101,6 +85,14 @@ namespace HD
 
     void mainWindow_Loaded(object sender, RoutedEventArgs e)
     {
+    }
+
+    void Settings_Click(
+      object sender, 
+      RoutedEventArgs e)
+    {
+      SettingsWindow settings = new SettingsWindow(((MainViewModel)DataContext).settings);
+      settings.ShowDialog();
     }
   }
 }

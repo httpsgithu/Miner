@@ -66,6 +66,7 @@ namespace HD
         Debug.Assert(price != null);
 
         dollarPerBitcoin = double.Parse(price.Bpi.USD.Rate, NumberStyles.Any, CultureInfo.InvariantCulture);
+        Debug.Assert(dollarPerBitcoin > 0);
         Miner.instance.OnStatsChange();
       }
       catch (Exception e)

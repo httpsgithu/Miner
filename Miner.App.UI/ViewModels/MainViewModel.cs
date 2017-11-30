@@ -249,7 +249,7 @@ namespace HD
       }
       else
       {
-        startOrStopText = "Start";
+        startOrStopText = "Force Start";
       }
       OnPropertyChanged(nameof(statsBoxList));
       OnPropertyChanged(nameof(additionalWalletStats));

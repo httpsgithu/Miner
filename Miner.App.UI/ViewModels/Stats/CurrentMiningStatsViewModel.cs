@@ -38,6 +38,8 @@ namespace HD
       Debug.Assert(stats != null);
 
       this.hashRate = stats.hashRate;
+      OnPropertyChanged(nameof(currentMiningPerformance));
+      OnPropertyChanged(nameof(currentMiningPerformanceString));
     }
   }
 }

@@ -46,11 +46,11 @@ namespace HD
       WorkerList data = JsonConvert.DeserializeObject<WorkerList>(content);
       Debug.Assert(data != null);
 
-      if(data.Result.Workers == null || data.Result.Workers.Length == 0)
+      if (data.Result.Workers == null || data.Result.Workers.Length == 0)
       { // No data ATM
         totalWorkerHashRateMHpS = 0;
         return;
-      } 
+      }
 
       double totalSpeed = 0;
       int dataCount = 0;
@@ -78,10 +78,11 @@ namespace HD
       }
 
       double averageSpeed;
-      if(dataCount == 0)
+      if (dataCount == 0)
       {
         averageSpeed = 0;
-      } else
+      }
+      else
       {
         averageSpeed = totalSpeed / dataCount;
       }

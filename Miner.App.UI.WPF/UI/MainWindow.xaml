@@ -5,13 +5,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HD"
-        xmlns:tb="http://www.hardcodet.net/taskbar"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
-        Title="HardlyDifficult Miner" 
-        Height="600" 
-        Width="526" 
+        Title="HD Miner" 
+        Height="250" 
+        Width="250" 
         ResizeMode="CanMinimize" 
         Closing="OnWindowClosing" 
         BorderThickness="0" 
@@ -20,8 +18,6 @@
         WindowStartupLocation="CenterScreen"
         RightWindowCommandsOverlayBehavior="Never"
         StateChanged="mainWindow_StateChanged" Loaded="mainWindow_Loaded">
-
-
 
     <Controls:MetroWindow.Resources>
         <ResourceDictionary>
@@ -35,81 +31,11 @@
         </ResourceDictionary>
     </Controls:MetroWindow.Resources>
 
-    <Controls:MetroWindow.Flyouts>
-        <Controls:FlyoutsControl>
-            <Controls:Flyout x:Name="SettingsFlyout" Header="Settings" Theme="Dark" Position="Right" Width="200">
-                <!-- Your custom content here -->
-                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                    <!--<WrapPanel Orientation="Vertical">
-                        <Label Margin="5,0,5,5" FontSize="14">Threads:</Label>
-                        <Slider Style="{DynamicResource FlatSlider}" Margin="5,0,5,5"/>
-                        <Label Margin="5,0,5,5" FontSize="14" ToolTip="Only A-Z,a-z allowed!" FontFamily="Segoe UI Semibold, Segoe UI, Lucida Sans Unicode, Verdana">Worker name:</Label>
-                        <TextBox Controls:TextBoxHelper.Watermark="Anonymous" Controls:TextBoxHelper.ClearTextButton="True" Margin="5,0,5,5" />
-                        <Label Margin="5,0,5,5" FontSize="14" ToolTip="Settings for a streamer you want to support.">Streamer:</Label>
-                        <ComboBox Margin="5,-1,5,5">
-                            <ComboBoxItem>Streamer #1</ComboBoxItem>
-                            <ComboBoxItem IsSelected="True">Streamer #2</ComboBoxItem>
-                            <ComboBoxItem>Streamer #3</ComboBoxItem>
-                        </ComboBox>
-                        <Label Margin="5,0,5,5" FontSize="14">Donate to the developer?</Label>
-                        <Controls:ToggleSwitch Margin="5,0,5,5" FontSize="14" />
-                        <Label Margin="5,0,5,5" FontSize="14" ToolTip="Percentage that goes to the developer.">Percentage:</Label>
-                        <Slider Style="{DynamicResource FlatSlider}" Margin="5,0,5,5"/>
-                    </WrapPanel>-->
-                    <StackPanel Margin="5,0,0,0" DataContext="{Binding settings}">
-                        <CheckBox x:Name="shouldStartWithWindows"  IsChecked="{Binding shouldStartWithWindows}">Start with Windows</CheckBox>
-                        <Label FontSize="14">Time to enter idle:</Label>
-                        <Slider x:Name="TimeTillIdle" Value="{Binding timeTillIdleInMinutes}" Minimum="1" Maximum="120" TickFrequency="1" IsSnapToTickEnabled="True" SmallChange="5" LargeChange="15" Style="{DynamicResource FlatSlider}"/>
-                        <Label Content="{Binding timeTillIdleInMinutesString}"></Label>
-                        <Label FontSize="18" Margin="5">Max CPU</Label>
-                        <Label FontSize="14">While Active:</Label>
-                        <Slider x:Name="sliderMaxCpuWhileActive" Value="{Binding maxCpuWhileActive}" Style="{DynamicResource FlatSlider}" Margin="5" Minimum="0" Maximum="1" TickFrequency=".01" IsSnapToTickEnabled="True" LargeChange=".10"></Slider>
-                        <TextBlock Text="{Binding maxCpuWhileActive, StringFormat={}{0:p0}}"></TextBlock>
-                        <Label FontSize="14">While Idle:</Label>
-                        <Slider x:Name="sliderMaxCpuWhileIdle" Value="{Binding maxCpuWhileIdle}" Style="{DynamicResource FlatSlider}" Margin="5" Minimum="0" Maximum="1" TickFrequency=".01" IsSnapToTickEnabled="True"  LargeChange=".10"></Slider>
-                        <TextBlock Text="{Binding maxCpuWhileIdle, StringFormat={}{0:p0}}"></TextBlock>
-
-
-                        <Label FontSize="14">Your Name (Optional):</Label>
-                        <TextBox x:Name="workerNameText" Margin="5" MaxLength="15" MaxLines="1" Text="{Binding workerName}"></TextBox>
-                        <Label FontSize="8">This will be visible on the NiceHash dashboard.</Label>
-                        <Label FontSize="14">Your Wallet:</Label>
-                        <TextBox x:Name="yourWalletText" Margin="5">
-                            <Binding Path="myWallet" ValidatesOnExceptions="True">
-                                
-                                </Binding></TextBox>
-                        <Label Content="Any BTC wallet is okay. No registration required." FontSize="8"></Label>
-                        <!--<Label FontSize="14">TODO % of Time that goes to HD:</Label>
-                        <Slider x:Name="sliderPercentToHD" Style="{DynamicResource FlatSlider}" Margin="5" LargeChange="0.1" SmallChange="0.01" TickFrequency="0.1" Maximum="1" ValueChanged="sliderPercentToHD_ValueChanged"></Slider>
-                        <Label x:Name="labelPercentToHD" Content="66%" />-->
-
-
-                    </StackPanel>
-                </ScrollViewer>
-            </Controls:Flyout>
-            <Controls:Flyout x:Name="MiningForFlyout" Header="Mining for" Theme="Dark" Position="Right" Width="200">
-                <!-- Your custom content here -->
-                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                    <StackPanel>
-                        <Label Margin="5,0,5,5" FontSize="14" ToolTip="Settings for a streamer you want to support.">Streamer:</Label>
-                        <ComboBox x:Name="dropdown1" Margin="5,-1,5,5">
-                            <ComboBoxItem IsSelected="True">Rotation</ComboBoxItem>
-                            <ComboBoxItem>Streamer #1</ComboBoxItem>
-                            <ComboBoxItem>Streamer #2</ComboBoxItem>
-                            <ComboBoxItem>Streamer #3</ComboBoxItem>
-                        </ComboBox>
-                    </StackPanel>
-                </ScrollViewer>
-            </Controls:Flyout>
-        </Controls:FlyoutsControl>
-    </Controls:MetroWindow.Flyouts>
-
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
-            <ToggleButton IsChecked="{Binding ElementName=SettingsFlyout, Path=IsOpen}" Cursor="Hand">
+            <ToggleButton IsChecked="{Binding ElementName=SettingsFlyout, Path=IsOpen}" Cursor="Hand" Click="Settings_Click">
                 <StackPanel Orientation="Horizontal">
-                    <Rectangle Width="20"
-                   Height="20"
+                    <Rectangle Width="20" Height="20"
                    Fill="{Binding RelativeSource={RelativeSource AncestorType=ToggleButton}, Path=Foreground}">
                         <Rectangle.OpacityMask>
                             <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_settings}" />
@@ -120,7 +46,7 @@
                    Text="settings" />
                 </StackPanel>
             </ToggleButton>
-            <Button Cursor="Hand" Click="reportBug">
+            <!--<Button Cursor="Hand" Click="reportBug">
                 <StackPanel Orientation="Horizontal">
                     <Rectangle Width="20"
                    Height="20"
@@ -133,7 +59,7 @@
                    VerticalAlignment="Center"
                    Text="report bug!" />
                 </StackPanel>
-            </Button>
+            </Button>-->
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
 
@@ -147,58 +73,56 @@
                     DoubleClickCommand="{Commands:ShowSampleWindowCommand}">
             
         </tb:TaskbarIcon>-->
-        <TabControl HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
-            <TabItem Header="Main">
-                <Grid>
-                    <StackPanel >
+        <Grid>
+            <StackPanel>
+                <WrapPanel>
+                    <StackPanel  Height="75">
+                        <Label Content="Currently mining for:"></Label>
                         <StackPanel Visibility="{Binding isCurrentlyMining, Converter={StaticResource BoolToVis}}">
-                            <Label Content="Currently mining for:"></Label>
                             <local:StatsBox DataContext="{Binding currentlyMiningFor}"></local:StatsBox>
                         </StackPanel>
                         <StackPanel Visibility="{Binding isCurrentlyMining, Converter={StaticResource BoolToNotVis}}">
                             <Label Content="Idle"></Label>
                         </StackPanel>
-                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                            <StackPanel>
-                                <Label Content="Total support for:"></Label>
-                                <WrapPanel>
-                                    <ItemsControl ItemsSource="{Binding additionalWalletStats}" >
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <WrapPanel>
-                                                </WrapPanel>
-                                            </ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <local:StatsBox Content="{Binding}"></local:StatsBox>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
+                    </StackPanel>
 
-                                    <!--<Controls:Tile Title="Currently mining for" Style="{StaticResource SmallTileStyle}" Click="miningforTile_Click">
-                                    <Label x:Name="miningfor">NOT ACTIVE</Label>
-                                </Controls:Tile>
-                                <Controls:Tile Title="Streamers estimated monthly earnings " Style="{StaticResource LargeTileStyle}" Click="Tile_Click">
-                                    <StackPanel>
-                                        <Label x:Name="streamerearnings" HorizontalAlignment="Center">0.00000000 BTC</Label>
-                                    </StackPanel>
-                                </Controls:Tile>
-                                <Controls:Tile Title="Your estimated monthly earnings" Style="{StaticResource LargeTileStyle}">
-                                    <StackPanel>
-                                        <Label x:Name="monthlyearnings" HorizontalAlignment="Center">0.00000000 BTC</Label>
-                                    </StackPanel>
-                                </Controls:Tile>
-                                <Controls:Tile Title="Your total earnings" Style="{StaticResource SmallTileStyle}">
-                                    <StackPanel>
-                                        <Label x:Name="totalearnings" HorizontalAlignment="Center">0.00000000 BTC</Label>
-                                    </StackPanel>
-                                </Controls:Tile>
-                                <Controls:Tile Title="Threads in use" Style="{StaticResource SmallTileStyle}">
-                                    <Label>0</Label>
-                                </Controls:Tile>-->
-                                </WrapPanel>
-                                <!--<ListBox DockPanel.Dock="Top" ItemsSource="{Binding StatsBoxList}" >
+                    <Button x:Name="StartStopButton" Height="20" Margin="5" Width="100" VerticalAlignment="Bottom" 
+                                    Command="{Binding startStopCMD}" 
+                                    Content="{Binding startOrStopText}"></Button>
+                </WrapPanel>
+                <Grid Margin="0,10,0,0">
+
+                    <StackPanel Panel.ZIndex="10" Visibility="{Binding isCurrentlyMining, Converter={StaticResource BoolToVis}}">
+                        <ProgressBar Value="{Binding cpuUsageForMining}" Maximum="1" Height="5" Width="234"/>
+                        <!--<Label Content="{Binding cpuUsageForMining}" ContentStringFormat="{}{0:p0}" HorizontalAlignment="Center"></Label>-->
+
+                    </StackPanel>
+                    <StackPanel Panel.ZIndex="1">
+
+                        <ProgressBar Value="{Binding cpuUsageOverall}" Maximum="1"  Height="10" Width="234"/>
+                        <Label Content="{Binding cpuUsageOverall}" ContentStringFormat="{}{0:p0}" HorizontalAlignment="Center"></Label>
+                    </StackPanel>
+                </Grid>
+
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" MaxHeight="100">
+                    <StackPanel>
+                        <Label Content="Total support for:"></Label>
+                        <WrapPanel>
+                            <ItemsControl ItemsSource="{Binding additionalWalletStats}" >
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel>
+                                        </WrapPanel>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <local:StatsBox Content="{Binding}"></local:StatsBox>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </WrapPanel>
+                        <!--<ListBox DockPanel.Dock="Top" ItemsSource="{Binding StatsBoxList}" >
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <local:StatsBox></local:StatsBox>
@@ -208,73 +132,13 @@
                             
                             was.. Click="OnStartStopButtonClick"
                             -->
-                                <Button x:Name="StartStopButton" Padding="10" Margin="40" 
-                                    Command="{Binding startStopCMD}" 
-                                    Content="{Binding startOrStopText}"></Button>
-                                <Grid>
-                                    
-                                <StackPanel Panel.ZIndex="10" Visibility="{Binding isCurrentlyMining, Converter={StaticResource BoolToVis}}">
-                                    <ProgressBar Value="{Binding cpuUsageForMining}" Maximum="1" Height="5" Width="234"/>
-                                    <!--<Label Content="{Binding cpuUsageForMining}" ContentStringFormat="{}{0:p0}" HorizontalAlignment="Center"></Label>-->
 
-                                </StackPanel>
-                                <StackPanel Panel.ZIndex="1">
-                                    
-                                    <ProgressBar Value="{Binding cpuUsageOverall}" Maximum="1"  Height="10" Width="234"/>
-                                    <Label Content="{Binding cpuUsageOverall}" ContentStringFormat="{}{0:p0}" HorizontalAlignment="Center"></Label>
-                                </StackPanel>
-                                </Grid>
 
-                                <Label FontSize="8" Content="{Binding version}"></Label>
 
-                            </StackPanel>
-                        </ScrollViewer>
+
                     </StackPanel>
-
-                </Grid>
-            </TabItem>
-            <TabItem Header="Streamers">
-                <Grid>
-                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-
-                    </ScrollViewer>
-                </Grid>
-            </TabItem>
-            <!--<TabItem Header="Settings">
-                <Grid>
-                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                        <StackPanel>
-                            <CheckBox x:Name="shouldAutoOnIdle" IsChecked="True">Auto run when idle</CheckBox>
-                            <CheckBox x:Name="shouldStartWithWindows" IsChecked="True">Start with Windows</CheckBox>
-                            <TextBox x:Name="TimeTillIdle" Text="10"  Width="42"/>
-
-                            <Label>Threads:</Label>
-                            <Slider x:Name="sliderNumberOfThreads" Margin="5" Minimum="1" Maximum="{Binding Environment.ProcessorCount}" SmallChange="1" IsSnapToTickEnabled="True"></Slider>
-                            <Label x:Name="labelNumberOfThreads" Content="3"/>
-                            <Label>Your Name (Optional):</Label>
-                            <TextBox x:Name="workerNameText" Margin="5" MaxLength="15" MaxLines="1"></TextBox>
-                            <Label Background="Red">Your Wallet:</Label>
-                            <TextBox x:Name="yourWalletText" Margin="5" Background="Red"></TextBox>
-                            <Label Background="#FFE61111">% of Time that goes to HD:</Label>
-                            <Slider x:Name="sliderPercentToHD" Margin="5" LargeChange="0.1" SmallChange="0.01" TickFrequency="0.1" Maximum="1" Value="0.2" Background="#FFE61111"></Slider>
-                            <Label x:Name="labelPercentToHD" Content="66%" Background="#FFE61111" />
-
-
-                        </StackPanel>
-                    </ScrollViewer>
-                </Grid>
-            </TabItem>-->
-            <TabItem Header="About">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="39*"/>
-                        <ColumnDefinition Width="47*"/>
-                    </Grid.ColumnDefinitions>
-                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.ColumnSpan="2">
-                        <Label FontSize="60">Yay</Label>
-                    </ScrollViewer>
-                </Grid>
-            </TabItem>
-        </TabControl>
+                </ScrollViewer>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Controls:MetroWindow>

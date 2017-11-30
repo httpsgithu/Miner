@@ -42,6 +42,15 @@ namespace HD
       ToFile(filename, $"{nameof(Error)} {message} {memberName} @ {sourceFilePath}: {sourceLineNumber}");
     }
 
+    public static void Network(
+      string message = null,
+      [CallerMemberName] string memberName = null,
+      [CallerFilePath] string sourceFilePath = null,
+      [CallerLineNumber] int sourceLineNumber = 0)
+    {
+      ToFile(filename, $"{nameof(Network)} {message} {memberName} @ {sourceFilePath}: {sourceLineNumber}");
+    }
+
     public static void NetworkError(
       string className,
       string method,

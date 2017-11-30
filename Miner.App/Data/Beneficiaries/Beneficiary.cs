@@ -26,7 +26,7 @@ namespace HD
 
     APINiceHashWorkerList apiWorkerList;
 
-    readonly Timer updateNetworkPerformanceTimer = new Timer(20000);
+    readonly Timer updateNetworkPerformanceTimer = new Timer(1);
     #endregion
 
     #region Properties
@@ -123,6 +123,7 @@ namespace HD
       object sender, 
       ElapsedEventArgs e)
     {
+      updateNetworkPerformanceTimer.Interval = 20000;
       apiWorkerList.ReadWhenReady();
       updateNetworkPerformanceTimer.Start();
     }

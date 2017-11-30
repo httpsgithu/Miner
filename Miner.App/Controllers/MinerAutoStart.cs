@@ -8,11 +8,11 @@ namespace HD
   /// </summary>
   public class MinerAutoStart
   {
-
+    readonly Timer timer;
 
     public MinerAutoStart()
     {
-      Timer timer = new Timer(TimeSpan.FromMinutes(1).TotalMilliseconds);
+      timer = new Timer(5000);
       timer.Elapsed += Timer_Elapsed;
       timer.Start();
     }
@@ -21,6 +21,8 @@ namespace HD
       object sender,
       ElapsedEventArgs e)
     {
+      timer.Interval = TimeSpan.FromMinutes(1).TotalMilliseconds;
+
       if (
         // Not already running
         Miner.instance.isMinerRunning == false

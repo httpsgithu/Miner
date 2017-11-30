@@ -79,6 +79,8 @@ namespace HD
       string content = e.Result;
       Debug.Assert(string.IsNullOrWhiteSpace(content) == false);
 
+      Log.Network(content);
+
       OnDownloadComplete(content);
     }
 

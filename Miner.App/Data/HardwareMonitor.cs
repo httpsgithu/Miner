@@ -20,6 +20,15 @@ namespace HD
       = new PerformanceCounter("Processor", "% Processor Time", "_Total");
     #endregion
 
+    public static bool isMinerDataReady
+    {
+      get
+      {
+        return miningCpuRollingHistory.hasFilledOnce
+          && totalCpuRollingHistory.hasFilledOnce;
+      }
+    }
+
     static PerformanceCounter _minerProcessPerformanceCounter;
 
     public static PerformanceCounter minerProcessPerformanceCounter
@@ -32,7 +41,7 @@ namespace HD
       {
         _minerProcessPerformanceCounter = value;
 
-        if(value == null)
+        if (value == null)
         {
           miningCpuRollingHistory.Clear();
         }
@@ -43,7 +52,7 @@ namespace HD
     {
       get
       {
-        if(totalCpuRollingHistory.hasFilledOnce == false)
+        if (totalCpuRollingHistory.hasFilledOnce == false)
         {
           return 0;
         }
@@ -56,7 +65,7 @@ namespace HD
     {
       get
       {
-        if(miningCpuRollingHistory.hasFilledOnce == false)
+        if (miningCpuRollingHistory.hasFilledOnce == false)
         {
           return 0;
         }
@@ -75,7 +84,11 @@ namespace HD
       {
         try
         {
-          miningCpuRollingHistory.Add(minerProcessPerformanceCounter.NextValue() / Environment.ProcessorCount);
+          double value = minerProcessPerformanceCounter.NextValue();
+          if (value > 0 || miningCpuRollingHistory.hasFilledOnce)
+          {
+            miningCpuRollingHistory.Add(value / Environment.ProcessorCount);
+          }
         }
         catch
         {

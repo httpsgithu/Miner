@@ -31,7 +31,7 @@ namespace HD
       refreshResourcesTimer.Elapsed += Refresh;
       refreshResourcesTimer.Start();
     }
-    
+
     public void Start()
     {
       sleepForInNanoseconds = 206892080;
@@ -41,49 +41,58 @@ namespace HD
 
     #region Private
     void Refresh(
-      object sender, 
+      object sender,
       ElapsedEventArgs eargs)
     {
-        try
+      try
+      {
+        if (HardwareMonitor.RefreshValues() == false
+          && Miner.instance.isMinerRunning)
+        { // Miner crashed
+          Log.Event("Miner crashed");
+
+          Miner.instance.Stop();
+          return;
+        }
+        onValueUpdated?.Invoke();
+
+        if (HardwareMonitor.isMinerDataReady)
         {
-          if (HardwareMonitor.RefreshValues() == false
-            && Miner.instance.isMinerRunning)
-          { // Miner crashed
-            Log.Event("Miner crashed");
-
-            Miner.instance.Stop();
-            return;
-          }
-          onValueUpdated?.Invoke();
-
-          if (Miner.instance.isMinerRunning)
-          {
-            if (HardwareMonitor.percentTotalCPU - HardwareMonitor.percentMinerCPU > Miner.instance.currentTargetCpu)
-            { // Something else is using the entire budget
-              if (DateTime.Now - last > TimeSpan.FromSeconds(5))
-              {
-                Log.Event($"Miner killed by competing app: target: {Miner.instance.currentTargetCpu} with {HardwareMonitor.percentTotalCPU - HardwareMonitor.percentMinerCPU:p4} consumed by other apps.  Miner was at {HardwareMonitor.percentMinerCPU:p4}");
-
-                Miner.instance.Stop();
-                return;
-              }
-            }
-            else
+          if (HardwareMonitor.percentTotalCPU - HardwareMonitor.percentMinerCPU > Miner.instance.currentTargetCpu)
+          { // Something else is using the entire budget consistently for at least 2 seconds (sleep by 1)
+            if (DateTime.Now - last > TimeSpan.FromSeconds(1.5))
             {
-              last = DateTime.Now;
-            }
-            UpdateSleepFor();
-          }
+              Log.Event($"Miner killed by competing app: target: {Miner.instance.currentTargetCpu} with {HardwareMonitor.percentTotalCPU - HardwareMonitor.percentMinerCPU:p4} consumed by other apps.  Miner was at {HardwareMonitor.percentMinerCPU:p4}");
 
+              Miner.instance.Stop();
+              return;
+            }
+          }
+          else
+          {
+            last = DateTime.Now;
+          }
+          UpdateSleepFor();
         }
-        catch (Exception e)
+        else
         {
-          Log.Exception(e);
+          last = DateTime.Now;
         }
+      }
+      catch (Exception e)
+      {
+        Log.Exception(e);
+      }
     }
 
     void UpdateSleepFor()
     {
+      if (HardwareMonitor.isMinerDataReady == false)
+      {
+        server.Send(new SetSleepFor(sleepForInNanoseconds));
+        return;
+      }
+
       // Possible range is (-1, 1)
       double deltaTargetCpu = HardwareMonitor.percentTotalCPU - Miner.instance.currentTargetCpu;
 
