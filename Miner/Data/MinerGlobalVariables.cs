@@ -9,7 +9,12 @@ namespace HD
     /// Used for TCP communication with the middleware
     /// </summary>
     /// <remarks>max port 65535</remarks>
-    public const int internalServerPort = 62817;
+    public const int internalServerPort =
+#if DEBUG
+      62816;
+#else
+      62817;
+#endif
 
     /// <summary>
     /// Should be used for all JSON serializing and deserializing.

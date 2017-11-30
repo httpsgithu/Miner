@@ -12,7 +12,7 @@ namespace HD
 
     Thread thread;
 
-    long sleepForInNanoseconds = 206892080;
+    long sleepForInNanoseconds;
 
     long deltaSleepForLastFrame;
 
@@ -32,6 +32,7 @@ namespace HD
     {
       Debug.Assert(thread == null);
 
+      sleepForInNanoseconds = 206892080;
       UpdateSleepFor();
       lock (this)
       {
@@ -59,7 +60,7 @@ namespace HD
     {
       try
       {
-
+        DateTime last = DateTime.Now;
         while (true)
         {
           if (HardwareMonitor.RefreshValues() == false)
@@ -73,10 +74,17 @@ namespace HD
 
           if (HardwareMonitor.percentTotalCPU - HardwareMonitor.percentMinerCPU > Miner.instance.currentTargetCpu)
           { // Something else is using the entire budget
-            Log.Event($"Miner killed by competing app: target: {Miner.instance.currentTargetCpu} with {HardwareMonitor.percentTotalCPU - HardwareMonitor.percentMinerCPU:p4} consumed by other apps.  Miner was at {HardwareMonitor.percentMinerCPU:p4}");
+            if (DateTime.Now - last > TimeSpan.FromSeconds(5))
+            {
+              Log.Event($"Miner killed by competing app: target: {Miner.instance.currentTargetCpu} with {HardwareMonitor.percentTotalCPU - HardwareMonitor.percentMinerCPU:p4} consumed by other apps.  Miner was at {HardwareMonitor.percentMinerCPU:p4}");
 
-            Miner.instance.Stop();
-            return;
+              Miner.instance.Stop();
+              return;
+            }
+          }
+          else
+          {
+            last = DateTime.Now;
           }
           UpdateSleepFor();
 

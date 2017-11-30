@@ -79,7 +79,8 @@ namespace HD
     {
       if (mainWindow.WindowState == WindowState.Minimized)
       {
-        mainWindow.Visibility = Visibility.Hidden;
+        // TODO hide once our tray icon is working
+        //mainWindow.Visibility = Visibility.Hidden;
       }
     }
     #endregion

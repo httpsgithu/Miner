@@ -121,10 +121,14 @@ namespace HD
     {
       get
       {
-        double maxResources = Math.Max(maxCpuWhileActive, maxCpuWhileIdle);
-        Debug.Assert(maxResources <= 1.001);
+        // Currently set to processorCount, allowing us to change the target while running
+        return Environment.ProcessorCount;
 
-        return (int)Math.Max(1, Math.Ceiling(Environment.ProcessorCount * maxResources));
+
+        //double maxResources = Math.Max(maxCpuWhileActive, maxCpuWhileIdle);
+        //Debug.Assert(maxResources <= 1.001);
+
+        //return (int)Math.Max(1, Math.Ceiling(Environment.ProcessorCount * maxResources));
       }
     }
     #endregion
