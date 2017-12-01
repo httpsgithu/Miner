@@ -16,6 +16,7 @@ namespace HD
       object sender,
       StartupEventArgs e)
     {
+#if !DEBUG
       AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
       DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(1) };
       timer.Tick += delegate
@@ -23,6 +24,7 @@ namespace HD
         CheckForUpdates();
       };
       timer.Start();
+#endif
     }
 
     static void CheckForUpdates()
