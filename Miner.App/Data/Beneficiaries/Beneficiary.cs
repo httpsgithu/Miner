@@ -86,8 +86,7 @@ namespace HD
           total += new decimal(apiWorkerList.totalWorkerHashRateMHpS);
         }
 
-        if (this == Miner.instance.currentWinner
-          && (apiWorkerList == null || apiWorkerList.includesMyWorkerName == false))
+        if (this == Miner.instance.currentWinner)
         {
           total += localHashRate;
         }

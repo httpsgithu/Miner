@@ -28,8 +28,6 @@ namespace HD
 
     #region Data
     public double totalWorkerHashRateMHpS = -1;
-
-    public bool includesMyWorkerName;
     #endregion
 
     #region Init
@@ -65,6 +63,7 @@ namespace HD
           if((string)worker[0] == Miner.instance.settings.minerConfig.workerName)
           {
             includesMyWorkerName = true;
+            continue;
           }
           Dictionary<string, string> speedObject = ((JObject)worker[1]).ToObject<Dictionary<string, string>>();
           speedObject.TryGetValue("a", out string speedString);
@@ -84,7 +83,6 @@ namespace HD
       {
         Log.Error(e);
       }
-      this.includesMyWorkerName = includesMyWorkerName;
 
       double averageSpeed;
       if (dataCount == 0)
@@ -96,7 +94,7 @@ namespace HD
         averageSpeed = totalSpeed / dataCount;
       }
 
-      totalSpeed += averageSpeed * (data.Result.Workers.Length - dataCount);
+      totalSpeed += averageSpeed * (data.Result.Workers.Length - dataCount - (includesMyWorkerName ? 1 : 0));
 
       Debug.Assert(double.IsNaN(totalSpeed) == false);
       totalWorkerHashRateMHpS = totalSpeed / 1000;

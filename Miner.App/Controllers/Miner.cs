@@ -61,7 +61,7 @@ namespace HD
     readonly APIBitcoinPrice bitcoinPrice;
 
     readonly APINiceHashMiningPriceList miningPriceList;
-    
+
     readonly System.Timers.Timer refreshNetworkAPI = new System.Timers.Timer(TimeSpan.FromSeconds(30).TotalMilliseconds);
     #endregion
 
@@ -182,7 +182,7 @@ namespace HD
       Start(isForceOn);
     }
     #endregion
-    
+
     #region Public
     public void Start(
       bool isForceOn)
@@ -227,10 +227,10 @@ namespace HD
           middlewareProcess.Kill();
         }
         catch { }
+        middlewareProcess = null;
       }
 
       lastStoppedTime = DateTime.Now;
-      middlewareProcess = null;
       isForceOn = false;
       onStartOrStop?.Invoke();
     }
@@ -238,7 +238,7 @@ namespace HD
 
     #region Helpers
     public void RefreshNetworkAPIsIfCooldown(
-      object sender, 
+      object sender,
       ElapsedEventArgs e)
     {
       bitcoinPrice.ReadWhenReady();
@@ -255,29 +255,45 @@ namespace HD
 
       this.isForceOn = isForceOn;
       // This is where we select the most profitable algorithm...
-      middlewareProcess = new Process();
-      string directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-      middlewareProcess.StartInfo.FileName = Path.Combine(
-        directory, "Miner.Middleware.Xmr-stak-cpu.exe");
+      try
+      {
 
-      middlewareProcess.StartInfo.WorkingDirectory = directory;
-      middlewareProcess.StartInfo.UseShellExecute = false;
-      middlewareProcess.StartInfo.LoadUserProfile = false;
-      middlewareProcess.StartInfo.CreateNoWindow = true;
+        middlewareProcess = new Process();
+        string directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        middlewareProcess.StartInfo.FileName = Path.Combine(
+          directory, "Miner.Middleware.Xmr-stak-cpu.exe");
 
-      middlewareProcess.Start();
-      middlewareProcess.PriorityClass = ProcessPriorityClass.BelowNormal;
+        middlewareProcess.StartInfo.WorkingDirectory = directory;
+        middlewareProcess.StartInfo.UseShellExecute = false;
+        middlewareProcess.StartInfo.LoadUserProfile = false;
+        middlewareProcess.StartInfo.CreateNoWindow = true;
 
-      string instanceName = middlewareProcess.GetInstanceName();
+        middlewareProcess.Start();
+        middlewareProcess.PriorityClass = ProcessPriorityClass.BelowNormal;
 
-      MinerOS.instance.RegisterMiddleProcess(middlewareProcess);
+        string instanceName = middlewareProcess.GetInstanceName();
 
-      Log.Info("Start Miner Process");
+        MinerOS.instance.RegisterMiddleProcess(middlewareProcess);
 
-      changeWalletTimer.Start();
-      onStartOrStop?.Invoke();
-      HardwareMonitor.minerProcessPerformanceCounter
-        = new PerformanceCounter("Process", "% Processor Time", instanceName);
+        Log.Info("Start Miner Process");
+
+        changeWalletTimer.Start();
+        onStartOrStop?.Invoke();
+        HardwareMonitor.minerProcessPerformanceCounter
+          = new PerformanceCounter("Process", "% Processor Time", instanceName);
+      }
+      catch(Exception e)
+      {
+        Log.Error(e);
+
+        HardwareMonitor.minerProcessPerformanceCounter = null;
+        try
+        {
+          middlewareProcess?.Kill();
+        }
+        catch { }
+        middlewareProcess = null;
+      }
     }
     #endregion
   }
