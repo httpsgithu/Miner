@@ -54,7 +54,7 @@ namespace HD
         }
         else
         {
-          return currentMiningPerformance.usdString;
+          return currentMiningPerformance.currencyString;
         }
       }
     }

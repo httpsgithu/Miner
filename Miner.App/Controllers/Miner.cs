@@ -135,11 +135,16 @@ namespace HD
         return DateTime.Now - lastStartedTime;
       }
     }
+
+    public string SelectedCurrency { get; set; }
     #endregion
 
     #region Init
     Miner()
     {
+            // Default to USD if user hasn't selected a currency
+            SelectedCurrency = "USD";
+
       changeWalletTimer.Elapsed += ChangeWalletTimer_OnTick;
 
       refreshNetworkAPI.Elapsed += RefreshNetworkAPIsIfCooldown;

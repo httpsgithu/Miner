@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HD.Controllers;
+using System;
 
 namespace HD
 {
@@ -31,7 +32,7 @@ namespace HD
       }
     }
 
-    public string usdString
+    public string currencyString
     {
       get
       {
@@ -39,8 +40,8 @@ namespace HD
         {
           return "loading...";
         }
-
-        return $"${Miner.instance.settings.minerConfig.period.DailyToPeriod(usdDay):N2}";
+        var value = CurrencyExchangeManager.From(usdDay, "USD").To(Miner.instance.SelectedCurrency);
+        return $"{Miner.instance.settings.minerConfig.period.DailyToPeriod(value):N2} {Miner.instance.SelectedCurrency}";
       }
     }
     
