@@ -22,19 +22,7 @@ namespace HD
     }
 
     public CurrentMiningStatsViewModel(
-      MainViewModel mainViewModel)
-      : base(mainViewModel)
-    {
-      MiddlewareServer.onMiningStatsUpdate += MiddlewareServer_onMiningStatsUpdate;
-    }
-
-    void MiddlewareServer_onMiningStatsUpdate(
-      MiningStats stats)
-    {
-      Debug.Assert(stats != null);
-
-      OnPropertyChanged(nameof(currentMiningPerformance));
-      OnPropertyChanged(nameof(currentMiningPerformanceString));
-    }
+      MainViewModel mainViewModel) 
+      : base(mainViewModel) { }
   }
 }

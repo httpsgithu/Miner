@@ -93,6 +93,18 @@ namespace HD
       Debug.Assert(mainViewModel != null);
 
       this.mainViewModel = mainViewModel;
+      MiddlewareServer.onMiningStatsUpdate += MiddlewareServer_onMiningStatsUpdate;
+    }
+    #endregion
+
+    #region Events
+    void MiddlewareServer_onMiningStatsUpdate(
+      MiningStats stats)
+    {
+      Debug.Assert(stats != null);
+
+      OnPropertyChanged(nameof(currentMiningPerformance));
+      OnPropertyChanged(nameof(currentMiningPerformanceString));
     }
     #endregion
   }
