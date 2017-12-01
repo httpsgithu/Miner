@@ -1,4 +1,4 @@
-﻿using Miner.OS;
+﻿using Miner.instance.OS;
 using Newtonsoft.Json;
 using System;
 using System.IO;

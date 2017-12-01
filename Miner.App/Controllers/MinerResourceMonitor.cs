@@ -8,8 +8,6 @@ namespace HD
     #region Data
     public event Action onValueUpdated;
 
-    readonly MiddlewareServer server;
-
     readonly Timer refreshResourcesTimer = new Timer(TimeSpan.FromSeconds(1).TotalMilliseconds);
 
     /// <summary>
@@ -21,12 +19,8 @@ namespace HD
     #endregion
 
     #region Init
-    public MinerResourceMonitor(
-      MiddlewareServer server)
+    public MinerResourceMonitor()
     {
-      Debug.Assert(server != null);
-
-      this.server = server;
       refreshResourcesTimer.Elapsed += Refresh;
       refreshResourcesTimer.Start();
     }
@@ -88,7 +82,7 @@ namespace HD
       if (HardwareMonitor.isMinerDataReady == false)
       {
         sleepRate = .9; // Always start with too much sleep
-        server.Send(new SetSleepFor(sleepRate));
+        Miner.instance.middlewareServer.Send(new SetSleepFor(sleepRate));
         return;
       }
 
@@ -111,7 +105,7 @@ namespace HD
       }
 
       sleepRate = (sleepRate * 2 + targetSleepRate) / 3;
-      server.Send(new SetSleepFor(sleepRate));
+      Miner.instance.middlewareServer.Send(new SetSleepFor(sleepRate));
     }
     #endregion
   }

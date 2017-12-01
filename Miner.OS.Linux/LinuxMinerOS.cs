@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Miner.OS.Linux
+namespace Miner.instance.OS.Linux
 {
   public class LinuxMinerOS : MinerOS
   {

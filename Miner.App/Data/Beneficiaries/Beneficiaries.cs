@@ -28,6 +28,7 @@ namespace HD
     #region Data
     public event Action onBeneficiaryListChanged;
 
+
     readonly List<Beneficiary> beneficiaryList = new List<Beneficiary>();
 
     static readonly Random random = new Random();
@@ -46,7 +47,7 @@ namespace HD
       {
         for (int i = 0; i < beneficiaryList.Count; i++)
         {
-          if(beneficiaryList[i].isUsersWallet)
+          if (beneficiaryList[i].isUsersWallet)
           {
             return beneficiaryList[i];
           }
@@ -176,14 +177,16 @@ namespace HD
 
       File.WriteAllText(beneficiaryFilename, beneficiaryJson);
     }
+    #endregion
 
+    #region Public Read
     public Beneficiary PickAWinner()
     {
       double rngValue = random.NextDouble() * totalPercentContribution;
       Beneficiary winner = beneficiaryList[0];
       for (int i = 0; i < beneficiaryList.Count; i++)
       {
-        if(beneficiaryList[i].isValidAndActive == false)
+        if (beneficiaryList[i].isValidAndActive == false)
         {
           continue;
         }
@@ -201,9 +204,7 @@ namespace HD
 
       return winner;
     }
-    #endregion
 
-    #region Public Read
     public IEnumerator<Beneficiary> GetEnumerator()
     {
       return beneficiaryList.GetEnumerator();

@@ -15,8 +15,7 @@ namespace HD
     #endregion
 
     #region Data
-    public event Action<MiningStats> onMiningStatsUpdate;
-
+    public static event Action<MiningStats> onMiningStatsUpdate;
     #endregion
 
     #region Init

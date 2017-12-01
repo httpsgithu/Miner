@@ -3,7 +3,7 @@ using System.Diagnostics;
 using HD;
 using JobManagement;
 
-namespace Miner.OS.Windows
+namespace Miner.instance.OS.Windows
 {
   class WindowsMinerOS : MinerOS
   {

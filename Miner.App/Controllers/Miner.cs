@@ -1,4 +1,4 @@
-﻿using Miner.OS;
+﻿using Miner.instance.OS;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -20,7 +20,7 @@ namespace HD
     #region Data
     public static readonly Miner instance = new Miner();
 
-    public readonly Settings settings = new Settings();
+    public readonly Settings settings;
 
     public event Action onStatsChange;
 
@@ -51,17 +51,17 @@ namespace HD
 
     DateTime lastStoppedTime;
 
-    public readonly MiddlewareServer middlewareServer = new MiddlewareServer();
+    public readonly MiddlewareServer middlewareServer;
 
-    readonly MinerAutoStart minerAutoStart = new MinerAutoStart();
+    readonly MinerAutoStart minerAutoStart;
 
     readonly System.Timers.Timer changeWalletTimer = new System.Timers.Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
 
     // Network APIs
-    readonly APIBitcoinPrice bitcoinPrice = new APIBitcoinPrice();
+    readonly APIBitcoinPrice bitcoinPrice;
 
-    readonly APINiceHashMiningPriceList miningPriceList = new APINiceHashMiningPriceList();
-
+    readonly APINiceHashMiningPriceList miningPriceList;
+    
     readonly System.Timers.Timer refreshNetworkAPI = new System.Timers.Timer(TimeSpan.FromSeconds(30).TotalMilliseconds);
     #endregion
 
@@ -140,13 +140,18 @@ namespace HD
     #region Init
     Miner()
     {
+      settings = new Settings();
+      middlewareServer = new MiddlewareServer();
+      minerAutoStart = new MinerAutoStart();
+      bitcoinPrice = new APIBitcoinPrice();
+      miningPriceList = new APINiceHashMiningPriceList();
+
       changeWalletTimer.Elapsed += ChangeWalletTimer_OnTick;
 
       refreshNetworkAPI.Elapsed += RefreshNetworkAPIsIfCooldown;
       refreshNetworkAPI.AutoReset = false;
       RefreshNetworkAPIsIfCooldown(null, null);
-
-      monitor = new MinerResourceMonitor(middlewareServer);
+      monitor = new MinerResourceMonitor();
     }
     #endregion
 

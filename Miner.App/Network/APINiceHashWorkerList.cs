@@ -28,13 +28,16 @@ namespace HD
 
     #region Data
     public double totalWorkerHashRateMHpS = -1;
+
+    public bool includesMyWorkerName;
     #endregion
 
     #region Init
     public APINiceHashWorkerList(
       string wallet)
       : base(new Uri(string.Format(urlParam0Wallet, wallet)))
-    { }
+    {
+    }
     #endregion
 
     #region Events
@@ -54,10 +57,15 @@ namespace HD
 
       double totalSpeed = 0;
       int dataCount = 0;
+      bool includesMyWorkerName = false;
       try
       {
         foreach (object[] worker in data.Result.Workers)
         {
+          if((string)worker[0] == Miner.instance.settings.minerConfig.workerName)
+          {
+            includesMyWorkerName = true;
+          }
           Dictionary<string, string> speedObject = ((JObject)worker[1]).ToObject<Dictionary<string, string>>();
           speedObject.TryGetValue("a", out string speedString);
           if (string.IsNullOrEmpty(speedString) == false)
@@ -76,6 +84,7 @@ namespace HD
       {
         Log.Error(e);
       }
+      this.includesMyWorkerName = includesMyWorkerName;
 
       double averageSpeed;
       if (dataCount == 0)

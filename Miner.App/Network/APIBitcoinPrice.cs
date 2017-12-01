@@ -51,7 +51,8 @@ namespace HD
     #region Init
     public APIBitcoinPrice()
       : base(currentPriceUri)
-    { }
+    {
+    }
     #endregion
 
     #region Events

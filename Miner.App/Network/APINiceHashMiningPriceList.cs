@@ -43,7 +43,8 @@ namespace HD
     #region Init
     public APINiceHashMiningPriceList()
       : base(niceHashGlobalStatsUri)
-    { }
+    {
+    }
     #endregion
 
     #region Events

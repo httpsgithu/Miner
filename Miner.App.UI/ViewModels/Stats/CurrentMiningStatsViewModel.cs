@@ -4,14 +4,12 @@ namespace HD
 {
   public class CurrentMiningStatsViewModel : MiningStatsBoxViewModel
   {
-    double hashRate = -1;
-
     public override MinerPeformance currentMiningPerformance
     {
       get
       {
-        decimal value = new decimal(hashRate);
-        return new MinerPeformance(value * Miner.instance.pricePerDayInBtcFor1MHOfCryptonight);
+        return new MinerPeformance(beneficiary.localHashRate 
+          * Miner.instance.pricePerDayInBtcFor1MHOfCryptonight);
       }
     }
 
@@ -27,9 +25,7 @@ namespace HD
       MainViewModel mainViewModel)
       : base(mainViewModel)
     {
-      Debug.Assert(mainViewModel != null);
-
-      Miner.instance.middlewareServer.onMiningStatsUpdate += MiddlewareServer_onMiningStatsUpdate;
+      MiddlewareServer.onMiningStatsUpdate += MiddlewareServer_onMiningStatsUpdate;
     }
 
     void MiddlewareServer_onMiningStatsUpdate(
@@ -37,7 +33,6 @@ namespace HD
     {
       Debug.Assert(stats != null);
 
-      this.hashRate = stats.hashRate;
       OnPropertyChanged(nameof(currentMiningPerformance));
       OnPropertyChanged(nameof(currentMiningPerformanceString));
     }

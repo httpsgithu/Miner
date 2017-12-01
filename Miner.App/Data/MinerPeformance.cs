@@ -43,7 +43,7 @@ namespace HD
         return $"${Miner.instance.settings.minerConfig.period.DailyToPeriod(usdDay):N2}";
       }
     }
-    
+
     public MinerPeformance(
       decimal btcPerDay)
     {

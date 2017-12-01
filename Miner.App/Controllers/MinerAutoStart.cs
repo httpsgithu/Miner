@@ -12,6 +12,7 @@ namespace HD
 
     public MinerAutoStart()
     {
+
       timer = new Timer(5000);
       timer.Elapsed += Timer_Elapsed;
       timer.Start();

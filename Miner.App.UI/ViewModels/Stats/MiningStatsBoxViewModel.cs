@@ -33,7 +33,7 @@ namespace HD
     {
       get
       {
-        return new MinerPeformance(new decimal(beneficiary.totalWorkerHashRateMHpS)
+        return new MinerPeformance(beneficiary.totalWorkerHashRateMHpS
           * Miner.instance.pricePerDayInBtcFor1MHOfCryptonight);
       }
     }

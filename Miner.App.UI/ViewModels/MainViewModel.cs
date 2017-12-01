@@ -12,13 +12,13 @@ namespace HD
     #region Data
     public ObservableCollection<MiningStatsBoxViewModel> statsBoxList
     {
-      get; 
+      get;
     }
 
     public SettingsViewModel settings
     {
       get;
-    } = new SettingsViewModel();
+    }
 
     public ICommand startStopCMD
     {
@@ -46,7 +46,7 @@ namespace HD
     {
       get
       {
-        if(isCurrentlyMining)
+        if (isCurrentlyMining)
         {
           return statsBoxList[0];
         }
@@ -130,7 +130,7 @@ namespace HD
       }
       set
       {
-        if(_startOrStopText == value)
+        if (_startOrStopText == value)
         {
           return;
         }
@@ -165,6 +165,8 @@ namespace HD
     #region Init
     public MainViewModel()
     {
+      settings = new SettingsViewModel();
+
       startStopCMD = new CommandHandler(OnStartStopBtnClick, true);
       statsBoxList = new ObservableCollection<MiningStatsBoxViewModel>
       {
@@ -174,7 +176,7 @@ namespace HD
       // TODO support add/remove from this list
       foreach (Beneficiary beneficiary in Miner.instance.settings.beneficiaries)
       {
-        if(beneficiary.isValidAndActive)
+        if (beneficiary.isValidAndActive)
         {
           statsBoxList.Add(new NetworkMiningStatsViewModel(this, beneficiary));
         }
@@ -230,7 +232,7 @@ namespace HD
     {
       Miner.instance.Stop();
     }
-    
+
     // TODO Switch to event instead of poll
     void UpdateRunningState()
     {
