@@ -4,27 +4,40 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   >
   <StackLayout>
-    <CheckBox Text="Auto run when idle" Checked="{Binding AutoMineWhenIdle}" />
-    <CheckBox Text="Start with Windows" Checked="{Binding StartWithWindows}"/>
+    <CheckBox Text="Start with Windows" Checked="{Binding shouldStartWithWindows}"/>
+    
     <Label Text="Time to enter idle:" />    
-    <NumericUpDown Value="{Binding TimeToEnterIdle}" DecimalPlaces="2" />
-    <Label Text="Threads:" />
-    <NumericUpDown Value="{Binding ThreadsUsed}" DecimalPlaces="0" MinValue="1" MaxValue="{Binding MaxThreadsAvailible}"/>
+    <NumericUpDown Value="{Binding timeTillIdleInMinutes}" DecimalPlaces="2" />
+    <Label Text="{Binding timeTillIdleInMinutesString}" />
+
+    <Label Text="Max CPU" />
+
     <StackLayout Orientation="Horizontal">
-      <Label Text="Max. available: " />
-      <Label Text="{Binding ThreadsMaxAvailible}"  />
+      <Label Text="While Active:" />
+      <Label Text="{Binding maxCpuWhileActive}" />
     </StackLayout>
+    <Slider Value="{Binding maxCpuWhileActive}" MaxValue="100" TickFrequency="1" Width="180" />
+
     <StackLayout Orientation="Horizontal">
-      <Label Text="Currently using: " />
-      <Label Text="{Binding ThreadsCurrentlyUsed}" />
+      <Label Text="While Idle:" />
+      <Label Text="{Binding maxCpuWhileIdle}" />
     </StackLayout>
+    <Slider Value="{Binding maxCpuWhileIdle}" MaxValue="100" TickFrequency="1" Width="180" />
+    
     <Label Text="Your Name (Optional):" />
-    <TextBox Text= "{Binding UserName}"/>
+    <TextBox Text= "{Binding workerName}"  MaxLength="15" />
+    
     <Label Text="Your Wallet: " />
-    <TextBox Text="{Binding WalletID}" />
+    <TextBox Text="{Binding myWallet}" />
+    
+    <!--
     <Label Text="% of Time that goes to HD:" />
     <Slider Value="{Binding PercentTimeToHD}" MaxValue="100" TickFrequency="1" />
     <Label Text="{Binding PercentTimeToHD}" />
+    -->
     
+    
+    
+    <Label Text="{Binding version}" />
   </StackLayout>
 </Panel>
