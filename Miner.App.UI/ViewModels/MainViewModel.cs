@@ -59,7 +59,7 @@ namespace HD
     {
       get
       {
-        return (int)(cpuUsageForMining * 10000000);
+        return (int)(cpuUsageForMining * 100000);
       }
     }
 
@@ -71,6 +71,22 @@ namespace HD
       }
       set { } // TODO read only
     }
+    public string cpuUsageMiningText
+    {
+        get
+        {
+            return "CPU Mining % Usage: " + (HardwareMonitor.percentMinerCPU * 100).ToString("F");
+            }
+    }
+
+    public int cpuUsageOverall0to100000
+    {
+        get
+        {
+            return (int)(HardwareMonitor.percentTotalCPU * 100000);
+        }
+        set { }
+    }
 
     public double cpuUsageOverall
     {
@@ -79,6 +95,14 @@ namespace HD
         return HardwareMonitor.percentTotalCPU;
       }
       set { }
+    }
+
+    public string cpuUsageText
+    {
+        get
+        {
+            return "CPU Total % Usage: " + (HardwareMonitor.percentTotalCPU * 100).ToString("F");
+        }
     }
 
     public bool shouldStartWithWindows
@@ -250,7 +274,10 @@ namespace HD
       OnPropertyChanged(nameof(currentlyMiningFor));
       OnPropertyChanged(nameof(cpuUsageForMining));
       OnPropertyChanged(nameof(cpuUsageForMining0To100000));
-    }
+      OnPropertyChanged(nameof(cpuUsageOverall0to100000));
+      OnPropertyChanged(nameof(cpuUsageMiningText));
+      OnPropertyChanged(nameof(cpuUsageText));
+        }
     #endregion
   }
 }
