@@ -40,7 +40,9 @@ namespace HD
         {
           return "loading...";
         }
-        var value = CurrencyExchangeManager.From(usdDay, "USD").To(Miner.instance.SelectedCurrency);
+        var value = usdDay;
+        if(Miner.instance.SelectedCurrency != "USD")
+            CurrencyExchangeManager.From(usdDay, "USD").To(Miner.instance.SelectedCurrency);
         return $"{Miner.instance.settings.minerConfig.period.DailyToPeriod(value):N2} {Miner.instance.SelectedCurrency}";
       }
     }
