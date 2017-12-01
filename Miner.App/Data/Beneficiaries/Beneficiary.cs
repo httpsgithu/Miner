@@ -22,7 +22,7 @@ namespace HD
     public bool isUsersWallet;
 
     [JsonProperty]
-    double _percentTime;
+    public double _percentTime;
 
     APINiceHashWorkerList apiWorkerList;
 

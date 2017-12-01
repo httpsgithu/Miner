@@ -165,7 +165,8 @@ namespace HD
       {
         for (int i = 0; i < beneficiaryList.Count; i++)
         {
-          beneficiaryList[i].percentTime = beneficiaryList[i].percentTime / totalPercentContribution;
+          // Setting percentTime triggers a save and crash... hence _percentTime instead.  Hacky.
+          beneficiaryList[i]._percentTime = beneficiaryList[i].percentTime / totalPercentContribution;
         }
       }
       totalPercentContribution = CalcTotalPercent();
