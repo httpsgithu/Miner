@@ -9,11 +9,16 @@
 ### Project Setup 
 
  - Clone this repro
- - Clone [HardlyCommon](https://github.com/hardlydifficult/HardlyCommon), [HardlyCommonWindows](https://github.com/hardlydifficult/HardlyCommonWindows), [Hardly's AutoUpdater.NET](https://github.com/hardlydifficult/AutoUpdater.NET) and [Hardly's XMR](https://github.com/hardlydifficult/xmr-stak-cpu) in the same directory (so Miner, HardlyCommon, HardlyCommondWindows, and xmr-stak-cpu folders are side by side)
- - If references are broken:
-    - Open menu Tools -> NuGet Package Manager
-    - Run ```Update-Package -reinstall```
- - [Setup Project support](https://marketplace.visualstudio.com/items?itemName=VisualStudioProductTeam.MicrosoftVisualStudio2017InstallerProjects)
+ - Run SyncDependencies.bat
+   - This will clone and/or sync [HardlyCommon](https://github.com/hardlydifficult/HardlyCommon), [HardlyCommonWindows](https://github.com/hardlydifficult/HardlyCommonWindows), [Hardly's AutoUpdater.NET](https://github.com/hardlydifficult/AutoUpdater.NET) and [Hardly's XMR](https://github.com/hardlydifficult/xmr-stak-cpu)
+   - If references are broken:
+      - Open menu Tools -> NuGet Package Manager
+      - Run ```Update-Package -reinstall```
+ - (Optional) Install [Setup Project support](https://marketplace.visualstudio.com/items?itemName=VisualStudioProductTeam.MicrosoftVisualStudio2017InstallerProjects)
+ - Set the startup project to Miner.App.UI.WPF
+ - Build xmr-stak-cpu
+ - Run
+  
 
 ### Sync your forked repository
 
