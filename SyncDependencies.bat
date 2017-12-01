@@ -1,3 +1,6 @@
+cd %~dp0
+git pull
+
 git clone https://github.com/hardlydifficult/HardlyCommon.git %~dp0..\HardlyCommon
 cd %~dp0..\HardlyCommon 
 git pull 
