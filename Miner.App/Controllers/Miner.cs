@@ -26,7 +26,9 @@ namespace HD
 
     public event Action onStartOrStop;
 
-    public readonly MinerResourceMonitor monitor;
+    public readonly MinerResourceMonitor resourceMonitor;
+
+    public readonly MinerRegionMonitor regionMonitor;
 
     /// <summary>
     /// The current (or most recent) wallet this machine is mining for.
@@ -151,7 +153,8 @@ namespace HD
       refreshNetworkAPI.Elapsed += RefreshNetworkAPIsIfCooldown;
       refreshNetworkAPI.AutoReset = false;
       RefreshNetworkAPIsIfCooldown(null, null);
-      monitor = new MinerResourceMonitor(settings.minerConfig);
+      resourceMonitor = new MinerResourceMonitor(settings.minerConfig);
+      regionMonitor = new MinerRegionMonitor(middlewareServer);
     }
     #endregion
 
@@ -231,8 +234,18 @@ namespace HD
       }
 
       lastStoppedTime = DateTime.Now;
-      isForceOn = false;
       onStartOrStop?.Invoke();
+    }
+
+    public void RestartIfRunning()
+    {
+      if(isMinerRunning == false)
+      {
+        return;
+      }
+
+      Stop();
+      Start(isForceOn);
     }
     #endregion
 

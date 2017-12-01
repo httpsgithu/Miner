@@ -18,18 +18,24 @@ namespace HD
     [JsonProperty]
     public readonly string workerName;
 
+    [JsonProperty]
+    public readonly string stratumUrl;
+
     public StartMiningRequest(
       string wallet,
       int numberOfThreads,
-      string workerName)
+      string workerName,
+      string stratumUrl)
     {
       Debug.Assert(string.IsNullOrWhiteSpace(wallet) == false);
       Debug.Assert(numberOfThreads > 0);
       Debug.Assert(string.IsNullOrWhiteSpace(workerName) == false);
+      Debug.Assert(string.IsNullOrWhiteSpace(stratumUrl) == false);
 
       this.wallet = wallet;
       this.numberOfThreads = numberOfThreads;
       this.workerName = workerName;
+      this.stratumUrl = stratumUrl;
     }
   }
 }

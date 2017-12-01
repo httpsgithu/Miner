@@ -34,7 +34,7 @@ namespace HD
       CallingConvention = CallingConvention.Cdecl,
       BestFitMapping = false,
       ThrowOnUnmappableChar = true)]
-    static extern void SleepFor(
+    static extern bool SleepFor(
       double sleepRate);
     #endregion
 
@@ -62,20 +62,21 @@ namespace HD
     public void StartMining(
       string wallet,
       int numberOfThreads,
-      string workerName)
+      string workerName,
+      string stratumUrl)
     {
-      string configurationJson = GenerateConfigJson(wallet, numberOfThreads, workerName);
+      string configurationJson = GenerateConfigJson(wallet, numberOfThreads, workerName, stratumUrl);
 
       Debug.Assert(string.IsNullOrWhiteSpace(configurationJson) == false);
-      Log.Info("Xmr start mining.");
+      Log.Info($"Xmr start mining {stratumUrl} for wallet:{wallet} as worker:{workerName}");
 
       Start(configurationJson);
     }
 
-    public void SetSleepFor(
+    public bool SetSleepFor(
       double sleepRate)
     {
-      SleepFor(sleepRate);
+      return SleepFor(sleepRate);
     }
     #endregion
 
@@ -83,7 +84,8 @@ namespace HD
     static string GenerateConfigJson(
       string wallet,
       int numberOfThreads,
-      string workerName)
+      string workerName,
+      string stratumUrl)
     {
       StringBuilder builder = new StringBuilder();
 
@@ -108,7 +110,9 @@ namespace HD
 ""use_tls"" : false,
 ""tls_secure_algo"" : true,
 ""tls_fingerprint"" : """",
-""pool_address"" : ""cryptonight.usa.nicehash.com:3355"",
+""pool_address"" : """);
+      builder.Append(stratumUrl);
+      builder.Append(@""",
 ""wallet_address"" : """);
       builder.Append(wallet);
       if (string.IsNullOrEmpty(workerName) == false)

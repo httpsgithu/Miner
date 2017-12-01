@@ -13,10 +13,10 @@ namespace HD
       LoggerConfiguration config = new LoggerConfiguration();
       config.WriteTo.RollingFile(
           pathFormat: Path.Combine(
-            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "{Date}.log"),
+            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Assembly.GetEntryAssembly().FullName + "{Date}.log"),
           outputTemplate: "{Timestamp} [{Level}] {Message}{NewLine}{Exception}",
           retainedFileCountLimit: 5,
-          buffered: true,
+          buffered: false,
           shared: false);
 
       Serilog.Log.Logger = config.CreateLogger();

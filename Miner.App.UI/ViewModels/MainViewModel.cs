@@ -182,7 +182,7 @@ namespace HD
         }
       }
 
-      Miner.instance.monitor.onValueUpdated += OnMonitorValueUpdated;
+      Miner.instance.resourceMonitor.onValueUpdated += OnMonitorValueUpdated;
 
       Miner.instance.onStartOrStop += OnMinerStartOrStop;
       Miner.instance.onStatsChange += OnMinerStatsChange;
