@@ -20,18 +20,18 @@ namespace HD.Controllers
             this.amount = amount;
         }
 
-        public decimal To(string targetCurrency)
+        public decimal To(HD.Currencies targetCurrency)
         {
-            targetCurrency = targetCurrency.ToUpperInvariant();
+            var currencyName = targetCurrency.ToString();
 
             // trying to convert to the same currency we're already in?
-            if (rates == null || targetCurrency == Name)
+            if (rates == null || currencyName == Name)
                 return amount;
 
-            if (rates.rates.ContainsKey(targetCurrency))
-                return rates.rates[targetCurrency] * amount;
+            if (rates.rates.ContainsKey(currencyName))
+                return rates.rates[currencyName] * amount;
 
-            throw new InvalidOperationException($"Invalid currency name '{targetCurrency}'");
+            throw new InvalidOperationException($"Invalid currency name '{currencyName}'");
         }
     }
 }

@@ -11,17 +11,20 @@ namespace HD.Controllers
     public static class CurrencyExchangeManager
     {
         const string API_URL = "https://api.fixer.io/latest?base=";
-        static Dictionary<string, (DateTime lastUpdated, CurrencyExchangeRates values)> rates = new Dictionary<string, (DateTime, CurrencyExchangeRates)>();
 
-        public static CurrencyExchange From(decimal amount, string baseCurrency, bool forceUpdate = false)
+        static Dictionary<string, (DateTime lastUpdated, CurrencyExchangeRates values)> rates = new Dictionary<string, (DateTime, CurrencyExchangeRates)>();
+        static int isUpdating = 0;
+
+        public static CurrencyExchange From(decimal amount, HD.Currencies baseCurrency, bool forceUpdate = false)
         {
-            baseCurrency = baseCurrency.ToUpperInvariant();
-            if (AreRatesOutdated(baseCurrency) || forceUpdate)
+            var currencyName = baseCurrency.ToString();
+            if (AreRatesOutdated(currencyName) || forceUpdate)
             {
-                Task.Run(() => { Fetch(baseCurrency); });
-                return new CurrencyExchange(null, 0);
+                // Don't have rates yet, return -1 for now
+                Task.Run(() => { Fetch(currencyName); });
+                return new CurrencyExchange(null, -1);
             }
-            return new CurrencyExchange(rates[baseCurrency].values, amount);
+            return new CurrencyExchange(rates[currencyName].values, amount);
         }
 
         private static bool AreRatesOutdated(string baseCurrency)
@@ -38,9 +41,13 @@ namespace HD.Controllers
 
         private static void Fetch(string baseCurrency)
         {
-            var dataString = Encoding.UTF8.GetString(HDWebClient.GetBytes($"{API_URL}{baseCurrency}"));
-            var obj = JsonConvert.DeserializeObject<CurrencyExchangeRates>(dataString);
-            rates[baseCurrency] = (lastUpdated: DateTime.UtcNow, values: obj);
+            if (System.Threading.Interlocked.CompareExchange(ref isUpdating, 1, 0) == 0)
+            {
+                var dataString = Encoding.UTF8.GetString(HDWebClient.GetBytes($"{API_URL}{baseCurrency}"));
+                var obj = JsonConvert.DeserializeObject<CurrencyExchangeRates>(dataString);
+                rates[baseCurrency] = (lastUpdated: DateTime.UtcNow, values: obj);
+                isUpdating = 0;
+            }
         }
     }
 }

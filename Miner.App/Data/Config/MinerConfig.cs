@@ -36,6 +36,9 @@ namespace HD
 
     [JsonProperty]
     Period _period;
+
+    [JsonProperty]
+    Currencies _currency;
     #endregion
 
     #region Properties
@@ -147,10 +150,23 @@ namespace HD
         Save();
       }
     }
-    #endregion
 
-    #region Init
-    public static MinerConfig LoadOrCreate()
+    public Currencies currency
+    {
+        get
+        {
+            return _currency;
+        }
+        set
+        {
+            _currency = value;
+            Save();
+        }
+    }
+        #endregion
+
+        #region Init
+        public static MinerConfig LoadOrCreate()
     {
       try
       {

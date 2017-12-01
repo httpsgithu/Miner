@@ -177,5 +177,30 @@ namespace HD
         }
       }
     }
+
+    public Currencies currency
+    {
+        get
+        {
+            return Miner.instance.settings.minerConfig.currency;
+        }
+        set
+        {
+            Miner.instance.settings.minerConfig.currency = value;
+            OnPropertyChanged();
+        }
+        }
+
+    public IEnumerable<Currencies> currencyList
+    {
+        get
+        {
+            Array list = Enum.GetValues(typeof(Currencies));
+            for (int i = 0; i < list.Length; i++)
+            {
+                yield return (Currencies)list.GetValue(i);
+            }
+        }
+    }
   }
 }
