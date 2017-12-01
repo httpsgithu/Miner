@@ -25,7 +25,7 @@ namespace HD.Controllers
             targetCurrency = targetCurrency.ToUpperInvariant();
 
             // trying to convert to the same currency we're already in?
-            if (targetCurrency == Name)
+            if (rates == null || targetCurrency == Name)
                 return amount;
 
             if (rates.rates.ContainsKey(targetCurrency))

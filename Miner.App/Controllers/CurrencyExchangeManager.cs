@@ -17,7 +17,10 @@ namespace HD.Controllers
         {
             baseCurrency = baseCurrency.ToUpperInvariant();
             if (AreRatesOutdated(baseCurrency) || forceUpdate)
-                Fetch(baseCurrency);
+            {
+                Task.Run(() => { Fetch(baseCurrency); });
+                return new CurrencyExchange(null, 0);
+            }
             return new CurrencyExchange(rates[baseCurrency].values, amount);
         }
 
