@@ -17,7 +17,8 @@
  - (Optional) Install [Setup Project support](https://marketplace.visualstudio.com/items?itemName=VisualStudioProductTeam.MicrosoftVisualStudio2017InstallerProjects)
     - Otherwise simply Remove the project from the solution (please don't check in the change to the solution)
  - Set the startup project to Miner.App.UI.WPF
- - Build xmr-stak-cpu
+ - (Optional) Build xmr-stak-cpu
+    - We checked in the built dlls, you can remove the xmr projects if you do not want to look at c++ ;)
  - Run
   
 
