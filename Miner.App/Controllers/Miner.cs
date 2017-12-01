@@ -151,7 +151,7 @@ namespace HD
       refreshNetworkAPI.Elapsed += RefreshNetworkAPIsIfCooldown;
       refreshNetworkAPI.AutoReset = false;
       RefreshNetworkAPIsIfCooldown(null, null);
-      monitor = new MinerResourceMonitor();
+      monitor = new MinerResourceMonitor(settings.minerConfig);
     }
     #endregion
 

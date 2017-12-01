@@ -19,15 +19,25 @@ namespace HD
     #endregion
 
     #region Init
-    public MinerResourceMonitor()
+    public MinerResourceMonitor(
+      MinerConfig config)
     {
       refreshResourcesTimer.Elapsed += Refresh;
       refreshResourcesTimer.Start();
-    }
 
+      config.onCpuConfigChanged += MinerConfig_onCpuConfigChanged;
+    }
+    
     public void Start()
     {
       UpdateSleepFor();
+    }
+    #endregion
+
+    #region Events
+    void MinerConfig_onCpuConfigChanged()
+    {
+      CalcInitialSleepRate();
     }
     #endregion
 
@@ -81,7 +91,7 @@ namespace HD
     {
       if (HardwareMonitor.isMinerDataReady == false)
       {
-        sleepRate = .9; // Always start with too much sleep
+        CalcInitialSleepRate();
         Miner.instance.middlewareServer.Send(new SetSleepFor(sleepRate));
         return;
       }
@@ -104,8 +114,13 @@ namespace HD
         targetSleepRate = .9;
       }
 
-      sleepRate = (sleepRate * 2 + targetSleepRate) / 3;
+      sleepRate = (sleepRate * 4 + targetSleepRate) / 5;
       Miner.instance.middlewareServer.Send(new SetSleepFor(sleepRate));
+    }
+
+    private void CalcInitialSleepRate()
+    {
+      sleepRate = Math.Min(.9, (1 - Miner.instance.currentTargetCpu) + .1); // Always start with too much sleep
     }
     #endregion
   }
