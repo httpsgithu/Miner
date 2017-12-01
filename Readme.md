@@ -11,10 +11,11 @@
  - Clone this repro
  - Run SyncDependencies.bat
    - This will clone and/or sync [HardlyCommon](https://github.com/hardlydifficult/HardlyCommon), [HardlyCommonWindows](https://github.com/hardlydifficult/HardlyCommonWindows), [Hardly's AutoUpdater.NET](https://github.com/hardlydifficult/AutoUpdater.NET) and [Hardly's XMR](https://github.com/hardlydifficult/xmr-stak-cpu)
-   - If references are broken:
+   - If references are broken (but they should be fine):
       - Open menu Tools -> NuGet Package Manager
       - Run ```Update-Package -reinstall```
  - (Optional) Install [Setup Project support](https://marketplace.visualstudio.com/items?itemName=VisualStudioProductTeam.MicrosoftVisualStudio2017InstallerProjects)
+    - Otherwise simply Remove the project from the solution (please don't check in the change to the solution)
  - Set the startup project to Miner.App.UI.WPF
  - Build xmr-stak-cpu
  - Run
