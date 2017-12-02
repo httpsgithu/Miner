@@ -14,8 +14,13 @@ namespace HD
     #region Data
     // Saved Info
     public readonly MinerConfig minerConfig = MinerConfig.LoadOrCreate();
-    public readonly Beneficiaries beneficiaries =  new Beneficiaries();
+    public readonly Beneficiaries beneficiaries;
     #endregion
+
+    public Settings()
+    {
+      beneficiaries = new Beneficiaries();
+    }
 
     #region Public
     public void SaveOnExit()

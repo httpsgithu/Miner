@@ -34,7 +34,8 @@ namespace HD
     public APINiceHashWorkerList(
       string wallet)
       : base(new Uri(string.Format(urlParam0Wallet, wallet)))
-    { }
+    {
+    }
     #endregion
 
     #region Events
@@ -54,10 +55,16 @@ namespace HD
 
       double totalSpeed = 0;
       int dataCount = 0;
+      bool includesMyWorkerName = false;
       try
       {
         foreach (object[] worker in data.Result.Workers)
         {
+          if((string)worker[0] == Miner.instance.settings.minerConfig.workerName)
+          {
+            includesMyWorkerName = true;
+            continue;
+          }
           Dictionary<string, string> speedObject = ((JObject)worker[1]).ToObject<Dictionary<string, string>>();
           speedObject.TryGetValue("a", out string speedString);
           if (string.IsNullOrEmpty(speedString) == false)
@@ -87,7 +94,7 @@ namespace HD
         averageSpeed = totalSpeed / dataCount;
       }
 
-      totalSpeed += averageSpeed * (data.Result.Workers.Length - dataCount);
+      totalSpeed += averageSpeed * (data.Result.Workers.Length - dataCount - (includesMyWorkerName ? 1 : 0));
 
       Debug.Assert(double.IsNaN(totalSpeed) == false);
       totalWorkerHashRateMHpS = totalSpeed / 1000;

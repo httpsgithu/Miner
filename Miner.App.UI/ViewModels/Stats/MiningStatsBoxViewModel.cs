@@ -34,7 +34,7 @@ namespace HD
     {
       get
       {
-        return new MinerPeformance(new decimal(beneficiary.totalWorkerHashRateMHpS)
+        return new MinerPeformance(beneficiary.totalWorkerHashRateMHpS
           * Miner.instance.pricePerDayInBtcFor1MHOfCryptonight);
       }
     }
@@ -94,13 +94,22 @@ namespace HD
       Debug.Assert(mainViewModel != null);
 
       this.mainViewModel = mainViewModel;
-
-      Miner.instance.settings.minerConfig.onCurrencyChange += OnCurrencyUpdated;
+      MiddlewareServer.onMiningStatsUpdate += MiddlewareServer_onMiningStatsUpdate;
+      Miner.instance.settings.minerConfig.onCurrencyChange += Config_OnCurrencyUpdated;
     }
     #endregion
 
-    #region Callbacks
-    void OnCurrencyUpdated(Currency currency)
+    #region Events
+    void MiddlewareServer_onMiningStatsUpdate(
+      MiningStats stats)
+    {
+      Debug.Assert(stats != null);
+
+      OnPropertyChanged(nameof(currentMiningPerformance));
+      OnPropertyChanged(nameof(currentMiningPerformanceString));
+    }
+
+    void Config_OnCurrencyUpdated(Currency currency)
     {
       OnPropertyChanged(nameof(currentMiningPerformanceString));
     }

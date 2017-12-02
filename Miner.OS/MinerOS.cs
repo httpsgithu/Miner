@@ -2,7 +2,7 @@
 using HD;
 using System.Diagnostics;
 
-namespace Miner.OS
+namespace Miner.instance.OS
 {
   /// <summary>
   /// Offers an abstract interface to any platform specific features.

@@ -8,8 +8,6 @@ namespace HD
     #region Data
     public event Action onValueUpdated;
 
-    readonly MiddlewareServer server;
-
     readonly Timer refreshResourcesTimer = new Timer(TimeSpan.FromSeconds(1).TotalMilliseconds);
 
     /// <summary>
@@ -22,18 +20,24 @@ namespace HD
 
     #region Init
     public MinerResourceMonitor(
-      MiddlewareServer server)
+      MinerConfig config)
     {
-      Debug.Assert(server != null);
-
-      this.server = server;
       refreshResourcesTimer.Elapsed += Refresh;
       refreshResourcesTimer.Start();
-    }
 
+      config.onCpuConfigChanged += MinerConfig_onCpuConfigChanged;
+    }
+    
     public void Start()
     {
       UpdateSleepFor();
+    }
+    #endregion
+
+    #region Events
+    void MinerConfig_onCpuConfigChanged()
+    {
+      CalcInitialSleepRate();
     }
     #endregion
 
@@ -87,8 +91,8 @@ namespace HD
     {
       if (HardwareMonitor.isMinerDataReady == false)
       {
-        sleepRate = .9; // Always start with too much sleep
-        server.Send(new SetSleepFor(sleepRate));
+        CalcInitialSleepRate();
+        Miner.instance.middlewareServer.Send(new SetSleepFor(sleepRate));
         return;
       }
 
@@ -110,8 +114,13 @@ namespace HD
         targetSleepRate = .9;
       }
 
-      sleepRate = (sleepRate * 2 + targetSleepRate) / 3;
-      server.Send(new SetSleepFor(sleepRate));
+      sleepRate = (sleepRate * 4 + targetSleepRate) / 5;
+      Miner.instance.middlewareServer.Send(new SetSleepFor(sleepRate));
+    }
+
+    private void CalcInitialSleepRate()
+    {
+      sleepRate = Math.Min(.9, (1 - Miner.instance.currentTargetCpu) + .1); // Always start with too much sleep
     }
     #endregion
   }

@@ -38,7 +38,8 @@ namespace HD
 
       dll.StartMining(startMiningRequest.wallet,
           startMiningRequest.numberOfThreads,
-          startMiningRequest.workerName);
+          startMiningRequest.workerName,
+          startMiningRequest.stratumUrl);
     }
 
     public override void OnMessage(
@@ -46,7 +47,9 @@ namespace HD
     {
       Debug.Assert(sleepFor != null);
 
-      dll.SetSleepFor(sleepFor.sleepRate);
+      bool isWorkStalled = dll.SetSleepFor(sleepFor.sleepRate);
+
+      Send(new WorkIsStalled(isWorkStalled));
     }
     #endregion
   }

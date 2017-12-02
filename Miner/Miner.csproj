@@ -50,6 +50,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\JSON\WorkIsStalled.cs" />
     <Compile Include="Data\MinerGlobalVariables.cs" />
     <Compile Include="Data\JSON\MiningStats.cs" />
     <Compile Include="Data\JSON\SetSleepFor.cs" />

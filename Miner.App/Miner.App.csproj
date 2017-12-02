@@ -104,6 +104,7 @@
     <Compile Include="Controllers\CurrencyExchange.cs" />
     <Compile Include="Controllers\CurrencyExchangeManager.cs" />
     <Compile Include="Controllers\MinerAutoStart.cs" />
+    <Compile Include="Controllers\MinerRegionMonitor.cs" />
     <Compile Include="Controllers\MinerResourceMonitor.cs" />
     <Compile Include="Data\Beneficiaries\Beneficiaries.cs" />
     <Compile Include="Data\Beneficiaries\Beneficiary.cs" />

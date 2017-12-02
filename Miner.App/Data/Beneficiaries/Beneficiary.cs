@@ -22,11 +22,16 @@ namespace HD
     public bool isUsersWallet;
 
     [JsonProperty]
-    double _percentTime;
+    public double _percentTime;
 
     APINiceHashWorkerList apiWorkerList;
 
     readonly Timer updateNetworkPerformanceTimer = new Timer(1);
+
+    public decimal localHashRate
+    {
+      get; private set;
+    } = -1;
     #endregion
 
     #region Properties
@@ -52,7 +57,7 @@ namespace HD
           value = 1;
         }
 
-        if(percentTime == value)
+        if (percentTime == value)
         {
           return;
         }
@@ -71,11 +76,22 @@ namespace HD
       }
     }
 
-    public double totalWorkerHashRateMHpS
+    public decimal totalWorkerHashRateMHpS
     {
       get
       {
-        return apiWorkerList?.totalWorkerHashRateMHpS ?? 0;
+        decimal total = 0;
+        if (apiWorkerList != null)
+        {
+          total += new decimal(apiWorkerList.totalWorkerHashRateMHpS);
+        }
+
+        if (this == Miner.instance.currentWinner)
+        {
+          total += localHashRate;
+        }
+
+        return total;
       }
     }
     #endregion
@@ -89,7 +105,8 @@ namespace HD
     {
       this.name = name;
       this.wallet = wallet;
-      this.percentTime = percentTime;
+      // Don't auto-save
+      this._percentTime = percentTime;
       this.isUsersWallet = isUsersWallet;
 
       updateNetworkPerformanceTimer.AutoReset = false;
@@ -115,12 +132,13 @@ namespace HD
     {
       apiWorkerList = new APINiceHashWorkerList(wallet);
       updateNetworkPerformanceTimer.Start();
+      MiddlewareServer.onMiningStatsUpdate += MiddlewareServer_onMiningStatsUpdate;
     }
     #endregion
 
     #region Events
     void Timer_Elapsed(
-      object sender, 
+      object sender,
       ElapsedEventArgs e)
     {
       updateNetworkPerformanceTimer.Interval = 20000;
@@ -158,8 +176,54 @@ namespace HD
 
     void Save()
     {
-      // Here Miner.instance is null during initial construction.
-      Miner.instance?.settings.beneficiaries.Save();
+      Miner.instance.settings.beneficiaries.Save();
+    }
+
+    void MiddlewareServer_onMiningStatsUpdate(
+      MiningStats stats)
+    {
+      Debug.Assert(stats != null);
+
+      if (Miner.instance.currentWinner == this)
+      {
+        this.localHashRate = new decimal(stats.hashRate);
+      }
+      else
+      {
+        this.localHashRate = 0;
+      }
+    }
+    #endregion
+
+    #region Class stuff
+    public static bool operator ==(
+      Beneficiary a,
+      Beneficiary b)
+    {
+      return a?.wallet == b?.wallet;
+    }
+
+    public static bool operator !=(
+      Beneficiary a,
+      Beneficiary b)
+    {
+      return a?.wallet != b?.wallet;
+    }
+
+    public override int GetHashCode()
+    {
+      return wallet.GetHashCode();
+    }
+
+    public override bool Equals(
+      object obj)
+    {
+      if (obj is Beneficiary beneficiary)
+      {
+        return wallet == beneficiary.wallet;
+      }
+
+      return false;
     }
     #endregion
   }

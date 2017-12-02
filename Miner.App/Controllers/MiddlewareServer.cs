@@ -15,8 +15,9 @@ namespace HD
     #endregion
 
     #region Data
-    public event Action<MiningStats> onMiningStatsUpdate;
+    public static event Action<MiningStats> onMiningStatsUpdate;
 
+    public event Action<WorkIsStalled> onWorkIsStalled;
     #endregion
 
     #region Init
@@ -31,11 +32,12 @@ namespace HD
     #region Events
     void OnConnection()
     {
-      Miner.instance.monitor.Start();
+      Miner.instance.resourceMonitor.Start();
       Send(new StartMiningRequest(
         wallet: Miner.instance.currentWinner.wallet,
         numberOfThreads: Miner.instance.settings.minerConfig.numberOfThreads,
-        workerName: Miner.instance.settings.minerConfig.workerName));
+        workerName: Miner.instance.settings.minerConfig.workerName,
+        stratumUrl: Miner.instance.regionMonitor.currentRegion.stratumUrl));
     }
 
     void OnDisconnect(
@@ -52,11 +54,10 @@ namespace HD
       if (message is MiningStats stats)
       {
         onMiningStatsUpdate?.Invoke(stats);
-        // TODO UI
-        //viewModel.btcAmount =
-        //  stats.hashRate
-        //  * Miner.instance.settings.miningPriceList.pricePerDayInBtcFor1MH
-        //  * viewModel.daysPerInterval;
+      }
+      else if (message is WorkIsStalled stalled)
+      {
+        onWorkIsStalled?.Invoke(stalled);
       }
       else
       {

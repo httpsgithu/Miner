@@ -1,4 +1,4 @@
-﻿using Miner.OS;
+﻿using Miner.instance.OS;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -22,6 +22,8 @@ namespace HD
     #endregion
 
     #region Data
+    public event Action onCpuConfigChanged;
+
     [JsonProperty]
     string _workerName = "anonymous";
 
@@ -68,6 +70,7 @@ namespace HD
           _maxCpuWhileActive = maxCpuWhileIdle;
         }
         Save();
+        onCpuConfigChanged?.Invoke();
       }
     }
 
@@ -85,6 +88,7 @@ namespace HD
           _maxCpuWhileIdle = maxCpuWhileActive;
         }
         Save();
+        onCpuConfigChanged?.Invoke();
       }
     }
 
@@ -115,6 +119,8 @@ namespace HD
       {
         ValidateTimeTill(ref value);
         _timeTillIdle = value;
+        Save();
+        onCpuConfigChanged?.Invoke();
       }
     }
 
