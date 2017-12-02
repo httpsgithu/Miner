@@ -36,13 +36,12 @@ namespace HD
     {
       get
       {
-        if (usdDay < 0)
-        {
-          return "loading...";
-        }
         var value = usdDay;
         if (Miner.instance.settings.minerConfig.currency != Currency.USD)
           value = CurrencyExchangeManager.From(usdDay, Currency.USD).To(Miner.instance.settings.minerConfig.currency);
+
+        if (value < 0)
+          return "loading...";
 
         return $"{Miner.instance.settings.minerConfig.period.DailyToPeriod(value):N2} {Miner.instance.settings.minerConfig.currency.ToString()}";
       }
