@@ -16,18 +16,16 @@ namespace HD
       object sender,
       StartupEventArgs e)
     {
-        // Don't update while being debugged
-        if (!Debugger.IsAttached)
-        {
-            AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
-            DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(1) };
-            timer.Tick += delegate
-            {
-                CheckForUpdates();
-            };
-            timer.Start();
-        }
-        }
+#if !DEBUG
+      AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
+      DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(1) };
+      timer.Tick += delegate
+      {
+        CheckForUpdates();
+      };
+      timer.Start();
+#endif
+    }
 
     static void CheckForUpdates()
     {

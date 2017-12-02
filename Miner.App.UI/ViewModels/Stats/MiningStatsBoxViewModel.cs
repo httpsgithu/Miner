@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HD.Controllers;
+using System;
 using System.Diagnostics;
 
 namespace HD
@@ -93,6 +94,15 @@ namespace HD
       Debug.Assert(mainViewModel != null);
 
       this.mainViewModel = mainViewModel;
+
+      Miner.instance.settings.minerConfig.onCurrencyChange += OnCurrencyUpdated;
+    }
+    #endregion
+
+    #region Callbacks
+    void OnCurrencyUpdated(Currency currency)
+    {
+      OnPropertyChanged(nameof(currentMiningPerformanceString));
     }
     #endregion
   }

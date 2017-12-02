@@ -108,7 +108,7 @@
     <Compile Include="Data\Beneficiaries\Beneficiaries.cs" />
     <Compile Include="Data\Beneficiaries\Beneficiary.cs" />
     <Compile Include="Data\Beneficiaries\BeneficiarySorter.cs" />
-    <Compile Include="Data\Config\Currencies.cs" />
+    <Compile Include="Data\Config\Currency.cs" />
     <Compile Include="Data\Config\MinerConfig.cs" />
     <Compile Include="Data\Config\Settings.cs" />
     <Compile Include="Controllers\Miner.cs" />

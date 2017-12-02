@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace HD.Data.JSON
 {
-    [JsonObject(MemberSerialization.OptIn)]
-    public class CurrencyExchangeRates
-    {
-        [JsonProperty]
-        public readonly string @base;
+  [JsonObject(MemberSerialization.OptIn)]
+  public class CurrencyExchangeRates
+  {
+    [JsonProperty]
+    public readonly string @base;
 
-        [JsonProperty]
-        public readonly DateTime date;
+    [JsonProperty]
+    public readonly DateTime date;
 
-        [JsonProperty]
-        public readonly Dictionary<string, decimal> rates;
-    }
+    [JsonProperty]
+    public readonly Dictionary<string, decimal> rates;
+  }
 }

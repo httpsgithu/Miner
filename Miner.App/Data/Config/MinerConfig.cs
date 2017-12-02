@@ -38,7 +38,7 @@ namespace HD
     Period _period;
 
     [JsonProperty]
-    Currencies _currency;
+    Currency _currency;
     #endregion
 
     #region Properties
@@ -151,22 +151,23 @@ namespace HD
       }
     }
 
-    public Currencies currency
+    public Currency currency
     {
-        get
-        {
-            return _currency;
-        }
-        set
-        {
-            _currency = value;
-            Save();
-        }
+      get
+      {
+        return _currency;
+      }
+      set
+      {
+        _currency = value;
+        onCurrencyChange?.Invoke(value);
+        Save();
+      }
     }
-        #endregion
+    #endregion
 
-        #region Init
-        public static MinerConfig LoadOrCreate()
+    #region Init
+    public static MinerConfig LoadOrCreate()
     {
       try
       {
@@ -220,6 +221,10 @@ namespace HD
         value = minIdleTime;
       }
     }
+    #endregion
+
+    #region Events
+    public event Action<Currency> onCurrencyChange;
     #endregion
   }
 }

@@ -8,46 +8,64 @@ using System.Threading.Tasks;
 
 namespace HD.Controllers
 {
-    public static class CurrencyExchangeManager
+  public static class CurrencyExchangeManager
+  {
+    const string API_URL = "https://api.fixer.io/latest?base=";
+
+    static Dictionary<string, (DateTime lastUpdated, CurrencyExchangeRates values)> rates = new Dictionary<string, (DateTime, CurrencyExchangeRates)>();
+    static int isUpdating = 0;
+
+    public static CurrencyExchange From(decimal amount, HD.Currency baseCurrency, bool forceUpdate = false)
     {
-        const string API_URL = "https://api.fixer.io/latest?base=";
+      var currencyName = baseCurrency.ToString();
+      if (AreRatesOutdated(currencyName) || forceUpdate)
+      {
+        Task.Run(() => { Fetch(currencyName); });
+      }
 
-        static Dictionary<string, (DateTime lastUpdated, CurrencyExchangeRates values)> rates = new Dictionary<string, (DateTime, CurrencyExchangeRates)>();
-        static int isUpdating = 0;
-
-        public static CurrencyExchange From(decimal amount, HD.Currencies baseCurrency, bool forceUpdate = false)
-        {
-            var currencyName = baseCurrency.ToString();
-            if (AreRatesOutdated(currencyName) || forceUpdate)
-            {
-                // Don't have rates yet, return -1 for now
-                Task.Run(() => { Fetch(currencyName); });
-                return new CurrencyExchange(null, -1);
-            }
-            return new CurrencyExchange(rates[currencyName].values, amount);
-        }
-
-        private static bool AreRatesOutdated(string baseCurrency)
-        {
-            if (!rates.ContainsKey(baseCurrency))
-                return true;
-
-            // Update once per hour
-            if ((DateTime.UtcNow - rates[baseCurrency].lastUpdated).TotalHours >= 1)
-                return true;
-
-            return false;
-        }
-
-        private static void Fetch(string baseCurrency)
-        {
-            if (System.Threading.Interlocked.CompareExchange(ref isUpdating, 1, 0) == 0)
-            {
-                var dataString = Encoding.UTF8.GetString(HDWebClient.GetBytes($"{API_URL}{baseCurrency}"));
-                var obj = JsonConvert.DeserializeObject<CurrencyExchangeRates>(dataString);
-                rates[baseCurrency] = (lastUpdated: DateTime.UtcNow, values: obj);
-                isUpdating = 0;
-            }
-        }
+      // to avoid a race condition when returning at the exact same time
+      // as the update thread is writing to the dict.
+      lock (rates)
+      {
+        return rates.ContainsKey(currencyName) ?
+          new CurrencyExchange(rates[currencyName].values, amount) :
+          new CurrencyExchange(null, -1);
+      }
     }
+
+    private static bool AreRatesOutdated(string baseCurrency)
+    {
+      if (!rates.ContainsKey(baseCurrency))
+        return true;
+
+      // Update once per hour
+      if ((DateTime.UtcNow - rates[baseCurrency].lastUpdated).TotalHours >= 1)
+        return true;
+
+      return false;
+    }
+
+    private static void Fetch(string baseCurrency)
+    {
+      if (System.Threading.Interlocked.CompareExchange(ref isUpdating, 1, 0) == 0)
+      {
+        try
+        {
+          var dataString = Encoding.UTF8.GetString(HDWebClient.GetBytes($"{API_URL}{baseCurrency}"));
+          var obj = JsonConvert.DeserializeObject<CurrencyExchangeRates>(dataString);
+          lock (rates)
+          {
+            rates[baseCurrency] = (lastUpdated: DateTime.UtcNow, values: obj);
+          }
+        }
+        catch
+        {
+        }
+        finally
+        {
+          isUpdating = 0;
+        }
+      }
+    }
+  }
 }

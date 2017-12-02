@@ -178,7 +178,7 @@ namespace HD
       }
     }
 
-    public Currencies currency
+    public Currency currency
     {
         get
         {
@@ -191,14 +191,14 @@ namespace HD
         }
         }
 
-    public IEnumerable<Currencies> currencyList
+    public IEnumerable<Currency> currencyList
     {
         get
         {
-            Array list = Enum.GetValues(typeof(Currencies));
+            Array list = Enum.GetValues(typeof(Currency));
             for (int i = 0; i < list.Length; i++)
             {
-                yield return (Currencies)list.GetValue(i);
+                yield return (Currency)list.GetValue(i);
             }
         }
     }
