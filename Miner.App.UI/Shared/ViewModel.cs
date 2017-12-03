@@ -12,15 +12,17 @@ namespace HD
   {
     public event PropertyChangedEventHandler PropertyChanged;
 
-    readonly SynchronizationContext context;
+    static SynchronizationContext context;
 
     public ViewModel()
     {
-      context = SynchronizationContext.Current;
-      Debug.Assert(context != null, @"
+        if(context == null && SynchronizationContext.Current != null)
+            context = SynchronizationContext.Current;
+     /* Debug.Assert(context != null, @"
 ViewModels must be created on the UI thread.  
 To create a new ViewModel from anywhere, you should use context.Post first, like ViewModel.OnPropertyChanged
-        ");
+        "
+        );*/
     }
 
     /// <summary>
@@ -33,10 +35,13 @@ To create a new ViewModel from anywhere, you should use context.Post first, like
     protected void OnPropertyChanged(
       [CallerMemberName] string propertyName = null)
     {
-      context.Post((state) =>
+      if (context != null)
       {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-      }, null);
+        context.Send((state) =>
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }, null);
+      }
     }
   }
 }

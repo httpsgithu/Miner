@@ -12,7 +12,6 @@ namespace HD
     {
       // https://github.com/picoe/Eto/wiki/Running-your-application
       var app = new Application(Platform.Detect);
-      SynchronizationContext.SetSynchronizationContext(new UISynchronizationContext(app));
       app.Run(new MainForm());
     }
   }

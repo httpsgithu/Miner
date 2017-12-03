@@ -12,13 +12,14 @@ namespace HD
       XamlReader.Load(this);
 
       //StatsBoxes.ControlType = typeof(StatsBox); //tells the GenericStackControl what type of control should be used, so it can create controls for each of the items in the set datacontext (datacontex has been set for this in the xaml to the statsboxlist)
-      DataContext = new MainViewModel();
+
+      
     }
 
-    protected void HandleClickMe(object sender, EventArgs e)
+    protected override void OnShown(EventArgs e)
     {
-      //MinerSettings settingsView = new MinerSettings();
-
+        base.OnShown(e);
+        DataContext = new MainViewModel();
     }
 
     protected void HandleQuit(object sender, EventArgs e)
