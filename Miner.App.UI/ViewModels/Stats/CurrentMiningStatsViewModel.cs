@@ -8,6 +8,11 @@ namespace HD
     {
       get
       {
+        if(beneficiary == null)
+        {
+          return default(MinerPeformance);
+        }
+
         return new MinerPeformance(beneficiary.localHashRate 
           * Miner.instance.pricePerDayInBtcFor1MHOfCryptonight);
       }

@@ -21,7 +21,7 @@ namespace HD
     {
       get
       {
-        return beneficiary.isValidAndActive;
+        return beneficiary?.isValidAndActive ?? false; 
       }
     }
 
@@ -34,6 +34,11 @@ namespace HD
     {
       get
       {
+        if(beneficiary == null)
+        {
+          return default(MinerPeformance);
+        }
+
         return new MinerPeformance(beneficiary.totalWorkerHashRateMHpS
           * Miner.instance.pricePerDayInBtcFor1MHOfCryptonight);
       }
@@ -64,7 +69,7 @@ namespace HD
     {
       get
       {
-        return beneficiary.wallet;
+        return beneficiary?.wallet;
       }
     }
 
@@ -72,7 +77,7 @@ namespace HD
     {
       get
       {
-        return beneficiary.name;
+        return beneficiary?.name;
       }
     }
 
@@ -80,7 +85,7 @@ namespace HD
     {
       get
       {
-        return beneficiary.percentTime;
+        return beneficiary?.percentTime ?? 0;
       }
     }
 
