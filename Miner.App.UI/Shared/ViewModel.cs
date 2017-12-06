@@ -18,11 +18,6 @@ namespace HD
     {
         if(context == null && SynchronizationContext.Current != null)
             context = SynchronizationContext.Current;
-     /* Debug.Assert(context != null, @"
-ViewModels must be created on the UI thread.  
-To create a new ViewModel from anywhere, you should use context.Post first, like ViewModel.OnPropertyChanged
-        "
-        );*/
     }
 
     /// <summary>

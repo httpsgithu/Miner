@@ -28,7 +28,7 @@
     <TextBox Text= "{Binding workerName}"  MaxLength="15" />
     
     <Label Text="Your Wallet: " />
-    <TextBox Text="{Binding myWallet}" />
+    <TextBox x:Name="WalletTextBox" Text="{Binding myWallet}" />
     
     <!--
     <Label Text="% of Time that goes to HD:" />

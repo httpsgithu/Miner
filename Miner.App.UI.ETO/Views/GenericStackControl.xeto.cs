@@ -6,7 +6,7 @@ using Eto.Serialization.Xaml;
 using System.Collections;
 using System.Collections.Specialized;
 
-namespace HD
+namespace HD.Views
 {
     public class GenericStackControl : Scrollable
     {

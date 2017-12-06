@@ -4,12 +4,12 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   >
   <TableLayout>
-	<Label Text="{Binding Title}" />	
+	<Label Text="{Binding walletOwner}" />	<!--
     <StackLayout Orientation="Horizontal">	  
-      <Label Text="{Binding LeftValue}" />
-	  <Label Text="        " />
-      <Label Text="{Binding RightValue}" />
-    </StackLayout>
+      <Label Text="{Binding walledOwner}" />
+	  <Label Text="        " /> -->
+      <Label Text="{Binding currentMiningPerformanceString}" /> 
+    <!--</StackLayout> -->
   </TableLayout>
 	
 </Panel>
