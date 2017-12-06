@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HD.Controllers;
+using System;
 using System.Diagnostics;
 
 namespace HD
@@ -54,7 +55,7 @@ namespace HD
         }
         else
         {
-          return currentMiningPerformance.usdString;
+          return currentMiningPerformance.currencyString;
         }
       }
     }
@@ -94,6 +95,7 @@ namespace HD
 
       this.mainViewModel = mainViewModel;
       MiddlewareServer.onMiningStatsUpdate += MiddlewareServer_onMiningStatsUpdate;
+      Miner.instance.settings.minerConfig.onCurrencyChange += Config_OnCurrencyUpdated;
     }
     #endregion
 
@@ -104,6 +106,11 @@ namespace HD
       Debug.Assert(stats != null);
 
       OnPropertyChanged(nameof(currentMiningPerformance));
+      OnPropertyChanged(nameof(currentMiningPerformanceString));
+    }
+
+    void Config_OnCurrencyUpdated(Currency currency)
+    {
       OnPropertyChanged(nameof(currentMiningPerformanceString));
     }
     #endregion

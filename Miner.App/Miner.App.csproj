@@ -96,18 +96,25 @@
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\CurrencyExchange.cs" />
+    <Compile Include="Controllers\CurrencyExchangeManager.cs" />
     <Compile Include="Controllers\MinerAutoStart.cs" />
     <Compile Include="Controllers\MinerRegionMonitor.cs" />
     <Compile Include="Controllers\MinerResourceMonitor.cs" />
     <Compile Include="Data\Beneficiaries\Beneficiaries.cs" />
     <Compile Include="Data\Beneficiaries\Beneficiary.cs" />
     <Compile Include="Data\Beneficiaries\BeneficiarySorter.cs" />
+    <Compile Include="Data\Config\Currency.cs" />
     <Compile Include="Data\Config\MinerConfig.cs" />
     <Compile Include="Data\Config\Settings.cs" />
     <Compile Include="Controllers\Miner.cs" />
     <Compile Include="Data\HardwareMonitor.cs" />
+    <Compile Include="Data\JSON\CurrencyExchangeRates.cs" />
     <Compile Include="Data\MinerPeformance.cs" />
     <Compile Include="Data\Config\Period.cs" />
     <Compile Include="Network\APIBitcoinPrice.cs" />

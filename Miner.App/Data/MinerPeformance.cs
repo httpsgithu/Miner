@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HD.Controllers;
+using System;
 
 namespace HD
 {
@@ -22,7 +23,7 @@ namespace HD
     {
       get
       {
-        if(btcPerDay < 0)
+        if (btcPerDay < 0)
         {
           return "loading...";
         }
@@ -31,16 +32,18 @@ namespace HD
       }
     }
 
-    public string usdString
+    public string currencyString
     {
       get
       {
-        if(usdDay < 0)
-        {
-          return "loading...";
-        }
+        var value = usdDay;
+        if (Miner.instance.settings.minerConfig.currency != Currency.USD)
+          value = CurrencyExchangeManager.From(usdDay, Currency.USD).To(Miner.instance.settings.minerConfig.currency);
 
-        return $"${Miner.instance.settings.minerConfig.period.DailyToPeriod(usdDay):N2}";
+        if (value < 0)
+          return "loading...";
+
+        return $"{Miner.instance.settings.minerConfig.period.DailyToPeriod(value):N2} {Miner.instance.settings.minerConfig.currency.ToString()}";
       }
     }
 

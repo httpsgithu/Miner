@@ -38,6 +38,9 @@ namespace HD
 
     [JsonProperty]
     Period _period;
+
+    [JsonProperty]
+    Currency _currency;
     #endregion
 
     #region Properties
@@ -153,6 +156,20 @@ namespace HD
         Save();
       }
     }
+
+    public Currency currency
+    {
+      get
+      {
+        return _currency;
+      }
+      set
+      {
+        _currency = value;
+        onCurrencyChange?.Invoke(value);
+        Save();
+      }
+    }
     #endregion
 
     #region Init
@@ -210,6 +227,10 @@ namespace HD
         value = minIdleTime;
       }
     }
+    #endregion
+
+    #region Events
+    public event Action<Currency> onCurrencyChange;
     #endregion
   }
 }
