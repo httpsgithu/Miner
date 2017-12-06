@@ -2,7 +2,7 @@
 using Eto.Forms;
 using Eto.Serialization.Xaml;
 
-namespace HD
+namespace HD.Views
 {
     public class StatsBox : Panel
     {

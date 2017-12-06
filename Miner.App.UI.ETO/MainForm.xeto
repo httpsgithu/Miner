@@ -2,7 +2,7 @@
 <Form
 	xmlns="http://schema.picoe.ca/eto.forms" 
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:local="clr-namespace:HD"
+  xmlns:local="clr-namespace:HD.Views"
 	Title="HardlyDifficult Miner"
 	ClientSize="350, 350"
 	>
@@ -10,18 +10,28 @@
   <TabControl>
     <TabPage Text="Main">
       <StackLayout>
-        <!--<local:GenericStackControl x:Name="StatsBoxes" DataContext="{Binding StatsBoxList}" Width="350" Height="128" />-->
-        <Button x:Name="StartStopButton" Text="{Binding startOrStopText}" Command="{Binding startStopCMD}"/>
-        <ProgressBar Value="{Binding cpuUsageForMining0To100000}" MaxValue="100000"  Height="8" Width="350" />
-        <Label Text="{Binding cpuUsageForMining}" ContentStringFormat="{}{0:p4}" HorizontalAlignment="Center" />
+        <StackLayout Orientation="Horizontal" Spacing="128">
+          <Button x:Name="StartStopButton" Text="{Binding startOrStopText}" Command="{Binding startStopCMD}"  />
+          <local:StatsBox x:Name="MiningFor" DataContext="{Binding currentlyMiningFor}" /><!--Width="350" Height="128" /> ="{Binding isCurrentlyMining}" /-->
+        </StackLayout>
+        
+        <ProgressBar Value="{Binding cpuUsageForMining0To100000}" MaxValue="100000"  Height="8" Width="350"  ToolTip="{Binding cpuUsageMiningText}"/>
+        <!--<Label Text="{Binding cpuUsageForMining0To100}" ContentStringFormat="{}{0:p4}" HorizontalAlignment="Center" /> -->
+        <ProgressBar Value="{Binding cpuUsageOverall0to100000}" MaxValue="100000"  Height="8" Width="350" ToolTip="{Binding cpuUsageText}" />
+        <!--<Label Text="{Binding cpuUsageOverall0to100}" ContentStringFormat="{}{0:p4}" HorizontalAlignment="Center" />-->
 
+     
+        <StackLayout Orientation =" Horizontal" >
+          <local:GenericStackControl x:Name="StatsBoxes" DataContext="{Binding statsBoxList}" Width="350" Height="128" />
+          <!--local:GenericStackControl x:Name="StatsBoxesRight" DataContext="{Binding StatsBoxList}" Width="350" Height="128" /-->
+        </StackLayout>
       </StackLayout>
     </TabPage>
-    <TabPage Text="Streamers"></TabPage>
-    <TabPage Text="About"></TabPage>
+    <TabPage Text="Beneficiaries"></TabPage>   
     <TabPage Text="Settings">
-      <!--<local:MinerSettings DataContext="{Binding Settings}"/>-->
+      <local:MinerSettings DataContext="{Binding settings}"/>
     </TabPage>
+    <TabPage Text="About"></TabPage>
   </TabControl>
 
   <!--Form.Menu>
