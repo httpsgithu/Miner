@@ -38,9 +38,13 @@
     <Compile Include="WindowsMinerOS.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\HardlyCommonWindows\HardlyCommonWindows.csproj">
+    <ProjectReference Include="..\..\Hardly.Common.Windows\Hardly.Common.Windows.csproj">
       <Project>{af0b12c0-df72-4e8b-9841-32173cf7f539}</Project>
-      <Name>HardlyCommonWindows</Name>
+      <Name>Hardly.Common.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Hardly.Common\Hardly.Common.csproj">
+      <Project>{00174c6b-a135-42a7-af86-ca81806820a5}</Project>
+      <Name>Hardly.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\Miner.OS\Miner.OS.csproj">
       <Project>{494e2932-2f7a-4cd1-87f9-69a2d513eec4}</Project>

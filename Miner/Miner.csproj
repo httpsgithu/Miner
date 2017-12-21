@@ -64,9 +64,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\HardlyCommon\HardlyCommon.csproj">
+    <ProjectReference Include="..\..\Hardly.Common\Hardly.Common.csproj">
       <Project>{00174c6b-a135-42a7-af86-ca81806820a5}</Project>
-      <Name>HardlyCommon</Name>
+      <Name>Hardly.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

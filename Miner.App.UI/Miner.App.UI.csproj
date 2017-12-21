@@ -45,10 +45,6 @@
     <Compile Include="Shared\ViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\HardlyCommon\HardlyCommon.csproj">
-      <Project>{00174c6b-a135-42a7-af86-ca81806820a5}</Project>
-      <Name>HardlyCommon</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Miner.App\Miner.App.csproj">
       <Project>{0276b284-1301-47dc-b429-92f68ffb4e69}</Project>
       <Name>Miner.App</Name>

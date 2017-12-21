@@ -215,14 +215,6 @@
       <Project>{fb9e7e6b-b19f-4f37-a708-2996190cef13}</Project>
       <Name>AutoUpdater.NET</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\HardlyCommonWindows\HardlyCommonWindows.csproj">
-      <Project>{af0b12c0-df72-4e8b-9841-32173cf7f539}</Project>
-      <Name>HardlyCommonWindows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\HardlyCommon\HardlyCommon.csproj">
-      <Project>{00174c6b-a135-42a7-af86-ca81806820a5}</Project>
-      <Name>HardlyCommon</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Miner.App.UI\Miner.App.UI.csproj">
       <Project>{af66d91b-52d9-42ac-a608-509188ef01d7}</Project>
       <Name>Miner.App.UI</Name>
