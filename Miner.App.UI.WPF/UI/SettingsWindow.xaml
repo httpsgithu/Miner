@@ -60,17 +60,25 @@
 
 
             <Label FontSize="14">Your Name (Optional):</Label>
-            <TextBox x:Name="workerNameText" Margin="5" MaxLength="15" MaxLines="1" Text="{Binding workerName}"></TextBox>
+            <TextBox x:Name="workerNameText" Margin="0, 5" MaxLength="15" MaxLines="1" Text="{Binding workerName}"></TextBox>
             <Label FontSize="8">This will be visible on the NiceHash dashboard.</Label>
             <Label FontSize="14">Your Wallet:</Label>
-            <TextBox x:Name="yourWalletText" Margin="5">
+            <TextBox x:Name="yourWalletText" Margin="0, 5">
                 <Binding Path="myWallet" ValidatesOnExceptions="True">
 
                 </Binding>
             </TextBox>
-            <Label Content="Any BTC wallet is okay. No registration required." FontSize="8"></Label>
-
-            <ComboBox SelectedItem="{Binding period}" ItemsSource="{Binding periodTypeList}"></ComboBox>
+            <TextBlock>     
+                Any BTC wallet is okay. No registration required.
+            </TextBlock>
+            <TextBlock>
+            Don't have a wallet?  I recommend
+    <Hyperlink NavigateUri="http://coinbase.com/join/59ebf3c17be14a00f92091b8" RequestNavigate="OnHyperlinkClick_Coinbase">
+        Coinbase
+    </Hyperlink>.
+            </TextBlock>
+            
+            <ComboBox Margin="0, 5" SelectedItem="{Binding period}" ItemsSource="{Binding periodTypeList}"></ComboBox>
 
             <!--<Label FontSize="14">TODO % of Time that goes to HD:</Label>
                         <Slider x:Name="sliderPercentToHD" Style="{DynamicResource FlatSlider}" Margin="5" LargeChange="0.1" SmallChange="0.01" TickFrequency="0.1" Maximum="1" ValueChanged="sliderPercentToHD_ValueChanged"></Slider>

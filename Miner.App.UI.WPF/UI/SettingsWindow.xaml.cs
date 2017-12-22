@@ -1,5 +1,7 @@
 ﻿using System;
 using MahApps.Metro.Controls;
+using System.Windows.Navigation;
+using System.Diagnostics;
 
 namespace HD
 {
@@ -18,5 +20,14 @@ namespace HD
       DataContext = settingsViewModel;
     }
     #endregion
+
+
+    void OnHyperlinkClick_Coinbase(
+      object sender, 
+      RequestNavigateEventArgs e)
+    {
+      Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+      e.Handled = true;
+    }
   }
 }

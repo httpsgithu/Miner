@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{494E2932-2F7A-4CD1-87F9-69A2D513EEC4}</ProjectGuid>
+    <ProjectGuid>{82A05081-D6E1-4194-BEB5-A9D4D3E30534}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Miner.OS</RootNamespace>

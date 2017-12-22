@@ -17,8 +17,10 @@
         WindowTransitionsEnabled="False"
         WindowStartupLocation="CenterScreen"
         RightWindowCommandsOverlayBehavior="Never"
-        StateChanged="mainWindow_StateChanged" Loaded="mainWindow_Loaded">
+        StateChanged="mainWindow_StateChanged" Loaded="mainWindow_Loaded"
+  xmlns:tb="http://www.hardcodet.net/taskbar">
 
+   
     <Controls:MetroWindow.Resources>
         <ResourceDictionary>
             <BooleanToVisibilityConverter x:Key="BoolToVis"  />
@@ -64,6 +66,18 @@
     </Controls:MetroWindow.RightWindowCommands>
 
     <Grid>
+        <tb:TaskbarIcon x:Name="myNotifyIcon"
+                    Visibility="Visible"
+                    ToolTipText="Hardly Difficult Miner"
+                    IconSource="/Resources/Logo.ico"
+                    MenuActivation="LeftOrRightClick"
+                    PopupActivation="DoubleClick"
+      />
+        <!-- TODO add stats to the tooltip (with binding)
+                    ContextMenu="{StaticResource TrayMenu}"
+                    TrayPopup="{StaticResoure TrayStatusPopup}"
+                    TrayToolTip="{StaticResource TrayToolTip}"-->
+
         <!--<tb:TaskbarIcon x:Name="myNotifyIcon"
                     Visibility="Visible"
                     ContextMenu="{StaticResource tbMenu}"
